@@ -14,3 +14,7 @@ Pages:
 - `assets/img/logo.svg` — the PyDevices mark.
 
 No build step: this is a static site, published directly from `main`.
+
+See [`docs/github-presence.md`](docs/github-presence.md) for a reference on
+how the PyDevices GitHub org is set up (Discussions, Issues, Pages sites,
+licensing, and what's still a manual step).
