@@ -1,9 +1,9 @@
 # PyDevices on GitHub — feature reference
 
 A map of how the [PyDevices](https://github.com/PyDevices) GitHub org is set
-up: where discussions, issues, docs, and Pages sites live, and what's still
-a manual step. Written to answer "how do I...?" / "where do I find...?"
-questions later without re-deriving the answer from scratch.
+up: where discussions, issues, docs, and Pages sites live. Written to answer
+"how do I...?" / "where do I find...?" questions later without re-deriving
+the answer from scratch.
 
 ## Quick answers
 
@@ -13,7 +13,6 @@ questions later without re-deriving the answer from scratch.
 | Report a bug or request a feature | Issues on the **specific repo** it affects (see [repo map](#repos--pages-sites)); use the Bug report / Feature request templates |
 | Find contribution guidelines shared across repos | [PyDevices/.github CONTRIBUTING.md](https://github.com/PyDevices/.github/blob/main/CONTRIBUTING.md) |
 | Read the org's public-facing "about us" | [PyDevices/.github profile README](https://github.com/PyDevices/.github/blob/main/profile/README.md) (rendered on [github.com/PyDevices](https://github.com/PyDevices)) |
-| Find the shared CSS/JS used by every Pages site | [`assets/css/site.css`](../assets/css/site.css) and [`assets/js/theme-toggle.js`](../assets/js/theme-toggle.js) in this repo, canonical at `https://pydevices.github.io/assets/...` |
 | Read pydisplay's full documentation | [pydisplay.readthedocs.io](https://pydisplay.readthedocs.io) |
 | Try the library without installing anything | [PyScript browser demos](https://pydevices.github.io/pydisplay/pyscript/) |
 
@@ -29,24 +28,14 @@ questions later without re-deriving the answer from scratch.
 - If you're not sure which repo an issue belongs to, open it on
   [pydisplay](https://github.com/PyDevices/pydisplay/issues) — per
   CONTRIBUTING.md, that's the routing point.
-- **Wikis** are present (GitHub's default) but intentionally unused — reference
-  content lives in each repo's `README.md`/`AGENTS.md`, in
+- **Wikis** are disabled org-wide — reference content lives in each repo's
+  `README.md`/`AGENTS.md`, in
   [pydisplay's docs](https://pydisplay.readthedocs.io), or on a Pages site,
   not in a wiki page.
 
 ## Org profile
 
 - **About / description / website**: set on the org (`https://pydevices.github.io/`).
-- **Org avatar**: **not set yet** — GitHub has no public API for uploading an
-  org avatar, so this is a manual step: Settings → Profile on
-  [github.com/PyDevices](https://github.com/PyDevices) (there's a rendered
-  copy of the logo at `assets/img/logo.svg` in this repo to use as source).
-- **Pinned repositories**: **not set yet** — GitHub has no REST/GraphQL
-  mutation for pinning an *organization's* repos (only user accounts), so
-  this is also manual: "Customize pins" on
-  [github.com/PyDevices](https://github.com/PyDevices). Suggested picks:
-  `pydisplay`, `lv_bindings`, `cmods`, `displayif`, `graphics`,
-  `lv_cpython_mod`.
 
 ## Repos & Pages sites
 
@@ -72,11 +61,18 @@ Every repo below ships a GitHub Pages site sharing the same chrome
 
 ## Licensing
 
-All owned repos are **MIT**, except **pydisplay**, which carries a LICENSE
-file with mixed attribution (Russ Hughes' original work plus Brad Barnett's
-additions) — GitHub shows this as `NOASSERTION` since it isn't a bare
-single-author MIT template, but the file itself grants the same permissive
-terms.
+All owned repos are **MIT**, using GitHub's standard single-author template
+(so it's correctly detected as MIT rather than `NOASSERTION`/`Other`). A
+handful of files in **pydisplay** that still carry code from other authors
+(`src/add_ons/tft_text.py`, `tft_write.py`, `tft_bitmap.py`, and the
+`polygon()` function in `src/lib/graphics/_shapes.py`, tracing back through
+Russ Hughes' st7789_mpy driver to Ivan Belokobylskiy's st7789py_mpy) keep
+their own self-contained MIT header with that attribution — those in-file
+notices govern those specific files/functions; the root `LICENSE` governs
+everything else. Keep any such pointer *out* of the root `LICENSE` file
+itself: GitHub's license detector does a similarity match against the exact
+template, and extra text (even a short explanatory paragraph) can drop it
+below the confidence threshold and flip the repo back to `NOASSERTION`.
 
 ## Topics
 
