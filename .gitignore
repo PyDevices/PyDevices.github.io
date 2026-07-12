@@ -1,0 +1,5 @@
+# This site has no build step — GitHub Pages serves the repo root
+# verbatim. Anything committed under docs/ is publicly reachable at
+# https://pydevices.github.io/docs/<file>, so keep private working
+# notes out of git entirely rather than just "not linked."
+docs/NOTES.md
