@@ -10,6 +10,7 @@ the answer from scratch.
 | I want to... | Go here |
 |---|---|
 | Ask a question / propose an idea / show something I built | [pydisplay Discussions](https://github.com/PyDevices/pydisplay/discussions) |
+| Find or share a one-off example that's too narrow for the official examples | [pydisplay Discussions → Recipes](https://github.com/PyDevices/pydisplay/discussions/categories/recipes) |
 | Report a bug or request a feature | Issues on the **specific repo** it affects (see [repo map](#repos--pages-sites)); use the Bug report / Feature request templates |
 | Find contribution guidelines shared across repos | [PyDevices/.github CONTRIBUTING.md](https://github.com/PyDevices/.github/blob/main/CONTRIBUTING.md) |
 | Read the org's public-facing "about us" | [PyDevices/.github profile README](https://github.com/PyDevices/.github/blob/main/profile/README.md) (rendered on [github.com/PyDevices](https://github.com/PyDevices)) |
@@ -28,6 +29,12 @@ the answer from scratch.
 - If you're not sure which repo an issue belongs to, open it on
   [pydisplay](https://github.com/PyDevices/pydisplay/issues) — per
   CONTRIBUTING.md, that's the routing point.
+- **Recipes** ([pydisplay Discussions → Recipes](https://github.com/PyDevices/pydisplay/discussions/categories/recipes),
+  open-ended format, not answerable) is for one-off examples/how-tos that
+  answer a specific question well but are too narrow to promote into
+  `src/examples/`. If one gets enough traction, promote it into a real
+  example later — this category is meant to be a low-friction incubator,
+  not a permanent home for everything filed into it.
 - **Wikis** are disabled org-wide — reference content lives in each repo's
   `README.md`/`AGENTS.md`, in
   [pydisplay's docs](https://pydisplay.readthedocs.io), or on a Pages site,
