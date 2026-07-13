@@ -39,6 +39,12 @@ the answer from scratch.
   `README.md`/`AGENTS.md`, in
   [pydisplay's docs](https://pydisplay.readthedocs.io), or on a Pages site,
   not in a wiki page.
+- **Projects** are disabled org-wide (org boards and per-repo Projects). Public
+  work tracking is Issues + Discussions; there is no org kanban.
+- **GitHub Packages** is not used. Installables go to TestPyPI / PyPI (CPython),
+  [micropython-lib](https://github.com/PyDevices/micropython-lib) via `mip`
+  (MicroPython), and GitHub Release assets — not GHCR or other GitHub package
+  registries.
 
 ## Org profile
 
