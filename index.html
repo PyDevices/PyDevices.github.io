@@ -37,33 +37,8 @@
 
   <main class="cards wrap">
     <div class="section-head">
-      <h2>Run anywhere</h2>
-      <span class="hint">Browser PWA and native Android are first-class hosts — not afterthoughts.</span>
-    </div>
-    <div class="grid">
-      <a class="card" href="https://pydevices.github.io/pydisplay/pyscript/">
-        <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M8 21h8M12 18v3"/><path d="M7 10l2.5 2.5L14 8"/></svg></span>
-        <h3>PyScript PWA</h3>
-        <p>Installable browser demos — MicroPython or Pyodide — with the same <code>board_config.runtime</code> loop as desktop and MCU.</p>
-        <span class="go">Open gallery <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
-      </a>
-      <a class="card" href="https://pydevices.github.io/pydisplay_android/">
-        <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M10 19h4"/></svg></span>
-        <h3>pydisplay_android</h3>
-        <p>python-for-android recipes and a buildozer demo APK — same SDL/<code>Runtime</code> stack on a phone.</p>
-        <span class="go">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
-      </a>
-      <a class="card" href="https://pydevices.github.io/pydisplay/">
-        <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></span>
-        <h3>pydisplay</h3>
-        <p>Pure-Python display, input, and event drivers — the foundation for MCU, desktop, PWA, and Android.</p>
-        <span class="go">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
-      </a>
-    </div>
-
-    <div class="section-head" style="margin-top: 36px;">
       <h2>The stack</h2>
-      <span class="hint">Start with pydisplay; add palettes or pdwidgets for color and widgets, or LVGL for a full toolkit.</span>
+      <span class="hint">Start with pydisplay; add hardware configs, palettes, or pdwidgets as you need them.</span>
     </div>
     <div class="grid">
       <a class="card" href="https://pydevices.github.io/pydisplay/">
@@ -78,12 +53,6 @@
         <p>Board configs, display/touch drivers, and hardware docs for MicroPython and CircuitPython — MIP install and Pages docs.</p>
         <span class="go">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
-      <a class="card" href="https://pydevices.github.io/mpftp/">
-        <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="3" width="12" height="18" rx="2"/><path d="M9 7h6M9 11h6M9 15h4"/><circle cx="15" cy="15" r="1"/><path d="M15 16v3M13 19h4"/></svg></span>
-        <h3>mpftp</h3>
-        <p>VS Code / Cursor board tools — dual-pane file transfer, ANSI REPL, mip/circup, and MicroPython firmware flash.</p>
-        <span class="go">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
-      </a>
       <a class="card" href="https://pydevices.github.io/palettes/">
         <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18"/></svg></span>
         <h3>palettes</h3>
@@ -96,23 +65,11 @@
         <p>Lightweight widget toolkit for pydisplay — buttons, forms, navigation, and themes without a full LVGL stack.</p>
         <span class="go">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
-      <a class="card" href="https://pydevices.github.io/lv_bindings/">
-        <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>
-        <h3>lv_bindings</h3>
-        <p>The generator that turns LVGL&apos;s C API into bindings for MicroPython, CircuitPython, and CPython — one source of truth, three targets.</p>
-        <span class="go">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
-      </a>
-      <a class="card" href="https://github.com/PyDevices/cmods">
-        <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l9 5v10l-9 5-9-5V7z"/><path d="M3 7l9 5 9-5M12 12v10"/></svg></span>
-        <h3>cmods</h3>
-        <p>Optional workspace for building MicroPython and CircuitPython with multiple PyDevices user C modules side by side.</p>
-        <span class="go">View repo <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
-      </a>
     </div>
 
     <div class="section-head" style="margin-top: 36px;">
-      <h2>Native modules &amp; Android</h2>
-      <span class="hint">Each has its own Pages site — speed, buses, SDL, LVGL glue, and APK packaging.</span>
+      <h2>Native modules</h2>
+      <span class="hint">Each has its own Pages site — buses, SDL, graphics, and LVGL glue.</span>
     </div>
     <div class="grid">
       <a class="card" href="https://pydevices.github.io/displayif/">
@@ -121,16 +78,22 @@
         <p>Native display bus and framebuffer modules for pydisplay on MicroPython ports.</p>
         <span class="go">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
+      <a class="card" href="https://pydevices.github.io/usdl2/">
+        <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M8 10v4M6 12h4M15 10.5h.01M18 13.5h.01"/></svg></span>
+        <h3>usdl2</h3>
+        <p>Native SDL2 subset plus pure-Python <code>usdl2-py</code> — pydisplay&apos;s desktop backend on MicroPython and CPython, unix &amp; Windows.</p>
+        <span class="go">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      </a>
       <a class="card" href="https://pydevices.github.io/pygraphics/">
         <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a13 13 0 0 1 0 18 13 13 0 0 1 0-18z"/></svg></span>
         <h3>pygraphics</h3>
         <p>Native <code>pygraphics-cmod</code> plus pure-Python <code>pygraphics</code> — FrameBuffer and Area for MicroPython, CircuitPython, and CPython.</p>
         <span class="go">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
-      <a class="card" href="https://pydevices.github.io/usdl2/">
-        <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M8 10v4M6 12h4M15 10.5h.01M18 13.5h.01"/></svg></span>
-        <h3>usdl2</h3>
-        <p>Native SDL2 subset plus pure-Python <code>usdl2-py</code> — pydisplay&apos;s desktop backend on MicroPython and CPython, unix &amp; Windows.</p>
+      <a class="card" href="https://pydevices.github.io/lv_bindings/">
+        <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>
+        <h3>lv_bindings</h3>
+        <p>The generator that turns LVGL&apos;s C API into bindings for MicroPython, CircuitPython, and CPython — one source of truth, three targets.</p>
         <span class="go">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
       <a class="card" href="https://pydevices.github.io/lv_cpython_mod/">
@@ -151,10 +114,42 @@
         <p>CircuitPython integration for LVGL — tree patches, build glue, and tests.</p>
         <span class="go">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
+    </div>
+
+    <div class="section-head" style="margin-top: 36px;">
+      <h2>Run anywhere</h2>
+      <span class="hint">Browser PWA and native Android are first-class hosts — not afterthoughts.</span>
+    </div>
+    <div class="grid">
+      <a class="card" href="https://pydevices.github.io/pydisplay/pyscript/">
+        <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M8 21h8M12 18v3"/><path d="M7 10l2.5 2.5L14 8"/></svg></span>
+        <h3>PyScript PWA</h3>
+        <p>Installable browser demos — MicroPython or Pyodide — with the same <code>board_config.runtime</code> loop as desktop and MCU.</p>
+        <span class="go">Open gallery <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      </a>
       <a class="card" href="https://pydevices.github.io/pydisplay_android/">
         <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M10 19h4"/></svg></span>
         <h3>pydisplay_android</h3>
-        <p>Android APK path for pydisplay — python-for-android recipes, buildozer demo, smoke tests.</p>
+        <p>python-for-android recipes and a buildozer demo APK — same SDL/<code>Runtime</code> stack on a phone.</p>
+        <span class="go">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      </a>
+    </div>
+
+    <div class="section-head" style="margin-top: 36px;">
+      <h2>Tools &amp; workspace</h2>
+      <span class="hint">Optional multi-usermod builds and board tooling.</span>
+    </div>
+    <div class="grid">
+      <a class="card" href="https://github.com/PyDevices/cmods">
+        <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l9 5v10l-9 5-9-5V7z"/><path d="M3 7l9 5 9-5M12 12v10"/></svg></span>
+        <h3>cmods</h3>
+        <p>Optional workspace for building MicroPython and CircuitPython with multiple PyDevices user C modules side by side.</p>
+        <span class="go">View repo <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      </a>
+      <a class="card" href="https://pydevices.github.io/mpftp/">
+        <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="3" width="12" height="18" rx="2"/><path d="M9 7h6M9 11h6M9 15h4"/><circle cx="15" cy="15" r="1"/><path d="M15 16v3M13 19h4"/></svg></span>
+        <h3>mpftp</h3>
+        <p>VS Code / Cursor board tools — dual-pane file transfer, ANSI REPL, mip/circup, and MicroPython firmware flash.</p>
         <span class="go">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
     </div>
