@@ -11,6 +11,12 @@ Pages:
   (`https://pydevices.github.io/assets/css/site.css`) from other repos'
   Pages, which also vendor a local copy under
   `web/vendor/pydevices-chrome/site.css` for offline/CI use.
+- `assets/js/site-chrome.js` — injects the identical org header and footer
+  into pages that provide `#pydevices-site-header` /
+  `#pydevices-site-footer` mounts. Nav: Gallery, PyDisplay, DisplayIF,
+  Drivers, GitHub, plus the theme toggle.
+- `assets/js/theme-toggle.js` — dark/light toggle for `#theme-toggle`
+  (load after `site-chrome.js`).
 - `assets/img/logo.svg` — the PyDevices mark (header / org hero).
 - `assets/img/products/*.svg` — per-product hero marks for sibling Pages
   sites (landing cards use compact inline icons). Product heroes should use
