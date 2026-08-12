@@ -13,7 +13,7 @@ Pages:
   `web/vendor/pydevices-chrome/site.css` for offline/CI use.
 - `assets/js/site-chrome.js` — injects the identical org header and footer
   into pages that provide `#pydevices-site-header` /
-  `#pydevices-site-footer` mounts. Nav: Gallery, PyDisplay, DisplayIF,
+  `#pydevices-site-footer` mounts. Nav: Gallery, Examples, DisplayIF,
   Drivers, GitHub, plus the theme toggle.
 - `assets/js/theme-toggle.js` — dark/light toggle for `#theme-toggle`
   (load after `site-chrome.js`).
