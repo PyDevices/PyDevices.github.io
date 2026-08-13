@@ -25,36 +25,41 @@
         <div class="logo-badge"><img src="assets/img/logo.svg" alt="PyDevices logo" width="112" height="112"></div>
         <span class="eyebrow">PyDevices</span>
       </div>
-      <h1>One display &amp; graphics stack. Three Python runtimes.</h1>
+      <h1>One display &amp; hardware contract. 5 Python runtimes.</h1>
     </div>
-    <p>PyDevices is a cross-platform Python driver stack for displays, audio, input, and graphics. Install the reusable product packages from <code>pydevices</code>, add native modules where you need speed, and reach for LVGL when you want a full widget toolkit — without rewriting the app for each interpreter.</p>
-    <p>The same ideas run on MicroPython and CircuitPython firmware, on CPython desktops, as an installable PyScript Gallery in the browser, and as Android APKs. Explore the product pages below, try the live demos, or jump into the docs when you are ready to wire a board or ship a package.</p>
+    <p>PyDevices is a cross-platform Python hardware driver engine, board contract specification, and display stack. Built around <code>pydevices</code> as its flagship product, it provides standardized board configurations (<code>board_config.py</code>), eager UI hardware initialization, lazy peripheral management (<code>boarddev</code>), and unified display abstractions (<code>displaydev</code>).</p>
+    <p>Write your display and hardware logic once and run it unchanged across 5 target environments: MicroPython, CircuitPython, CPython desktops, PyScript web PWAs, and Android APKs.</p>
     <div class="cta">
-      <a class="btn primary" href="https://pydevices.github.io/pydevices-examples/pyscript/">
+      <a class="btn primary" href="https://pydevices.github.io/pydevices/">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        Get Started with pydevices
+      </a>
+      <a class="btn" href="https://pydevices.github.io/pydevices-examples/pyscript/">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3l14 9-14 9z"/></svg>
-        Try the gallery demos
+        Try Gallery Demos
       </a>
     </div>
   </section>
 
   <main class="cards wrap">
     <div class="section-head">
-      <h2>The stack</h2>
-      <span class="hint">Install the product from pydevices; see it in action in pydevices-examples.</span>
+      <h2>The Flagship &amp; Core Stack</h2>
+      <span class="hint">Build products directly with pydevices; explore sample code in pydevices-examples.</span>
     </div>
     <div class="grid">
       <a class="card" href="https://pydevices.github.io/pydevices/">
         <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></span>
-        <h3>pydevices</h3>
-        <p>The reusable product: cross-runtime display and audio drivers, optional event coordination, timers, board configs, and hardware packages for MIP and pip.</p>
-        <span class="go">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        <h3>pydevices (Flagship)</h3>
+        <p>The core product: canonical board configurations, the PyDevices Board Contract, cross-runtime display and audio drivers, and hardware packages for MIP and pip.</p>
+        <span class="go">Visit flagship site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
       <a class="card" href="https://pydevices.github.io/pydevices-examples/">
         <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6M9 12h6M9 15h4"/><circle cx="17" cy="15" r="1.5"/></svg></span>
         <h3>pydevices-examples</h3>
-        <p>Examples, tutorials, and the installable PyScript gallery: the place to learn the product and see the same apps run across Python hosts.</p>
+        <p>Companion showcases, tutorials, and the installable PyScript gallery: reference code and live demos across Python hosts.</p>
         <span class="go">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
+
       <a class="card" href="https://pydevices.github.io/pdwidgets/">
         <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h10M7 12h6M7 16h8"/></svg></span>
         <h3>pdwidgets</h3>
@@ -148,6 +153,12 @@
       <span class="hint">Optional multi-usermod builds and board tooling.</span>
     </div>
     <div class="grid">
+      <a class="card" href="https://PyDevices.github.io/micropython-lib/mip/PyDevices">
+        <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.7l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.7l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="M3.3 7L12 12l8.7-5M12 22V12"/></svg></span>
+        <h3>PyDevices MIP Index</h3>
+        <p>Custom package index generated from our micropython-lib fork, hosting precompiled .mpy and .py distributions for MicroPython.</p>
+        <span class="go">Explore index <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      </a>
       <a class="card" href="https://github.com/PyDevices/cmods">
         <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l9 5v10l-9 5-9-5V7z"/><path d="M3 7l9 5 9-5M12 12v10"/></svg></span>
         <h3>cmods Workspace</h3>
@@ -161,6 +172,7 @@
         <span class="go">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
     </div>
+
   </main>
 
     <div id="pydevices-site-footer"></div>
