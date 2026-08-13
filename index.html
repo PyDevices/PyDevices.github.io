@@ -4,10 +4,10 @@
   <meta charset="utf-8">
   <script>try{if(localStorage.getItem('pydevices-theme')==='light'){document.documentElement.setAttribute('data-theme','light');}}catch(e){}</script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>PyDevices</title>
-  <meta name="description" content="A cross-platform Python stack for displays, input, and graphics — running the same code on MicroPython, CircuitPython, and CPython.">
+  <title>PyDevices — Cross-Platform Python Hardware & Display Engine</title>
+  <meta name="description" content="One display & hardware contract across 5 Python runtimes: MicroPython, CircuitPython, CPython, PyScript, and Android.">
   <meta property="og:title" content="PyDevices">
-  <meta property="og:description" content="A cross-platform Python stack for displays, input, and graphics — running the same code on MicroPython, CircuitPython, and CPython.">
+  <meta property="og:description" content="One display & hardware contract across 5 Python runtimes: MicroPython, CircuitPython, CPython, PyScript, and Android.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://pydevices.github.io/">
   <link rel="icon" type="image/svg+xml" href="assets/img/logo.svg">
@@ -19,16 +19,24 @@
 <body>
   <div id="pydevices-site-header"></div>
 
+  <!-- Hero Section -->
   <section class="hero wrap">
     <div class="hero-lead">
       <div class="hero-brand">
         <div class="logo-badge"><img src="assets/img/logo.svg" alt="PyDevices logo" width="112" height="112"></div>
-        <span class="eyebrow">PyDevices</span>
+        <span class="eyebrow">PyDevices Engine</span>
       </div>
       <h1>One display &amp; hardware contract. 5 Python runtimes.</h1>
     </div>
-    <p>PyDevices is a cross-platform Python hardware driver engine, board contract specification, and display stack. Built around <code>pydevices</code> as its flagship product, it provides standardized board configurations (<code>board_config.py</code>), eager UI hardware initialization, lazy peripheral management (<code>boarddev</code>), and unified display abstractions (<code>displaydev</code>).</p>
+    <p>PyDevices is a cross-platform Python hardware driver engine, board contract specification, and display stack. Built around <code>pydevices</code> as its flagship core, it provides standardized board configurations (<code>board_config.py</code>), eager UI hardware initialization, lazy peripheral management (<code>boarddev</code>), and unified display abstractions (<code>displaydev</code>).</p>
     <p>Write your display and hardware logic once and run it unchanged across 5 target environments: MicroPython, CircuitPython, CPython desktops, PyScript web PWAs, and Android APKs.</p>
+
+    <div class="stats-bar">
+      <div class="stat-pill"><span class="dot gold"></span> <strong>5</strong> Runtimes Supported</div>
+      <div class="stat-pill"><span class="dot green"></span> <strong>3</strong> Zero-Dependency Toolkits</div>
+      <div class="stat-pill"><span class="dot blue"></span> <strong>16</strong> Ecosystem Repositories</div>
+    </div>
+
     <div class="cta">
       <a class="btn primary" href="https://pydevices.github.io/pydevices/">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
@@ -36,135 +44,455 @@
       </a>
       <a class="btn" href="https://pydevices.github.io/pydevices-examples/pyscript/">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3l14 9-14 9z"/></svg>
-        Try Gallery Demos
+        Try PyScript Gallery Demos
       </a>
+      <button type="button" class="btn js-open-tree-modal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+        Explore Tree View
+      </button>
     </div>
   </section>
 
   <main class="cards wrap">
+
+    <!-- Interactive Tree Navigation Section -->
+    <section class="section" style="padding-top: 0;">
+      <div class="tree-container">
+        <div class="tree-header">
+          <h3>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px;height:20px;color:var(--accent-strong);"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+            Interactive Ecosystem Tree Explorer
+          </h3>
+          <div class="tree-search-wrap">
+            <svg class="tree-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+            <input type="text" class="tree-search" placeholder="Filter repositories, runtimes, tags...">
+          </div>
+        </div>
+
+        <div class="tree-view">
+          <!-- Tier 1 Branch -->
+          <div class="tree-branch open">
+            <div class="tree-branch-header">
+              <svg class="tree-toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+              <span>📁 Tier 1: Core Platform &amp; Board Contract</span>
+            </div>
+            <div class="tree-branch-children">
+              <a class="tree-leaf" href="https://pydevices.github.io/pydevices/">
+                <div>
+                  <div class="tree-leaf-name">pydevices</div>
+                  <div class="tree-leaf-desc">Core Board Contract, displaydev, audiodev &amp; drivers</div>
+                </div>
+                <span class="tag tag-tier-1">Core Package</span>
+              </a>
+              <a class="tree-leaf" href="https://pydevices.github.io/pydevices-examples/">
+                <div>
+                  <div class="tree-leaf-name">pydevices-examples</div>
+                  <div class="tree-leaf-desc">Companion showcases, tutorials &amp; PyScript gallery</div>
+                </div>
+                <span class="tag tag-tier-1">Showcase</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- Tier 2 Branch -->
+          <div class="tree-branch open">
+            <div class="tree-branch-header">
+              <svg class="tree-toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+              <span>📁 Tier 2: Pure-Python &amp; Portable Toolkits</span>
+            </div>
+            <div class="tree-branch-children">
+              <a class="tree-leaf" href="https://pydevices.github.io/pygraphics/">
+                <div>
+                  <div class="tree-leaf-name">pygraphics</div>
+                  <div class="tree-leaf-desc">Extended 2D FrameBuffer graphics engine with Area returns</div>
+                </div>
+                <span class="tag tag-tier-2">0-Dependency</span>
+              </a>
+              <a class="tree-leaf" href="https://pydevices.github.io/pdwidgets/">
+                <div>
+                  <div class="tree-leaf-name">pdwidgets</div>
+                  <div class="tree-leaf-desc">Lightweight UI widgets without full LVGL stack</div>
+                </div>
+                <span class="tag tag-tier-2">Pure-Python</span>
+              </a>
+              <a class="tree-leaf" href="https://pydevices.github.io/palettes/">
+                <div>
+                  <div class="tree-leaf-name">palettes</div>
+                  <div class="tree-leaf-desc">Standalone color toolkit (Wheel, Cube, Material, Win16)</div>
+                </div>
+                <span class="tag tag-tier-2">Color Engine</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- Tier 3 Branch -->
+          <div class="tree-branch open">
+            <div class="tree-branch-header">
+              <svg class="tree-toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+              <span>📁 Tier 3: Accelerated C &amp; Native Extension Modules</span>
+            </div>
+            <div class="tree-branch-children">
+              <a class="tree-leaf" href="https://pydevices.github.io/displayif/">
+                <div>
+                  <div class="tree-leaf-name">displayif</div>
+                  <div class="tree-leaf-desc">Accelerated C display bus &amp; framebuffer usermods</div>
+                </div>
+                <span class="tag tag-tier-3">C Bus Usermod</span>
+              </a>
+              <a class="tree-leaf" href="https://pydevices.github.io/lvgl-bindings/">
+                <div>
+                  <div class="tree-leaf-name">lvgl-bindings</div>
+                  <div class="tree-leaf-desc">LVGL binding generator for MicroPython, CircuitPython &amp; CPython</div>
+                </div>
+                <span class="tag tag-tier-3">Generator</span>
+              </a>
+              <a class="tree-leaf" href="https://pydevices.github.io/lvgl-micropython/">
+                <div>
+                  <div class="tree-leaf-name">lvgl-micropython</div>
+                  <div class="tree-leaf-desc">MicroPython native LVGL usermod module</div>
+                </div>
+                <span class="tag tag-tier-3">MicroPython C</span>
+              </a>
+              <a class="tree-leaf" href="https://pydevices.github.io/lvgl-python/">
+                <div>
+                  <div class="tree-leaf-name">lvgl-python</div>
+                  <div class="tree-leaf-desc">CPython LVGL extension &amp; Pyodide WASM wheels</div>
+                </div>
+                <span class="tag tag-tier-3">CPython / Pyodide</span>
+              </a>
+              <a class="tree-leaf" href="https://pydevices.github.io/lvgl-circuitpython/">
+                <div>
+                  <div class="tree-leaf-name">lvgl-circuitpython</div>
+                  <div class="tree-leaf-desc">CircuitPython LVGL extension patch scripts</div>
+                </div>
+                <span class="tag tag-tier-3">CircuitPython C</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- Tier 4 Branch -->
+          <div class="tree-branch open">
+            <div class="tree-branch-header">
+              <svg class="tree-toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+              <span>📁 Tier 4: Target App Hosts &amp; PWA Templates</span>
+            </div>
+            <div class="tree-branch-children">
+              <a class="tree-leaf" href="https://pydevices.github.io/pydevices-pyscript-template/">
+                <div>
+                  <div class="tree-leaf-name">pydevices-pyscript-template</div>
+                  <div class="tree-leaf-desc">Template for building offline-capable browser PWAs</div>
+                </div>
+                <span class="tag tag-tier-4">PWA Template</span>
+              </a>
+              <a class="tree-leaf" href="https://pydevices.github.io/pydevices-android-template/">
+                <div>
+                  <div class="tree-leaf-name">pydevices-android-template</div>
+                  <div class="tree-leaf-desc">python-for-android &amp; Buildozer APK generator</div>
+                </div>
+                <span class="tag tag-tier-4">Android APK</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- Tier 5 Branch -->
+          <div class="tree-branch open">
+            <div class="tree-branch-header">
+              <svg class="tree-toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+              <span>📁 Tier 5: Developer Tools &amp; Infrastructure</span>
+            </div>
+            <div class="tree-branch-children">
+              <a class="tree-leaf" href="https://PyDevices.github.io/micropython-lib/mip/PyDevices">
+                <div>
+                  <div class="tree-leaf-name">PyDevices MIP Package Index</div>
+                  <div class="tree-leaf-desc">Custom MIP index serving precompiled .mpy &amp; .py distributions</div>
+                </div>
+                <span class="tag tag-tier-5">MIP Index</span>
+              </a>
+              <a class="tree-leaf" href="https://github.com/PyDevices/cmods">
+                <div>
+                  <div class="tree-leaf-name">cmods Workspace</div>
+                  <div class="tree-leaf-desc">Multi-usermod compilation workspace for C extension builds</div>
+                </div>
+                <span class="tag tag-tier-5">Build Tool</span>
+              </a>
+              <a class="tree-leaf" href="https://pydevices.github.io/mpftp/">
+                <div>
+                  <div class="tree-leaf-name">mpftp Workbench</div>
+                  <div class="tree-leaf-desc">VS Code / Cursor extension: serial REPL, dual-pane FTP &amp; flasher</div>
+                </div>
+                <span class="tag tag-tier-5">Editor Extension</span>
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Tier 1 Section -->
     <div class="section-head">
-      <h2>The Flagship &amp; Core Stack</h2>
-      <span class="hint">Build products directly with pydevices; explore sample code in pydevices-examples.</span>
+      <h2>Tier 1: Core Platform &amp; Board Contract</h2>
+      <span class="hint">Standard hardware driver engine and companion reference code.</span>
     </div>
     <div class="grid">
-      <a class="card" href="https://pydevices.github.io/pydevices/">
-        <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></span>
-        <h3>pydevices (Flagship)</h3>
-        <p>The core product: canonical board configurations, the PyDevices Board Contract, cross-runtime display and audio drivers, and hardware packages for MIP and pip.</p>
-        <span class="go">Visit flagship site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      <a class="card card-tier-1" href="https://pydevices.github.io/pydevices/">
+        <div class="card-top">
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></span>
+          <span class="tag tag-tier-1">Core Flagship</span>
+        </div>
+        <h3>pydevices</h3>
+        <p>The core engine: canonical board configurations (<code>board_config.py</code>), the PyDevices Board Contract, cross-runtime display/touch drivers, and hardware packages published for pip and MIP.</p>
+        <span class="go">Visit pydevices core <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
-      <a class="card" href="https://pydevices.github.io/pydevices-examples/">
-        <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6M9 12h6M9 15h4"/><circle cx="17" cy="15" r="1.5"/></svg></span>
+
+      <a class="card card-tier-1" href="https://pydevices.github.io/pydevices-examples/">
+        <div class="card-top">
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6M9 12h6M9 15h4"/><circle cx="17" cy="15" r="1.5"/></svg></span>
+          <span class="tag tag-tier-1">Companion Showcase</span>
+        </div>
         <h3>pydevices-examples</h3>
-        <p>Companion showcases, tutorials, and the installable PyScript gallery: reference code and live demos across Python hosts.</p>
-        <span class="go">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
-      </a>
-
-      <a class="card" href="https://pydevices.github.io/pdwidgets/">
-        <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h10M7 12h6M7 16h8"/></svg></span>
-        <h3>pdwidgets</h3>
-        <p>Lightweight widget toolkit for the PyDevices display stack — buttons, forms, navigation, and themes without a full LVGL stack.</p>
-        <span class="go">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
-      </a>
-      <a class="card" href="https://pydevices.github.io/palettes/">
-        <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18"/></svg></span>
-        <h3>palettes</h3>
-        <p>Standalone color toolkit with no dependencies — wheel, cube, Material Design, and Windows-16 named colors for any host or user code.</p>
-        <span class="go">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        <p>Showcases, tutorials, and the installable PyScript gallery: reference implementation code and live interactive browser demos across all Python hosts.</p>
+        <span class="go">Visit examples site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
     </div>
 
-    <div class="section-head" style="margin-top: 36px;">
-      <h2>Native modules</h2>
-      <span class="hint">Each has its own Pages site — buses, graphics, and LVGL glue.</span>
+    <!-- Tier 2 Section -->
+    <div class="section-head" style="margin-top: 40px;">
+      <h2>Tier 2: Pure-Python &amp; Portable Toolkits</h2>
+      <span class="hint">Zero external native dependencies — runs on any Python 3 host.</span>
     </div>
     <div class="grid">
-      <a class="card" href="https://pydevices.github.io/pygraphics/">
-        <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a13 13 0 0 1 0 18 13 13 0 0 1 0-18z"/></svg></span>
+      <a class="card card-tier-2" href="https://pydevices.github.io/pygraphics/">
+        <div class="card-top">
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a13 13 0 0 1 0 18 13 13 0 0 1 0-18z"/></svg></span>
+          <span class="tag tag-tier-2">0-Dependency</span>
+        </div>
         <h3>pygraphics</h3>
-        <p>Native and Python FrameBuffer and Area for MicroPython, CircuitPython, and CPython.</p>
-        <span class="go">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        <p>Extended 2D FrameBuffer graphics engine with exposed read-only attributes, dirty <code>Area</code> tracking, 24-bit RGB888 for NeoPixel/DotStar arrays, custom fonts, and optional C acceleration.</p>
+        <span class="go">Visit pygraphics site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
-      <a class="card" href="https://pydevices.github.io/displayif/">
-        <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M7 16l1-4M17 16l-1-4"/></svg></span>
+
+      <a class="card card-tier-2" href="https://pydevices.github.io/pdwidgets/">
+        <div class="card-top">
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h10M7 12h6M7 16h8"/></svg></span>
+          <span class="tag tag-tier-2">Pure-Python UI</span>
+        </div>
+        <h3>pdwidgets</h3>
+        <p>Lightweight widget toolkit for the PyDevices display stack — buttons, forms, sliders, navigation, and custom themes without requiring a full LVGL native stack.</p>
+        <span class="go">Visit pdwidgets site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      </a>
+
+      <a class="card card-tier-2" href="https://pydevices.github.io/palettes/">
+        <div class="card-top">
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18"/></svg></span>
+          <span class="tag tag-tier-2">Color Engine</span>
+        </div>
+        <h3>palettes</h3>
+        <p>Standalone color toolkit with zero dependencies — wheel, cube, Material Design, and Windows-16 named colors for any Python microcontroller or host application.</p>
+        <span class="go">Visit palettes site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      </a>
+    </div>
+
+    <!-- Tier 3 Section -->
+    <div class="section-head" style="margin-top: 40px;">
+      <h2>Tier 3: Accelerated C &amp; Native Extension Modules</h2>
+      <span class="hint">High-performance display bus drivers and single-source LVGL bindings.</span>
+    </div>
+    <div class="grid">
+      <a class="card card-tier-3" href="https://pydevices.github.io/displayif/">
+        <div class="card-top">
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M7 16l1-4M17 16l-1-4"/></svg></span>
+          <span class="tag tag-tier-3">C Bus Usermod</span>
+        </div>
         <h3>displayif</h3>
-        <p>Native display bus and framebuffer modules for the PyDevices product on MicroPython ports.</p>
-        <span class="go">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        <p>Native display bus and framebuffer modules for MicroPython ports (SPI, I80 parallel, RGB, and DSI interfaces).</p>
+        <span class="go">Visit displayif site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
-      <a class="card" href="https://pydevices.github.io/lvgl-bindings/">
-        <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>
+
+      <a class="card card-tier-3" href="https://pydevices.github.io/lvgl-bindings/">
+        <div class="card-top">
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>
+          <span class="tag tag-tier-3">LVGL Generator</span>
+        </div>
         <h3>lvgl-bindings</h3>
-        <p>The generator that turns LVGL&apos;s C API into bindings for MicroPython, CircuitPython, and CPython — one source of truth, three targets.</p>
-        <span class="go">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        <p>The generator that turns LVGL's C API into bindings for MicroPython, CircuitPython, and CPython — one source of truth, three target runtimes.</p>
+        <span class="go">Visit generator site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
-      <a class="card" href="https://pydevices.github.io/lvgl-micropython/">
-        <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17V7l8-4 8 4v10l-8 4z"/><path d="M4 7l8 4 8-4M12 11v10"/></svg></span>
+
+      <a class="card card-tier-3" href="https://pydevices.github.io/lvgl-micropython/">
+        <div class="card-top">
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17V7l8-4 8 4v10l-8 4z"/><path d="M4 7l8 4 8-4M12 11v10"/></svg></span>
+          <span class="tag tag-tier-3">MicroPython C</span>
+        </div>
         <h3>lvgl-micropython</h3>
-        <p>MicroPython native LVGL module, built with <code>USER_C_MODULES</code>.</p>
+        <p>MicroPython native LVGL module, built with <code>USER_C_MODULES</code> for MCU firmware.</p>
         <span class="go">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
-      <a class="card" href="https://pydevices.github.io/lvgl-python/">
-        <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a4 4 0 0 1 4 4v1h1a3 3 0 0 1 3 3v1a4 4 0 0 1-4 4h-1v1a4 4 0 0 1-4 4 4 4 0 0 1-4-4v-1H6a4 4 0 0 1-4-4v-1a3 3 0 0 1 3-3h1V6a4 4 0 0 1 4-4z"/></svg></span>
+
+      <a class="card card-tier-3" href="https://pydevices.github.io/lvgl-python/">
+        <div class="card-top">
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a4 4 0 0 1 4 4v1h1a3 3 0 0 1 3 3v1a4 4 0 0 1-4 4h-1v1a4 4 0 0 1-4 4 4 4 0 0 1-4-4v-1H6a4 4 0 0 1-4-4v-1a3 3 0 0 1 3-3h1V6a4 4 0 0 1 4-4z"/></svg></span>
+          <span class="tag tag-tier-3">CPython / Pyodide</span>
+        </div>
         <h3>lvgl-python</h3>
-        <p>CPython LVGL extension with wheels for Linux, Windows, Android, and Pyodide.</p>
+        <p>CPython LVGL extension with binary wheels for Linux, Windows, macOS, Android, and Pyodide WASM.</p>
         <span class="go">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
-      <a class="card" href="https://pydevices.github.io/lvgl-circuitpython/">
-        <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v3M12 18v3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M3 12h3M18 12h3M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/><circle cx="12" cy="12" r="4"/></svg></span>
+
+      <a class="card card-tier-3" href="https://pydevices.github.io/lvgl-circuitpython/">
+        <div class="card-top">
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v3M12 18v3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M3 12h3M18 12h3M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/><circle cx="12" cy="12" r="4"/></svg></span>
+          <span class="tag tag-tier-3">CircuitPython C</span>
+        </div>
         <h3>lvgl-circuitpython</h3>
-        <p>CircuitPython LVGL extension with patch scripts for out-of-tree builds.</p>
+        <p>CircuitPython LVGL extension with automated patch scripts for out-of-tree builds.</p>
         <span class="go">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
     </div>
 
-    <div class="section-head" style="margin-top: 36px;">
-      <h2>Run anywhere</h2>
-      <span class="hint">Browser gallery and native Android are first-class hosts — not afterthoughts.</span>
+    <!-- Tier 4 Section -->
+    <div class="section-head" style="margin-top: 40px;">
+      <h2>Tier 4: Target App Hosts &amp; PWA Templates</h2>
+      <span class="hint">Deploy PyDevices apps directly to desktop browsers or mobile APKs.</span>
     </div>
     <div class="grid">
-      <a class="card" href="https://pydevices.github.io/pydevices-android-template/">
-        <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M10 19h4"/></svg></span>
-        <h3>pydevices-android-template</h3>
-        <p>python-for-android recipes and a Buildozer APK — package your PyDevices app for a phone.</p>
-        <span class="go">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
-      </a>
-      <a class="card" href="https://pydevices.github.io/pydevices-pyscript-template/">
-        <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M8 21h8M12 18v3"/><path d="M8 9h8M8 13h5"/></svg></span>
+      <a class="card card-tier-4" href="https://pydevices.github.io/pydevices-pyscript-template/">
+        <div class="card-top">
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M8 21h8M12 18v3"/><path d="M8 9h8M8 13h5"/></svg></span>
+          <span class="tag tag-tier-4">PWA Template</span>
+        </div>
         <h3>pydevices-pyscript-template</h3>
-        <p>Use this template to turn a Python entry file into an installable, offline-capable browser PWA on GitHub Pages.</p>
+        <p>Use this template to turn a Python entry file into an installable, offline-capable browser PWA published on GitHub Pages.</p>
         <span class="go">Use template <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
-    </div>
 
-    <div class="section-head" style="margin-top: 36px;">
-      <h2>Tools &amp; workspace</h2>
-      <span class="hint">Optional multi-usermod builds and board tooling.</span>
-    </div>
-    <div class="grid">
-      <a class="card" href="https://PyDevices.github.io/micropython-lib/mip/PyDevices">
-        <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.7l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.7l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="M3.3 7L12 12l8.7-5M12 22V12"/></svg></span>
-        <h3>PyDevices MIP Index</h3>
-        <p>Custom package index generated from our micropython-lib fork, hosting precompiled .mpy and .py distributions for MicroPython.</p>
-        <span class="go">Explore index <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
-      </a>
-      <a class="card" href="https://github.com/PyDevices/cmods">
-        <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l9 5v10l-9 5-9-5V7z"/><path d="M3 7l9 5 9-5M12 12v10"/></svg></span>
-        <h3>cmods Workspace</h3>
-        <p>Optional workspace for building MicroPython and CircuitPython with multiple native modules.</p>
-        <span class="go">View repo <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
-      </a>
-      <a class="card" href="https://pydevices.github.io/mpftp/">
-        <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="3" width="12" height="18" rx="2"/><path d="M9 7h6M9 11h6M9 15h4"/><circle cx="15" cy="15" r="1"/><path d="M15 16v3M13 19h4"/></svg></span>
-        <h3>mpftp</h3>
-        <p>VS Code / Cursor extension with dual-pane file transfer, REPL, and firmware flash utilities.</p>
+      <a class="card card-tier-4" href="https://pydevices.github.io/pydevices-android-template/">
+        <div class="card-top">
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M10 19h4"/></svg></span>
+          <span class="tag tag-tier-4">Android APK</span>
+        </div>
+        <h3>pydevices-android-template</h3>
+        <p>python-for-android recipes and a pre-configured Buildozer APK project — package your PyDevices application for mobile hardware.</p>
         <span class="go">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
     </div>
+
+    <!-- Tier 5 Section -->
+    <div class="section-head" style="margin-top: 40px;">
+      <h2>Tier 5: Developer Tools &amp; Infrastructure</h2>
+      <span class="hint">MIP package indexing, multi-usermod builds, and serial/FTP IDE extensions.</span>
+    </div>
+    <div class="grid">
+      <a class="card card-tier-5" href="https://PyDevices.github.io/micropython-lib/mip/PyDevices">
+        <div class="card-top">
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.7l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.7l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="M3.3 7L12 12l8.7-5M12 22V12"/></svg></span>
+          <span class="tag tag-tier-5">MIP Index</span>
+        </div>
+        <h3>PyDevices MIP Index</h3>
+        <p>Custom package index generated from our micropython-lib distribution, serving precompiled <code>.mpy</code> bytecode and <code>.py</code> packages.</p>
+        <span class="go">Explore index <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      </a>
+
+      <a class="card card-tier-5" href="https://github.com/PyDevices/cmods">
+        <div class="card-top">
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l9 5v10l-9 5-9-5V7z"/><path d="M3 7l9 5 9-5M12 12v10"/></svg></span>
+          <span class="tag tag-tier-5">Build Tool</span>
+        </div>
+        <h3>cmods Workspace</h3>
+        <p>Compilation workspace for building MicroPython and CircuitPython firmware with multiple native C modules enabled.</p>
+        <span class="go">View repo <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      </a>
+
+      <a class="card card-tier-5" href="https://pydevices.github.io/mpftp/">
+        <div class="card-top">
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="3" width="12" height="18" rx="2"/><path d="M9 7h6M9 11h6M9 15h4"/><circle cx="15" cy="15" r="1"/><path d="M15 16v3M13 19h4"/></svg></span>
+          <span class="tag tag-tier-5">Workbench Tool</span>
+        </div>
+        <h3>mpftp Workbench</h3>
+        <p>VS Code &amp; Cursor extension featuring dual-pane serial FTP file transfer, in-editor REPL, and automated firmware flashing utilities.</p>
+        <span class="go">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      </a>
+    </div>
+
+    <!-- Runtime Compatibility Matrix -->
+    <section class="section" style="margin-top: 40px;">
+      <div class="section-head">
+        <h2>Cross-Runtime Compatibility Matrix</h2>
+        <span class="hint">Unified contract coverage across target host environments.</span>
+      </div>
+
+      <div class="matrix-wrap">
+        <table class="matrix-table">
+          <thead>
+            <tr>
+              <th>Repository / Component</th>
+              <th>MicroPython</th>
+              <th>CircuitPython</th>
+              <th>CPython</th>
+              <th>PyScript / WASM</th>
+              <th>Android APK</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>pydevices (Core Engine)</strong></td>
+              <td><span class="check">✓</span> (MIP)</td>
+              <td><span class="check">✓</span> (pip/lib)</td>
+              <td><span class="check">✓</span> (PyPI)</td>
+              <td><span class="check">✓</span> (MicroPython / Pyodide)</td>
+              <td><span class="check">✓</span> (Buildozer)</td>
+            </tr>
+            <tr>
+              <td><strong>pygraphics (2D Canvas)</strong></td>
+              <td><span class="check">✓</span> (C / Python)</td>
+              <td><span class="check">✓</span> (Pure-Python)</td>
+              <td><span class="check">✓</span> (Wheels)</td>
+              <td><span class="check">✓</span> (Canvas)</td>
+              <td><span class="check">✓</span> (SDL2)</td>
+            </tr>
+            <tr>
+              <td><strong>pdwidgets (UI Widgets)</strong></td>
+              <td><span class="check">✓</span></td>
+              <td><span class="check">✓</span></td>
+              <td><span class="check">✓</span></td>
+              <td><span class="check">✓</span></td>
+              <td><span class="check">✓</span></td>
+            </tr>
+            <tr>
+              <td><strong>palettes (Color Toolkit)</strong></td>
+              <td><span class="check">✓</span></td>
+              <td><span class="check">✓</span></td>
+              <td><span class="check">✓</span></td>
+              <td><span class="check">✓</span></td>
+              <td><span class="check">✓</span></td>
+            </tr>
+            <tr>
+              <td><strong>displayif (C Bus Usermods)</strong></td>
+              <td><span class="check">✓</span> (Native)</td>
+              <td><span class="dash">—</span></td>
+              <td><span class="dash">—</span></td>
+              <td><span class="dash">—</span></td>
+              <td><span class="dash">—</span></td>
+            </tr>
+            <tr>
+              <td><strong>lvgl-python / bindings</strong></td>
+              <td><span class="check">✓</span> (C Module)</td>
+              <td><span class="check">✓</span> (C Module)</td>
+              <td><span class="check">✓</span> (C Extension)</td>
+              <td><span class="check">✓</span> (Pyodide Wheel)</td>
+              <td><span class="check">✓</span> (p4a Wheel)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
 
   </main>
 
-    <div id="pydevices-site-footer"></div>
+  <div id="pydevices-site-footer"></div>
+
   <script src="assets/js/site-chrome.js"></script>
   <script src="assets/js/theme-toggle.js"></script>
+  <script src="assets/js/tree-nav.js"></script>
 </body>
 </html>
