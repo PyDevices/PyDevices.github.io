@@ -16,8 +16,9 @@ We have completed Phase 2 **Above-the-Fold** redesign across all **PyDevices** o
 4. **Hero Lead Paragraph (`[2c]`)**: Unconstrained horizontally to span full container width (`1080px`).
 5. **4-Button CTA Action Bar (`[2d]`)**:
    - Standardized to **exactly 4 buttons** across all 16 repos (no maintainer/publishing links).
-   - Target-specific tier button border/text colors (Amber for Core, Emerald for Toolkits, Blue for Native C, Purple for Hosts, Steel Cyan for Tools/cmods/MIP).
-6. **Org Asset Sync**: Synced `site.css`, `site-chrome.js`, `tree-nav.js`, and `theme-toggle.js` to `web/vendor/pydevices-chrome/` across all subrepositories.
+   - Target-specific tier button border/text colors (Amber for Tier 1 Core including `displayif`, Emerald for Tier 2 Toolkits, Blue for Tier 3 Native LVGL, Purple for Tier 4 Hosts, Steel Cyan for Tier 5 Tools/cmods/MIP).
+6. **Org Asset Sync**: Synced `site.css`, `site-chrome.js`, `tree-nav.js`, and `theme-toggle.js` to `.site/vendor/pydevices-chrome/` across all subrepositories.
+7. **`.site/` Directory Migration**: Renamed all `web/` folders to `.site/` across all repositories to keep project roots 100% clean, created `.site/index.html` landing pages for `cmods` and `pydevices-pyscript-template`, and committed `.nojekyll` files to every repository.
 
 ---
 
@@ -44,5 +45,8 @@ We have completed Phase 2 **Above-the-Fold** redesign across all **PyDevices** o
 - `lvgl-micropython`
 - `lvgl-python`
 - `lvgl-circuitpython`
+- `pydevices-pyscript-template`
 - `pydevices-android-template`
 - `mpftp`
+- `micropython-lib`
+- `cmods`
