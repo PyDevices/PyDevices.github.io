@@ -6,11 +6,13 @@ Welcome to the **PyDevices Organization Portal** source repository. This site se
 
 ## 🏛️ Ecosystem Overview & Architecture
 
-All 16 repositories in the PyDevices organization follow a **100% uniform `.site/` filesystem layout**:
+All landing pages across the organization are centrally generated from the **[`.github` (*dotgithub*)](https://github.com/PyDevices/.github)** repository.
 
-- **`.site/index.html`**: Clean landing page source file.
-- **`.site/img/logo.svg`**: PyDevices brand mark.
-- **`.site/vendor/pydevices-chrome/`**: Synced shared styling (`site.css`), theme toggle (`theme-toggle.js`), header/footer injector (`site-chrome.js`), and tree navigation (`tree-nav.js`).
+For the `PyDevices.github.io` portal repository:
+- **`index.html`**: Organization portal landing page.
+- **`img/logo.svg`**: PyDevices brand mark.
+- **`vendor/pydevices-chrome/`**: Synced shared styling (`site.css`), theme toggle (`theme-toggle.js`), header/footer injector (`site-chrome.js`), and tree navigation (`tree-nav.js`).
+- **`.nojekyll`**: Bypasses Jekyll processing on GitHub Pages.
 
 ---
 
@@ -20,7 +22,7 @@ The entire PyDevices web presence is managed centrally from the **[`.github` (*d
 
 1. **Database ([`repos_db.json`](file:///home/brad/gh/pydevices/dotgithub/data/repos_db.json))**: Single Source of Truth storing eyebrows, headlines, descriptions, tier colors, and 4-button CTA layouts for all repositories.
 2. **Canonical Assets Vault ([`dotgithub/assets/`](file:///home/brad/gh/pydevices/dotgithub/assets/))**: Master source for shared CSS, JavaScript, and branding logos.
-3. **Automated Site Generator ([`dotgithub/scripts/generate_sites.py`](file:///home/brad/gh/pydevices/dotgithub/scripts/generate_sites.py))**: Generates Above-the-Fold hero banners, head tags, and syncs chrome assets across all repositories in < 0.2 seconds.
+3. **Automated Site Generator ([`dotgithub/scripts/generate_sites.py`](file:///home/brad/gh/pydevices/dotgithub/scripts/generate_sites.py))**: Generates Above-the-Fold hero banners, head tags, grid cards, and syncs chrome assets across all repositories.
 
 ---
 
@@ -34,10 +36,6 @@ python3 ../dotgithub/scripts/generate_sites.py
 
 ---
 
-## 🚀 Automated Deployment
+## 🚀 GitHub Pages Deployment
 
-Pushing changes to the `main` branch automatically triggers the GitHub Actions workflow ([`.github/workflows/deploy.yml`](.github/workflows/deploy.yml)):
-
-1. Checks out `PyDevices.github.io` and `PyDevices/.github`.
-2. Executes `python3 dotgithub/scripts/generate_sites.py`.
-3. Packages and deploys `.site/` directly to **GitHub Pages** at [https://PyDevices.github.io/](https://PyDevices.github.io/).
+Pushing commits to the `main` branch automatically updates GitHub Pages at [https://PyDevices.github.io/](https://PyDevices.github.io/) directly from the repository root.
