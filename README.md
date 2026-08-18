@@ -20,9 +20,9 @@ For the `PyDevices.github.io` portal repository:
 
 The entire PyDevices web presence is managed centrally from the **[`.github` (*dotgithub*)](https://github.com/PyDevices/.github)** repository:
 
-1. **Database ([`repos_db.json`](file:///home/brad/gh/pydevices/dotgithub/data/repos_db.json))**: Single Source of Truth storing eyebrows, headlines, descriptions, tier colors, and 4-button CTA layouts for all repositories.
-2. **Canonical Assets Vault ([`dotgithub/assets/`](file:///home/brad/gh/pydevices/dotgithub/assets/))**: Master source for shared CSS, JavaScript, and branding logos.
-3. **Automated Site Generator ([`dotgithub/scripts/generate_sites.py`](file:///home/brad/gh/pydevices/dotgithub/scripts/generate_sites.py))**: Generates Above-the-Fold hero banners, head tags, grid cards, and syncs chrome assets across all repositories.
+1. **Database ([`repos_db.json`](https://github.com/PyDevices/.github/blob/main/data/repos_db.json))**: Single Source of Truth storing eyebrows, headlines, descriptions, tier colors, and 4-button CTA layouts for all repositories.
+2. **Canonical Assets Vault ([`dotgithub/assets/`](https://github.com/PyDevices/.github/tree/main/assets/))**: Master source for shared CSS, JavaScript, and branding logos.
+3. **Automated Site Generator ([`dotgithub/scripts/generate_sites.py`](https://github.com/PyDevices/.github/blob/main/scripts/generate_sites.py))**: Generates Above-the-Fold hero banners, head tags, grid cards, and syncs chrome assets across all repositories.
 
 ---
 
