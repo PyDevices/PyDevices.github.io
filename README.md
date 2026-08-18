@@ -39,8 +39,10 @@ running it twice produces no second diff. Repos it cannot find are skipped with 
 `[SKIP]` line. It also writes the markdown ecosystem map into
 `dotgithub/profile/README.md` and `pydevices/docs/ecosystem.md`.
 
-A [workflow in `.github`](https://github.com/PyDevices/.github/blob/main/.github/workflows/ecosystem-map.yml)
-validates the database and fails if `profile/README.md` has drifted from it.
+Regeneration is **deliberately manual** — the database changes rarely, and
+running the generator is a one-line step when it does. It validates the database
+on every run and exits non-zero on a malformed entry, so the check happens at the
+moment you would notice it.
 
 ## Deployment
 
