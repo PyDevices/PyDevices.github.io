@@ -1,41 +1,48 @@
-# PyDevices.github.io — Organization Portal
+# PyDevices.github.io
 
-Welcome to the **PyDevices Organization Portal** source repository. This site serves as the unified landing hub for the entire [PyDevices](https://pydevices.github.io/) ecosystem — bridging hardware abstraction drivers, 2D graphics engines, widget toolkits, native LVGL C extensions, and target application hosts across MicroPython, CircuitPython, CPython, PyScript, and Android.
+Source for the organization landing portal at <https://pydevices.github.io/>.
 
----
+**This repository holds no content of its own.** Everything on the page is
+generated from the `.github` repository, and the ecosystem pitch lives in the
+[org profile](https://github.com/PyDevices) and
+[pydevices/docs/ecosystem.md](https://github.com/PyDevices/pydevices/blob/main/docs/ecosystem.md).
+What follows is the mechanics.
 
-## 🏛️ Ecosystem Overview & Architecture
+## Contents
 
-All landing pages across the organization are centrally generated from the **[`.github` (*dotgithub*)](https://github.com/PyDevices/.github)** repository.
+| Path | Role |
+|---|---|
+| `index.html` | The portal page. The regions between `<!-- PYDEVICES-…: START/END -->` markers are generated — edit the database, not the markup. |
+| `img/logo.svg` | Brand mark, synced from `dotgithub/assets/img/`. |
+| `vendor/pydevices-chrome/` | Shared chrome, synced from `dotgithub/assets/`: `site.css`, `site-chrome.js`, `theme-toggle.js`, `tree-nav.js`. |
+| `.nojekyll` | Bypasses Jekyll on GitHub Pages. |
 
-For the `PyDevices.github.io` portal repository:
-- **`index.html`**: Organization portal landing page.
-- **`img/logo.svg`**: PyDevices brand mark.
-- **`vendor/pydevices-chrome/`**: Synced shared styling (`site.css`), theme toggle (`theme-toggle.js`), header/footer injector (`site-chrome.js`), and tree navigation (`tree-nav.js`).
-- **`.nojekyll`**: Bypasses Jekyll processing on GitHub Pages.
+## Regenerating
 
----
+Every landing page in the organization — this portal and the 15 per-repo
+`.site/index.html` files — is rendered from
+[`data/repos_db.json`](https://github.com/PyDevices/.github/blob/main/data/repos_db.json)
+by
+[`scripts/generate_sites.py`](https://github.com/PyDevices/.github/blob/main/scripts/generate_sites.py).
+That database is the single source of truth for tiers, headlines, descriptions,
+and CTA buttons.
 
-## ⚡ Centralized Generator & Single Source of Truth
-
-The entire PyDevices web presence is managed centrally from the **[`.github` (*dotgithub*)](https://github.com/PyDevices/.github)** repository:
-
-1. **Database ([`repos_db.json`](https://github.com/PyDevices/.github/blob/main/data/repos_db.json))**: Single Source of Truth storing eyebrows, headlines, descriptions, tier colors, and 4-button CTA layouts for all repositories.
-2. **Canonical Assets Vault ([`dotgithub/assets/`](https://github.com/PyDevices/.github/tree/main/assets/))**: Master source for shared CSS, JavaScript, and branding logos.
-3. **Automated Site Generator ([`dotgithub/scripts/generate_sites.py`](https://github.com/PyDevices/.github/blob/main/scripts/generate_sites.py))**: Generates Above-the-Fold hero banners, head tags, grid cards, and syncs chrome assets across all repositories.
-
----
-
-## 🛠️ Local Development & Site Generation
-
-To regenerate the portal page or sync canonical assets across the organization, run:
+The generator resolves sibling repositories relative to its own location, so run
+it from a workspace where the repos are checked out side by side:
 
 ```bash
-python3 ../dotgithub/scripts/generate_sites.py
+python3 dotgithub/scripts/generate_sites.py
 ```
 
----
+It rewrites only the marked regions, syncs the chrome assets, and is idempotent —
+running it twice produces no second diff. Repos it cannot find are skipped with a
+`[SKIP]` line. It also writes the markdown ecosystem map into
+`dotgithub/profile/README.md` and `pydevices/docs/ecosystem.md`.
 
-## 🚀 GitHub Pages Deployment
+A [workflow in `.github`](https://github.com/PyDevices/.github/blob/main/.github/workflows/ecosystem-map.yml)
+validates the database and fails if `profile/README.md` has drifted from it.
 
-Pushing commits to the `main` branch automatically updates GitHub Pages at [https://PyDevices.github.io/](https://PyDevices.github.io/) directly from the repository root.
+## Deployment
+
+Pushes to `main` publish the repository root to GitHub Pages at
+<https://pydevices.github.io/>. There is no build step.
