@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- PYDEVICES-HEAD-TAGS: START -->
+  <title>PyDevices - pydevices-android-template</title>
+  <meta name="description" content="Pre-configured python-for-android build recipes and Buildozer project template for packaging PyDevices applications into native Android APKs.">
+  <link rel="icon" type="image/svg+xml" href="/img/logo.svg">
+  <!-- PYDEVICES-HEAD-TAGS: END -->
+  <meta charset="utf-8">
+  <script>try{if(localStorage.getItem('pydevices-theme')==='light'){document.documentElement.setAttribute('data-theme','light');}}catch(e){}</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  
+  <link rel="icon" type="image/svg+xml" href="/img/logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&display=swap">
+  <link rel="stylesheet" href="/vendor/pydevices-chrome/site.css">
+</head>
+<body>
+  <!-- PYDEVICES-ABOVE-THE-FOLD: START -->
+  <div id="pydevices-site-header"></div>
+
+  <!-- Hero Banner -->
+  <section class="hero wrap">
+    <div class="hero-lead">
+      <div class="hero-brand">
+        <div class="logo-badge product-mark" style="background: linear-gradient(135deg, var(--tier-4-purple), #7c3aed);"><img src="/img/logo.svg" alt="pydevices-android-template" width="112" height="112"></div>
+        <span class="eyebrow" style="color: var(--tier-4-purple);">android-template</span>
+      </div>
+      <h1>pydevices-android-template — Android APK Buildozer project.</h1>
+    </div>
+    <p><code>pydevices-android-template</code> Pre-configured python-for-android build recipes and Buildozer project template for packaging PyDevices applications into native Android APKs.</p>
+    <div class="cta">
+      <a class="btn primary" style="background: #24292e; color: #fff; border-color: #24292e;" href="https://github.com/PyDevices/pydevices-android-template">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.9a3.4 3.4 0 0 0-1-2.6c3-.3 6-1.5 6-6.5a5 5 0 0 0-1.4-3.5 4.6 4.6 0 0 0-.1-3.5s-1.1-.3-3.5 1.3a12 12 0 0 0-6 0C6.6 1.7 5.5 2 5.5 2a4.6 4.6 0 0 0-.1 3.5A5 5 0 0 0 4 9c0 5 3 6.2 6 6.5a3.4 3.4 0 0 0-1 2.6V22"/></svg>
+        GitHub Repo
+      </a>
+      <a class="btn" style="border-color: var(--tier-4-purple); color: var(--tier-4-purple);" href="https://github.com/PyDevices/pydevices-android-template/blob/main/README.md">Buildozer Guide</a>
+      <a class="btn" style="border-color: var(--tier-4-purple); color: var(--tier-4-purple);" href="https://github.com/PyDevices/pydevices-android-template/tree/main/recipes">p4a Recipes</a>
+      <a class="btn" style="border-color: var(--tier-4-purple); color: var(--tier-4-purple);" href="https://pydevices.github.io/pydevices/">pydevices Core</a>
+    </div>
+  </section>
+  <!-- PYDEVICES-ABOVE-THE-FOLD: END -->
+  <div id="pydevices-site-header"></div>
+
+  
+
+  <main class="wrap" style="padding-bottom: 60px;">
+    <div class="section-head">
+      <h2>Build APK Instructions</h2>
+      <span class="hint">Requires Android SDK/NDK &amp; buildozer</span>
+    </div>
+
+    <div class="spec-block">
+      <pre><code># Clone template repository:
+git clone https://github.com/PyDevices/pydevices-android-template.git
+cd pydevices-android-template
+
+# Run automated Android build script:
+./build_android.sh --title "PyDevices Demo App"
+
+# Generated APK output:
+# p4a_app/bin/pydevicesdemoapp-0.1-debug.apk</code></pre>
+    </div>
+  </main>
+
+  <div id="pydevices-site-footer"></div>
+  <script src="/vendor/pydevices-chrome/site-chrome.js"></script>
+  <script src="/vendor/pydevices-chrome/theme-toggle.js"></script>
+  <script src="/vendor/pydevices-chrome/tree-nav.js"></script>
+</body>
+</html>
