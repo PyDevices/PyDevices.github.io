@@ -138,7 +138,7 @@ class PyDevicesWatch:
 
         # 3. Inner Metallic Bezel Ring with Subtle Amber Accent
         inner_bezel_size = int(size * 0.95)
-        self.bezel_ring = lv.obj(self.bezel)
+        self.bezel_ring = lv.obj(self.parent)
         self.bezel_ring.set_size(inner_bezel_size, inner_bezel_size)
         self.bezel_ring.center()
         self.bezel_ring.set_style_radius(lv.RADIUS_CIRCLE, 0)
@@ -146,10 +146,11 @@ class PyDevicesWatch:
         self.bezel_ring.set_style_border_color(_color(0xF54E00), 0)
         self.bezel_ring.set_style_border_width(1, 0)
         self.bezel_ring.set_style_border_opa(lv.OPA._60, 0)
+        self.bezel_ring.set_style_pad_all(0, 0)
         _plain(self.bezel_ring)
 
         # 4. Dial Face (Underlay for background elements)
-        self.face = lv.obj(self.bezel_ring)
+        self.face = lv.obj(self.parent)
         self.face.set_size(dial_size, dial_size)
         self.face.center()
         self.face.set_style_radius(lv.RADIUS_CIRCLE, 0)
@@ -158,36 +159,56 @@ class PyDevicesWatch:
         self.face.set_style_bg_grad_dir(lv.GRAD_DIR.VER, 0)
         self.face.set_style_border_color(_color(0x28323D), 0)
         self.face.set_style_border_width(1, 0)
+        self.face.set_style_pad_all(0, 0)
         _plain(self.face)
 
-        # 5. Roman Hour Numerals (XII, III, VI, IX) - Polar-centered with zero padding
-        numerals = {0: "XII", 3: "III", 6: "VI", 9: "IX"}
-        num_radius = int(dial_size * 0.36)
-        for hour, label_text in numerals.items():
-            lbl = lv.label(self.face)
-            lbl.set_text(label_text)
-            lbl.set_style_text_color(_color(0xE2E8F0), 0)
-            _set_font(lbl, 14)
-            angle = math.radians(hour * 30 - 90)
-            nx = int(math.cos(angle) * num_radius)
-            ny = int(math.sin(angle) * num_radius)
-            lbl.align(lv.ALIGN.CENTER, nx, ny)
+        # 5. Roman Hour Numerals (XII, III, VI, IX)
+        # XII & VI: horizontal center aligned to parent (x_offset = 0), calculated y_offset
+        # IX & III: vertical center aligned to parent (y_offset = 0), calculated x_offset
+        num_inset = int(dial_size * 0.08)
+
+        self.lbl_xii = lv.label(self.face)
+        self.lbl_xii.set_text("XII")
+        self.lbl_xii.set_style_text_color(_color(0xE2E8F0), 0)
+        _set_font(self.lbl_xii, 14)
+        self.lbl_xii.align(lv.ALIGN.TOP_MID, 0, num_inset)
+
+        self.lbl_vi = lv.label(self.face)
+        self.lbl_vi.set_text("VI")
+        self.lbl_vi.set_style_text_color(_color(0xE2E8F0), 0)
+        _set_font(self.lbl_vi, 14)
+        self.lbl_vi.align(lv.ALIGN.BOTTOM_MID, 0, -num_inset)
+
+        self.lbl_ix = lv.label(self.face)
+        self.lbl_ix.set_text("IX")
+        self.lbl_ix.set_style_text_color(_color(0xE2E8F0), 0)
+        _set_font(self.lbl_ix, 14)
+        self.lbl_ix.align(lv.ALIGN.LEFT_MID, num_inset, 0)
+
+        self.lbl_iii = lv.label(self.face)
+        self.lbl_iii.set_text("III")
+        self.lbl_iii.set_style_text_color(_color(0xE2E8F0), 0)
+        _set_font(self.lbl_iii, 14)
+        self.lbl_iii.align(lv.ALIGN.RIGHT_MID, -num_inset, 0)
 
         # 6. Brand Label (Upper Dial Quadrant)
+        # Horizontal center aligned to parent (x_offset = 0), calculated y_offset
+        brand_top_offset = int(dial_size * 0.25)
         self.brand_lbl = lv.label(self.face)
         self.brand_lbl.set_text("PYDEVICES")
         self.brand_lbl.set_style_text_color(_color(0xF54E00), 0)
         _set_font(self.brand_lbl, 11)
-        self.brand_lbl.align(lv.ALIGN.CENTER, 0, -int(dial_size * 0.22))
+        self.brand_lbl.align(lv.ALIGN.TOP_MID, 0, brand_top_offset)
 
         # 7. Digital Readout Sub-Dial (Lower Dial Quadrant) - Created on dial face behind hands
+        # Horizontal center aligned to parent (x_offset = 0), calculated y_offset
         pill_w = int(dial_size * 0.46)
-        pill_h = int(dial_size * 0.16)
-        pill_center_y = int(dial_size * 0.22)
+        pill_h = int(dial_size * 0.18)
+        pill_bottom_offset = int(dial_size * 0.18)
 
         self.pill = lv.obj(self.face)
         self.pill.set_size(pill_w, pill_h)
-        self.pill.align(lv.ALIGN.CENTER, 0, pill_center_y)
+        self.pill.align(lv.ALIGN.BOTTOM_MID, 0, -pill_bottom_offset)
         self.pill.set_style_radius(max(4, int(pill_h * 0.18)), 0)
         self.pill.set_style_bg_color(_color(0x080B0E), 0)
         self.pill.set_style_bg_opa(lv.OPA._90, 0)
@@ -199,17 +220,19 @@ class PyDevicesWatch:
         except AttributeError:
             pass
 
+        # Digital Time & Date inside sub-dial:
+        # Both horizontal centers aligned to parent pill (x_offset = 0), calculated y_offsets
         self.digital_time = lv.label(self.pill)
         self.digital_time.set_text("00:00:00")
         self.digital_time.set_style_text_color(_color(0xF8FAFC), 0)
         _set_font(self.digital_time, 13)
-        self.digital_time.align(lv.ALIGN.TOP_MID, 0, int(pill_h * 0.10))
+        self.digital_time.align(lv.ALIGN.TOP_MID, 0, 4)
 
         self.digital_date = lv.label(self.pill)
         self.digital_date.set_text("FRI  OCT 24")
         self.digital_date.set_style_text_color(_color(0x94A3B8), 0)
         _set_font(self.digital_date, 10)
-        self.digital_date.align(lv.ALIGN.BOTTOM_MID, 0, -int(pill_h * 0.10))
+        self.digital_date.align(lv.ALIGN.BOTTOM_MID, 0, -4)
 
         # 8. Scale for Ticks & Analog Needles - Created AFTER dial & digital sub-dial
         # This guarantees that the tick ring and all rotating hands draw in FRONT of the digital display!
