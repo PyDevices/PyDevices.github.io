@@ -110,6 +110,7 @@
         renderLineHighlight: "all",
         padding: { top: 12, bottom: 12 }
       });
+      window.monacoEditor = monacoEditor;
 
       // Shortcut: Ctrl+Enter / Cmd+Enter to Run
       monacoEditor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, function () {
@@ -130,6 +131,64 @@
   // =========================================================================
   // Python Runtime Harness (Pyodide & MicroPython WASM)
   // =========================================================================
+
+  let micropythonInstance = null;
+  let mpyPackagesInstalled = false;
+
+  async function getMicroPython() {
+    if (micropythonInstance) return micropythonInstance;
+
+    setStatus("Booting MicroPython engine…", "busy");
+    logConsole("[Runtime] Loading MicroPython WASM environment…\n", "info");
+
+    const { loadMicroPython } = await import("https://cdn.jsdelivr.net/npm/@micropython/micropython-webassembly-pyscript/micropython.mjs");
+    micropythonInstance = await loadMicroPython({
+      stdout: (text) => logConsole(text + "\n"),
+      stderr: (text) => logConsole(text + "\n", "error"),
+      url: "https://cdn.jsdelivr.net/npm/@micropython/micropython-webassembly-pyscript/micropython.wasm"
+    });
+
+    // Setup sys.path and PyScript/DOM shims
+    try {
+      micropythonInstance.runPython(`
+import sys, os
+if "." not in sys.path:
+    sys.path.insert(0, ".")
+if "/lib" not in sys.path:
+    sys.path.append("/lib")
+
+# PyScript compatibility shims
+try:
+    import js
+    from js import document, window
+    class _PS:
+        pass
+    ps = _PS()
+    ps.document = document
+    ps.window = window
+    sys.modules["pyscript"] = ps
+except Exception:
+    pass
+`);
+    } catch (e) {
+      console.warn("MicroPython init shim:", e);
+    }
+
+    // Preload local mip.py into MicroPython filesystem
+    try {
+      const mipRes = await fetch("/vendor/pydevices-chrome/mip.py");
+      if (mipRes.ok) {
+        const mipCode = await mipRes.text();
+        micropythonInstance.FS.writeFile("mip.py", mipCode);
+      }
+    } catch (e) {
+      console.warn("Could not preload local mip.py for MicroPython:", e);
+    }
+
+    setStatus("Ready", "ready");
+    logConsole("[Runtime] MicroPython environment ready.\n", "success");
+    return micropythonInstance;
+  }
 
   async function getPyodide() {
     if (pyodideInstance) return pyodideInstance;
@@ -206,8 +265,49 @@ if "pyscript" not in sys.modules:
     logConsole(`\n--- Execution started (${new Date().toLocaleTimeString()}) ---\n`, "dim");
 
     const t0 = performance.now();
+    const runtime = elRuntimeSelect ? elRuntimeSelect.value : "pyodide";
 
     try {
+      if (runtime === "mpy") {
+        const mp = await getMicroPython();
+
+        setCanvasResolution(currentResolution.width, currentResolution.height, currentResolution.shape);
+
+        // Set MicroPython display environment
+        mp.runPython(`
+import sys, os
+if not hasattr(os, "environ"):
+    os.environ = {}
+os.environ["PYDEVICES_WIDTH"] = "${currentResolution.width}"
+os.environ["PYDEVICES_HEIGHT"] = "${currentResolution.height}"
+os.environ["PYDEVICES_CANVAS_ID"] = "display_canvas"
+`);
+
+        mp.FS.writeFile("main.py", code);
+        mp.runPython(code);
+
+        // Pump LVGL / display refresh
+        try {
+          mp.runPython(`
+import sys
+if "lvgl" in sys.modules:
+    lv = sys.modules["lvgl"]
+    if hasattr(lv, "task_handler"):
+        lv.task_handler()
+if "board_config" in sys.modules:
+    bc = sys.modules["board_config"]
+    if hasattr(bc, "display_drv") and hasattr(bc.display_drv, "show"):
+        bc.display_drv.show()
+`);
+        } catch (e) {}
+
+        const elapsed = ((performance.now() - t0) / 1000).toFixed(2);
+        logConsole(`--- Completed in ${elapsed}s ---\n`, "dim");
+        setStatus("Ready", "ready");
+        isRunning = false;
+        return;
+      }
+
       const pyodide = await getPyodide();
 
       // Always install pydevices-desktop for all scenarios
@@ -549,7 +649,59 @@ if "display_driver" in sys.modules:
     const promptStr = isMoreLines ? "... " : ">>> ";
     logConsole(`${promptStr}${line}\n`, "prompt");
 
+    const runtime = elRuntimeSelect ? elRuntimeSelect.value : "pyodide";
+
     try {
+      if (runtime === "mpy") {
+        const mp = await getMicroPython();
+
+        const pyWrapper = `
+import sys
+
+_line_input = ${JSON.stringify(line)}
+
+try:
+    _res = eval(_line_input)
+    if _res is not None:
+        print(repr(_res))
+except SyntaxError:
+    try:
+        _parts = [p.strip() for p in _line_input.split(";") if p.strip()]
+        if len(_parts) > 1:
+            for _p in _parts[:-1]:
+                exec(_p)
+            _last = _parts[-1]
+            try:
+                _res = eval(_last)
+                if _res is not None:
+                    print(repr(_res))
+            except SyntaxError:
+                exec(_last)
+        else:
+            exec(_line_input)
+    except Exception as _e:
+        import sys
+        sys.print_exception(_e) if hasattr(sys, "print_exception") else print(_e)
+except Exception as _e:
+    import sys
+    sys.print_exception(_e) if hasattr(sys, "print_exception") else print(_e)
+
+try:
+    if "lvgl" in sys.modules:
+        _lv = sys.modules["lvgl"]
+        if hasattr(_lv, "task_handler"):
+            _lv.task_handler()
+    if "board_config" in sys.modules:
+        _bc = sys.modules["board_config"]
+        if hasattr(_bc, "display_drv") and hasattr(_bc.display_drv, "show"):
+            _bc.display_drv.show()
+except Exception:
+    pass
+`;
+        mp.runPython(pyWrapper);
+        return;
+      }
+
       const pyodide = await getPyodide();
 
       const pyWrapper = `
@@ -643,6 +795,14 @@ _more
 
     if (elResolutionSelect) {
       elResolutionSelect.addEventListener("change", (e) => handleResolutionChange(e.target.value));
+    }
+
+    if (elRuntimeSelect) {
+      elRuntimeSelect.addEventListener("change", (e) => {
+        const val = e.target.value;
+        const name = val === "mpy" ? "MicroPython" : "Pyodide (CPython)";
+        logConsole(`[Runtime] Active execution engine set to ${name}.\n`, "info");
+      });
     }
 
     const themeToggle = document.getElementById("theme-toggle");
