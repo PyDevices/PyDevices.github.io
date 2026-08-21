@@ -282,7 +282,21 @@ _run_user_code()
 
 import code
 
-code.interact(local=globals())
+try:
+    code.interact(local=globals())
+except Exception as exc:
+    # PyScript's input() raises on the main thread, so code.interact() dies on
+    # its first prompt and Pyodide's REPL pane would otherwise show a traceback
+    # instead of a banner. The runtime stays on the main thread on purpose:
+    # a worker would fix input(), but psdisplay stores a Python object on the
+    # canvas element, and a PyProxy cannot cross the worker boundary.
+    if "input()" in str(exc):
+        print()
+        print("--- Script finished. This runtime's REPL is output-only. ---")
+        print("Switch to MicroPython for an interactive prompt, or press RESET")
+        print("to run your edited code again.")
+    else:
+        _report(exc)
 </template>
 
     <!-- Toast Notification -->
