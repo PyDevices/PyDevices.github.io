@@ -165,35 +165,40 @@ class PyDevicesWatch:
         _plain(self.face)
 
         # 5. Roman Hour Numerals (XII, III, VI, IX) - Created on dial face
-        numerals = {0: "XII", 3: "III", 6: "VI", 9: "IX"}
-        num_radius = int(r * 0.76)
         num_font_size = int(dial_size * 0.065)
-        for hour, label_text in numerals.items():
+        num_inset = int(dial_size * 0.09)
+
+        cardinals = {
+            "XII": (lv.ALIGN.TOP_MID, 0, num_inset),
+            "III": (lv.ALIGN.RIGHT_MID, -num_inset, 0),
+            "VI": (lv.ALIGN.BOTTOM_MID, 0, -num_inset),
+            "IX": (lv.ALIGN.LEFT_MID, num_inset, 0),
+        }
+        for label_text, (align_type, ax, ay) in cardinals.items():
             lbl = lv.label(self.face)
             lbl.set_text(label_text)
             lbl.set_style_text_color(_color(0xE2E8F0), 0)
+            lbl.set_style_text_align(lv.TEXT_ALIGN.CENTER, 0)
             _set_scaled_font(lbl, num_font_size)
-            angle = math.radians(hour * 30 - 90)
-            nx = int(math.cos(angle) * num_radius)
-            ny = int(math.sin(angle) * num_radius)
-            lbl.align(lv.ALIGN.CENTER, nx, ny)
+            lbl.align(align_type, ax, ay)
 
-        # 6. Brand Label (Top Half) - Calculated anchor point
-        brand_y = -int(r * 0.38)
+        # 6. Brand Label (Upper Dial Quadrant)
+        brand_top_offset = int(dial_size * 0.25)
         self.brand_lbl = lv.label(self.face)
         self.brand_lbl.set_text("PYDEVICES")
         self.brand_lbl.set_style_text_color(_color(0xF54E00), 0)
+        self.brand_lbl.set_style_text_align(lv.TEXT_ALIGN.CENTER, 0)
         _set_scaled_font(self.brand_lbl, int(dial_size * 0.05))
-        self.brand_lbl.align(lv.ALIGN.CENTER, 0, brand_y)
+        self.brand_lbl.align(lv.ALIGN.TOP_MID, 0, brand_top_offset)
 
-        # 7. Digital Readout Sub-Dial (Lower Half) - Created on dial face behind hands
+        # 7. Digital Readout Sub-Dial (Lower Dial Quadrant) - Created on dial face behind hands
         pill_w = int(dial_size * 0.46)
         pill_h = int(dial_size * 0.16)
-        pill_y = int(r * 0.42)
+        pill_bottom_offset = int(dial_size * 0.20)
 
         self.pill = lv.obj(self.face)
         self.pill.set_size(pill_w, pill_h)
-        self.pill.align(lv.ALIGN.CENTER, 0, pill_y)
+        self.pill.align(lv.ALIGN.BOTTOM_MID, 0, -pill_bottom_offset)
         self.pill.set_style_radius(max(4, int(pill_h * 0.18)), 0)
         self.pill.set_style_bg_color(_color(0x080B0E), 0)
         self.pill.set_style_bg_opa(lv.OPA._90, 0)
@@ -205,19 +210,19 @@ class PyDevicesWatch:
         except AttributeError:
             pass
 
-        time_y = -int(pill_h * 0.18)
         self.digital_time = lv.label(self.pill)
         self.digital_time.set_text("00:00:00")
         self.digital_time.set_style_text_color(_color(0xF8FAFC), 0)
+        self.digital_time.set_style_text_align(lv.TEXT_ALIGN.CENTER, 0)
         _set_scaled_font(self.digital_time, int(pill_h * 0.38))
-        self.digital_time.align(lv.ALIGN.CENTER, 0, time_y)
+        self.digital_time.align(lv.ALIGN.TOP_MID, 0, int(pill_h * 0.10))
 
-        date_y = int(pill_h * 0.24)
         self.digital_date = lv.label(self.pill)
         self.digital_date.set_text("FRI  OCT 24")
         self.digital_date.set_style_text_color(_color(0x94A3B8), 0)
+        self.digital_date.set_style_text_align(lv.TEXT_ALIGN.CENTER, 0)
         _set_scaled_font(self.digital_date, int(pill_h * 0.28))
-        self.digital_date.align(lv.ALIGN.CENTER, 0, date_y)
+        self.digital_date.align(lv.ALIGN.BOTTOM_MID, 0, -int(pill_h * 0.12))
 
         # 8. Scale for Ticks & Analog Needles - Created AFTER dial & digital sub-dial
         # This guarantees that the tick ring and all rotating hands draw in FRONT of the digital display!
