@@ -1,0 +1,487 @@
+/*
+ * simulator.css — PyDevices Interactive Python Simulator Stylesheet
+ *
+ * Full-screen IDE workspace with resizable panels, Monaco Editor integration,
+ * realistic device bezel, real-time REPL console, and dark/light themes.
+ */
+
+:root {
+  --bg-app: #090d16;
+  --bg-panel: #0f172a;
+  --bg-panel-subtle: #1e293b;
+  --bg-control: #1e293b;
+  --bg-control-hover: #334155;
+  --border-color: rgba(255, 255, 255, 0.1);
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --text-subtle: #64748b;
+  --accent: #f54e00;
+  --accent-glow: rgba(245, 78, 0, 0.3);
+  --accent-blue: #38bdf8;
+  --accent-green: #34d399;
+  --accent-red: #f87171;
+  --font-sans: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', Menlo, Monaco, Consolas, monospace;
+  --header-height: 54px;
+}
+
+[data-theme="light"] {
+  --bg-app: #f1f5f9;
+  --bg-panel: #ffffff;
+  --bg-panel-subtle: #f8fafc;
+  --bg-control: #e2e8f0;
+  --bg-control-hover: #cbd5e1;
+  --border-color: #e2e8f0;
+  --border-subtle: #cbd5e1;
+  --text-main: #0f172a;
+  --text-muted: #475569;
+  --text-subtle: #94a3b8;
+  --accent: #ea580c;
+  --accent-glow: rgba(234, 88, 12, 0.2);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: var(--bg-app);
+  color: var(--text-main);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ==========================================================================
+   Top Navigation & Action Toolbar
+   ========================================================================== */
+
+.sim-header {
+  height: var(--header-height);
+  background: var(--bg-panel);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  gap: 12px;
+  z-index: 50;
+  user-select: none;
+}
+
+.sim-header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex: none;
+}
+
+.sim-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: var(--text-main);
+  font-weight: 700;
+  font-size: 1.05rem;
+  letter-spacing: -0.01em;
+}
+
+.sim-brand img {
+  display: block;
+}
+
+.sim-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: linear-gradient(135deg, rgba(245, 78, 0, 0.2), rgba(56, 189, 248, 0.2));
+  color: var(--accent);
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--border-color);
+}
+
+.sim-header-center {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.sim-header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+}
+
+/* Control elements & Buttons */
+
+.sim-select-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.sim-select-wrap select {
+  appearance: none;
+  background: var(--bg-control);
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 6px 30px 6px 12px;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.15s ease;
+}
+
+.sim-select-wrap select:hover {
+  border-color: var(--accent);
+  background: var(--bg-control-hover);
+}
+
+.sim-select-wrap::after {
+  content: '';
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 5px solid var(--text-muted);
+  pointer-events: none;
+}
+
+.sim-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: var(--bg-control);
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  outline: none;
+}
+
+.sim-btn:hover {
+  background: var(--bg-control-hover);
+  border-color: rgba(255, 255, 255, 0.25);
+  transform: translateY(-1px);
+}
+
+.sim-btn:active {
+  transform: translateY(0);
+}
+
+.sim-btn-primary {
+  background: linear-gradient(135deg, #f54e00, #ff6b26);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 2px 10px var(--accent-glow);
+}
+
+.sim-btn-primary:hover {
+  background: linear-gradient(135deg, #ff6019, #ff7e42);
+  box-shadow: 0 4px 14px var(--accent-glow);
+}
+
+.sim-btn kbd {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  background: rgba(0, 0, 0, 0.25);
+  padding: 2px 5px;
+  border-radius: 4px;
+  opacity: 0.85;
+}
+
+.sim-icon-btn {
+  padding: 6px 10px;
+}
+
+.sim-icon-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ==========================================================================
+   Workspace Main Layout & Split Panes
+   ========================================================================== */
+
+.sim-workspace {
+  display: flex;
+  width: 100%;
+  height: calc(100% - var(--header-height));
+  position: relative;
+  overflow: hidden;
+}
+
+/* Left Pane: Code Editor */
+.sim-editor-pane {
+  flex: 1 1 50%;
+  min-width: 280px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-panel);
+  position: relative;
+}
+
+.sim-pane-header {
+  height: 36px;
+  background: var(--bg-panel-subtle);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 14px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  user-select: none;
+}
+
+.sim-tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-main);
+}
+
+.sim-editor-container {
+  flex: 1;
+  width: 100%;
+  height: calc(100% - 36px);
+  position: relative;
+}
+
+/* Drag Splitter */
+.sim-splitter {
+  width: 6px;
+  background: var(--border-subtle);
+  cursor: col-resize;
+  position: relative;
+  flex: none;
+  transition: background 0.15s ease;
+  z-index: 40;
+}
+
+.sim-splitter:hover, .sim-splitter.is-dragging {
+  background: var(--accent);
+}
+
+/* Right Pane: Simulator & Console */
+.sim-preview-pane {
+  flex: 1 1 50%;
+  min-width: 320px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-app);
+}
+
+.sim-device-stage {
+  flex: 1 1 60%;
+  min-height: 240px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  overflow: auto;
+  position: relative;
+  background:
+    radial-gradient(400px 300px at 50% 50%, rgba(56, 189, 248, 0.04), transparent 70%),
+    var(--bg-app);
+}
+
+/* Realistic Device Bezel */
+.sim-device-bezel {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: linear-gradient(145deg, #2a313d, #141821);
+  border-radius: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow:
+    0 16px 40px rgba(0, 0, 0, 0.5),
+    inset 0 1px 1px rgba(255, 255, 255, 0.15);
+  position: relative;
+  transition: all 0.25s ease;
+}
+
+.sim-device-bezel.is-round {
+  border-radius: 50%;
+  padding: 18px;
+}
+
+.sim-device-bezel.is-round #display_canvas {
+  border-radius: 50%;
+}
+
+#display_canvas {
+  display: block;
+  background: #000000;
+  border-radius: 12px;
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.9);
+  max-width: 100%;
+  max-height: 100%;
+  touch-action: none;
+}
+
+#aux_canvas {
+  display: none;
+}
+
+/* Horizontal Splitter between Device and Console */
+.sim-splitter-h {
+  height: 6px;
+  width: 100%;
+  background: var(--border-subtle);
+  cursor: row-resize;
+  position: relative;
+  flex: none;
+  transition: background 0.15s ease;
+  z-index: 40;
+}
+
+.sim-splitter-h:hover, .sim-splitter-h.is-dragging {
+  background: var(--accent);
+}
+
+/* Console / Output Panel */
+.sim-console-pane {
+  flex: 1 1 40%;
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-panel);
+  border-top: 1px solid var(--border-color);
+}
+
+.sim-console-body {
+  flex: 1;
+  padding: 12px 14px;
+  overflow-y: auto;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  line-height: 1.55;
+  background: #080c14;
+  color: #cbd5e1;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.sim-console-body .log-info { color: #38bdf8; }
+.sim-console-body .log-success { color: #34d399; }
+.sim-console-body .log-warn { color: #fbbf24; }
+.sim-console-body .log-err { color: #f87171; }
+.sim-console-body .log-dim { color: #64748b; }
+
+/* Status indicator pill in status bar */
+.sim-status-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.76rem;
+  color: var(--text-muted);
+}
+
+.sim-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--text-subtle);
+}
+
+.sim-status-dot.is-ready { background: var(--accent-green); }
+.sim-status-dot.is-busy { background: var(--accent); animation: pulse 1s infinite alternate; }
+.sim-status-dot.is-error { background: var(--accent-red); }
+
+@keyframes pulse {
+  from { opacity: 0.4; }
+  to { opacity: 1; }
+}
+
+/* Toast Message */
+.sim-toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: #1e293b;
+  color: #f8fafc;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  padding: 10px 18px;
+  font-size: 0.88rem;
+  font-weight: 500;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+  transform: translateY(60px);
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 100;
+}
+
+.sim-toast.is-active {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* Responsive Stacking for Mobile / Narrow screens */
+@media (max-width: 880px) {
+  .sim-header {
+    flex-wrap: wrap;
+    height: auto;
+    padding: 10px 12px;
+    gap: 8px;
+  }
+
+  .sim-workspace {
+    flex-direction: column;
+    height: calc(100% - 90px);
+  }
+
+  .sim-splitter {
+    display: none;
+  }
+
+  .sim-editor-pane {
+    flex: 1 1 50%;
+    min-height: 250px;
+  }
+
+  .sim-preview-pane {
+    flex: 1 1 50%;
+    min-height: 250px;
+  }
+
+  .sim-header-center {
+    order: 3;
+    width: 100%;
+    justify-content: space-between;
+  }
+}
