@@ -72,6 +72,10 @@ def _clean_obj(parent):
         obj.remove_flag(lv.obj.FLAG.SCROLLABLE)
     except AttributeError:
         pass
+    try:
+        obj.update_layout()
+    except AttributeError:
+        pass
     return obj
 
 
@@ -81,7 +85,6 @@ def _clean_label(parent, text, color, font_size):
         lbl.remove_style_all()
     except AttributeError:
         pass
-    lbl.set_text(text)
     font, _ = _font_for(font_size)
     if font is not None:
         lbl.set_style_text_font(font, 0)
@@ -98,6 +101,11 @@ def _clean_label(parent, text, color, font_size):
         pass
     try:
         lbl.set_style_outline_width(0, 0)
+    except AttributeError:
+        pass
+    lbl.set_text(text)
+    try:
+        lbl.update_layout()
     except AttributeError:
         pass
     return lbl
@@ -176,6 +184,10 @@ class PyDevicesWatch:
             self.parent.remove_flag(lv.obj.FLAG.SCROLLABLE)
         except AttributeError:
             pass
+        try:
+            self.parent.update_layout()
+        except AttributeError:
+            pass
 
         # 2. Outer Watch Bezel / Casing
         self.bezel = _clean_obj(self.parent)
@@ -188,6 +200,10 @@ class PyDevicesWatch:
         self.bezel.set_style_bg_opa(lv.OPA.COVER, 0)
         self.bezel.set_style_border_color(_color(0x3B444E), 0)
         self.bezel.set_style_border_width(max(2, int(size * 0.017)), 0)
+        try:
+            self.bezel.update_layout()
+        except AttributeError:
+            pass
 
         # 3. Inner Metallic Bezel Ring with Subtle Amber Accent
         inner_bezel_size = int(size * 0.95)
@@ -200,6 +216,10 @@ class PyDevicesWatch:
         self.bezel_ring.set_style_border_color(_color(0xF54E00), 0)
         self.bezel_ring.set_style_border_width(1, 0)
         self.bezel_ring.set_style_border_opa(lv.OPA._60, 0)
+        try:
+            self.bezel_ring.update_layout()
+        except AttributeError:
+            pass
 
         # 4. Dial Face (Underlay for background elements)
         self.face = _clean_obj(self.parent)
@@ -212,6 +232,10 @@ class PyDevicesWatch:
         self.face.set_style_bg_opa(lv.OPA.COVER, 0)
         self.face.set_style_border_color(_color(0x28323D), 0)
         self.face.set_style_border_width(1, 0)
+        try:
+            self.face.update_layout()
+        except AttributeError:
+            pass
 
         # 5. Roman Hour Numerals (XII, III, VI, IX)
         # XII & VI: horizontal center aligned to parent (x_offset = 0), calculated y_offset
@@ -220,21 +244,41 @@ class PyDevicesWatch:
 
         self.lbl_xii = _clean_label(self.face, "XII", 0xE2E8F0, 14)
         self.lbl_xii.align(lv.ALIGN.TOP_MID, 0, num_inset)
+        try:
+            self.lbl_xii.update_layout()
+        except AttributeError:
+            pass
 
         self.lbl_vi = _clean_label(self.face, "VI", 0xE2E8F0, 14)
         self.lbl_vi.align(lv.ALIGN.BOTTOM_MID, 0, -num_inset)
+        try:
+            self.lbl_vi.update_layout()
+        except AttributeError:
+            pass
 
         self.lbl_ix = _clean_label(self.face, "IX", 0xE2E8F0, 14)
         self.lbl_ix.align(lv.ALIGN.LEFT_MID, num_inset, 0)
+        try:
+            self.lbl_ix.update_layout()
+        except AttributeError:
+            pass
 
         self.lbl_iii = _clean_label(self.face, "III", 0xE2E8F0, 14)
         self.lbl_iii.align(lv.ALIGN.RIGHT_MID, -num_inset, 0)
+        try:
+            self.lbl_iii.update_layout()
+        except AttributeError:
+            pass
 
         # 6. Brand Label (Upper Dial Quadrant)
         # Horizontal center aligned to parent (x_offset = 0), calculated y_offset
         brand_top_offset = int(dial_size * 0.25)
         self.brand_lbl = _clean_label(self.face, "PYDEVICES", 0xF54E00, 11)
         self.brand_lbl.align(lv.ALIGN.TOP_MID, 0, brand_top_offset)
+        try:
+            self.brand_lbl.update_layout()
+        except AttributeError:
+            pass
 
         # 7. Digital Readout Sub-Dial (Lower Dial Quadrant) - Created on dial face behind hands
         # Horizontal center aligned to parent (x_offset = 0), calculated y_offset
@@ -250,14 +294,26 @@ class PyDevicesWatch:
         self.pill.set_style_bg_opa(lv.OPA._90, 0)
         self.pill.set_style_border_color(_color(0x28333E), 0)
         self.pill.set_style_border_width(1, 0)
+        try:
+            self.pill.update_layout()
+        except AttributeError:
+            pass
 
         # Digital Time & Date inside sub-dial:
         # Both horizontal centers aligned to parent pill (x_offset = 0), calculated y_offsets
         self.digital_time = _clean_label(self.pill, "00:00:00", 0xF8FAFC, 13)
         self.digital_time.align(lv.ALIGN.TOP_MID, 0, 4)
+        try:
+            self.digital_time.update_layout()
+        except AttributeError:
+            pass
 
         self.digital_date = _clean_label(self.pill, "FRI  OCT 24", 0x94A3B8, 10)
         self.digital_date.align(lv.ALIGN.BOTTOM_MID, 0, -4)
+        try:
+            self.digital_date.update_layout()
+        except AttributeError:
+            pass
 
         # 8. Scale for Ticks & Analog Needles - Created AFTER dial & digital sub-dial
         # This guarantees that the tick ring and all rotating hands draw in FRONT of the digital display!
