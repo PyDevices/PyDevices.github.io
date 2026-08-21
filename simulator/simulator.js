@@ -305,12 +305,22 @@ except Exception:
   // Canvas Resolution & Device Presets
   // =========================================================================
 
+  function clearCanvas() {
+    if (!elCanvas) return;
+    const ctx = elCanvas.getContext("2d");
+    if (ctx) {
+      ctx.fillStyle = "#000000";
+      ctx.fillRect(0, 0, elCanvas.width, elCanvas.height);
+    }
+  }
+
   function setCanvasResolution(width, height, shape = "rectangle") {
     currentResolution = { width, height, shape };
     if (!elCanvas) return;
 
     elCanvas.width = width;
     elCanvas.height = height;
+    clearCanvas();
 
     if (elDeviceBezel) {
       if (shape === "round") {
@@ -318,6 +328,24 @@ except Exception:
       } else {
         elDeviceBezel.classList.remove("is-round");
       }
+    }
+
+    // Stop active background timers when resolution or template changes
+    if (pyodideInstance) {
+      pyodideInstance.runPythonAsync(`
+import sys
+if "display_driver" in sys.modules:
+    try:
+        dd = sys.modules["display_driver"]
+        if hasattr(dd, "event_loop"):
+            inst = dd.event_loop.current_instance()
+            if inst is not None:
+                inst.deinit()
+        if hasattr(dd, "app"):
+            dd.app.stop_timer()
+    except Exception:
+        pass
+`).catch(() => {});
     }
   }
 
