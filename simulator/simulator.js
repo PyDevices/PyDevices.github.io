@@ -69,7 +69,13 @@
   }
 
   function clearConsole() {
-    if (elConsole) elConsole.textContent = "";
+    const termScript = document.getElementById("sim-terminal-script");
+    const pyTerm = document.querySelector("py-terminal");
+    const term = (termScript && termScript.terminal) || (pyTerm && pyTerm.terminal);
+    if (term && typeof term.clear === "function") {
+      term.clear();
+      term.write(">>> ");
+    }
   }
 
   function showToast(msg) {
@@ -255,31 +261,27 @@ if "pyscript" not in sys.modules:
       return;
     }
 
-    setStatus("Executing…", "busy");
+    setStatus("Resetting…", "busy");
 
-    // 1. Save code to main.py
-    if (typeof window._save_main_file === "function") {
-      window._save_main_file(code);
+    // 1. Set Canvas Resolution & clear hardware screen
+    setCanvasResolution(currentResolution.width, currentResolution.height, currentResolution.shape);
+    clearCanvas();
+
+    // 2. Clear terminal output for fresh reset
+    const termScript = document.getElementById("sim-terminal-script");
+    const pyTerm = document.querySelector("py-terminal");
+    const term = (termScript && termScript.terminal) || (pyTerm && pyTerm.terminal);
+    if (term && typeof term.clear === "function") {
+      term.clear();
     }
 
-    // 2. Set Canvas Resolution
-    setCanvasResolution(currentResolution.width, currentResolution.height, currentResolution.shape);
-
-    // 3. Send import command to the PyScript terminal (with auto-mip dependencies if needed)
-    const termScript = document.getElementById("sim-terminal-script");
-    if (termScript && typeof termScript.process === "function") {
-      let cmd = "";
-      if (code.includes("palettes")) {
-        cmd += "try:\n import palettes\nexcept ImportError:\n import mip; mip.install('palettes', index='https://PyDevices.github.io/mip')\n\n";
+    // 3. Trigger HTML Python reset function (_sim_reset)
+    if (typeof window._sim_reset === "function") {
+      try {
+        window._sim_reset();
+      } catch (err) {
+        console.error("Simulator reset error:", err);
       }
-      if (code.includes("pygraphics")) {
-        cmd += "try:\n import pygraphics\nexcept ImportError:\n import mip; mip.install('pygraphics', index='https://PyDevices.github.io/mip')\n\n";
-      }
-      if (code.includes("pdwidgets")) {
-        cmd += "try:\n import pdwidgets\nexcept ImportError:\n import mip; mip.install('pdwidgets', index='https://PyDevices.github.io/mip')\n\n";
-      }
-      cmd += "import sys; sys.modules.pop('main', None); import main\r";
-      termScript.process(cmd);
     }
 
     setStatus("Ready", "ready");

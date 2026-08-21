@@ -73,10 +73,10 @@
         </div>
 
         <div class="sim-header-right">
-            <!-- Run / Restart Button -->
-            <button type="button" class="sim-btn sim-btn-primary" id="run-btn" title="Run Script (Ctrl+Enter)">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-                <span>Run</span>
+            <!-- Reset Button -->
+            <button type="button" class="sim-btn sim-btn-primary" id="run-btn" title="Reset Simulator (Ctrl+Enter)">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                <span>RESET</span>
                 <kbd>Ctrl+↵</kbd>
             </button>
 
@@ -139,40 +139,44 @@
                 </div>
                 <div class="sim-console-body sim-terminal-body" id="console-log">
                     <script id="sim-terminal-script" type="mpy" terminal>
-import sys, os
+import sys, os, code
 from pyscript import window
 
-def _save_main_file(code_content):
-    with open("main.py", "w") as f:
-        f.write(code_content)
-
-window._save_main_file = _save_main_file
-
-# Write initial main.py from editor / template
-try:
-    _initial_code = window.getEditorCode() if hasattr(window, "getEditorCode") else ""
-    if _initial_code:
-        _save_main_file(_initial_code)
-except Exception:
-    pass
-
-# Bootstrap core desktop stack via mip from PyDevices MIP index
-try:
-    import mip
-    mip.install("pydevices-desktop", index="https://PyDevices.github.io/mip")
+def _do_reset():
+    # 1. Save main.py from editor
     try:
-        import utils.path
-    except Exception:
-        pass
-except Exception as _e:
-    print("MIP bootstrap:", _e)
+        _code = window.getEditorCode() if hasattr(window, "getEditorCode") else ""
+        if _code:
+            with open("main.py", "w") as f:
+                f.write(_code)
+    except Exception as e:
+        print("Save error:", e)
 
-try:
-    import main
-except Exception as _e:
-    sys.print_exception(_e) if hasattr(sys, "print_exception") else print(_e)
+    # 2. Bootstrap pydevices-desktop via mip from PyDevices MIP index
+    try:
+        import mip
+        mip.install("pydevices-desktop", index="https://PyDevices.github.io/mip")
+        try:
+            import utils.path
+        except Exception:
+            pass
+    except Exception as e:
+        print("MIP bootstrap:", e)
 
-import code
+    # 3. Import or reload main
+    try:
+        if 'main' in sys.modules:
+            del sys.modules['main']
+        import main
+    except Exception as e:
+        sys.print_exception(e) if hasattr(sys, "print_exception") else print(e)
+
+window._sim_reset = _do_reset
+
+# Run initial bootstrap & import main on load
+_do_reset()
+
+# Drop into interactive REPL at >>> prompt
 code.interact(local=globals())
                     </script>
                 </div>
