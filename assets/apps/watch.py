@@ -26,10 +26,10 @@ except ImportError:
 from displaydev.psdisplay import PSDisplay
 
 # Provide synthetic board_config for display_driver in browser / standalone canvas
-if "board_config" not in sys.modules:
-    bc = types.ModuleType("board_config")
-    bc.display_drv = PSDisplay("hero_canvas", width=240, height=240)
-    sys.modules["board_config"] = bc
+bc = types.ModuleType("board_config")
+bc.display_drv = PSDisplay("hero_canvas", width=240, height=240)
+bc.get_events = bc.display_drv.get_events
+sys.modules["board_config"] = bc
 
 import display_driver
 import lvgl as lv

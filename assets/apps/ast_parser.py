@@ -49,13 +49,10 @@ class AstParserHero:
         self.w = size
         self.h = size
 
-        if "board_config" not in sys.modules:
-            bc = types.ModuleType("board_config")
-            bc.display_drv = PSDisplay(canvas_id, width=size, height=size)
-            sys.modules["board_config"] = bc
-            self.drv = bc.display_drv
-        else:
-            self.drv = sys.modules["board_config"].display_drv
+        bc = types.ModuleType("board_config")
+        bc.display_drv = PSDisplay(canvas_id, width=size, height=size)
+        sys.modules["board_config"] = bc
+        self.drv = bc.display_drv
 
         self.tokens_parsed = 4820
         self.schemas_gen = 142

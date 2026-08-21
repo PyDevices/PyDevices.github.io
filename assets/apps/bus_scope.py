@@ -31,13 +31,10 @@ class BusScopeHero:
         self.w = size
         self.h = size
 
-        if "board_config" not in sys.modules:
-            bc = types.ModuleType("board_config")
-            bc.display_drv = PSDisplay(canvas_id, width=size, height=size)
-            sys.modules["board_config"] = bc
-            self.drv = bc.display_drv
-        else:
-            self.drv = sys.modules["board_config"].display_drv
+        bc = types.ModuleType("board_config")
+        bc.display_drv = PSDisplay(canvas_id, width=size, height=size)
+        sys.modules["board_config"] = bc
+        self.drv = bc.display_drv
 
         self.offset = 0.0
         self.fps = 60.0

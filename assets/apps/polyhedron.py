@@ -33,13 +33,10 @@ class PolyhedronHero:
         self.cy = size // 2
 
         # Initialize PSDisplay
-        if "board_config" not in sys.modules:
-            bc = types.ModuleType("board_config")
-            bc.display_drv = PSDisplay(canvas_id, width=size, height=size)
-            sys.modules["board_config"] = bc
-            self.drv = bc.display_drv
-        else:
-            self.drv = sys.modules["board_config"].display_drv
+        bc = types.ModuleType("board_config")
+        bc.display_drv = PSDisplay(canvas_id, width=size, height=size)
+        sys.modules["board_config"] = bc
+        self.drv = bc.display_drv
 
         # 3D Model: Icosahedron (12 vertices, 20 triangular faces)
         phi = (1.0 + math.sqrt(5.0)) / 2.0  # Golden ratio 1.618
