@@ -31,6 +31,12 @@
   const elDeviceBezel = document.getElementById("device-bezel");
   const elCanvas = document.getElementById("display_canvas");
   const elToast = document.getElementById("sim-toast");
+  const elReplForm = document.getElementById("repl-form");
+  const elReplInput = document.getElementById("repl-input");
+  const elReplPrompt = document.getElementById("repl-prompt");
+
+  const replHistory = [];
+  let replHistoryIdx = -1;
 
   // =========================================================================
   // Status & Console Helpers
@@ -54,6 +60,8 @@
     else if (type === "warn") span.className = "log-warn";
     else if (type === "error") span.className = "log-err";
     else if (type === "dim") span.className = "log-dim";
+    else if (type === "prompt") span.className = "log-prompt";
+    else if (type === "repl-out") span.className = "log-repl-out";
 
     span.textContent = text;
     elConsole.appendChild(span);
@@ -520,6 +528,97 @@ if "display_driver" in sys.modules:
   }
 
   // =========================================================================
+  // Interactive REPL Logic (code.InteractiveConsole)
+  // =========================================================================
+
+  let isMoreLines = false;
+
+  async function handleReplSubmit(e) {
+    if (e) e.preventDefault();
+    if (!elReplInput) return;
+
+    const line = elReplInput.value;
+    const trimmed = line.trim();
+
+    if (trimmed) {
+      replHistory.push(line);
+      replHistoryIdx = replHistory.length;
+    }
+    elReplInput.value = "";
+
+    const promptStr = isMoreLines ? "... " : ">>> ";
+    logConsole(`${promptStr}${line}\n`, "prompt");
+
+    try {
+      const pyodide = await getPyodide();
+
+      const pyWrapper = `
+import sys, code
+
+_line_input = ${JSON.stringify(line)}
+_main_mod = sys.modules.get("__main__")
+_main_dict = _main_mod.__dict__ if _main_mod else globals()
+
+if "_pydevices_console" not in globals() or _pydevices_console is None or _pydevices_console.locals is not _main_dict:
+    _pydevices_console = code.InteractiveConsole(locals=_main_dict)
+
+_more = _pydevices_console.push(_line_input)
+
+# Refresh display if LVGL is active
+try:
+    if "lvgl" in sys.modules:
+        _lv = sys.modules["lvgl"]
+        if _lv.is_initialized():
+            _lv.task_handler()
+            if "display_driver" in sys.modules:
+                _dd = sys.modules["display_driver"]
+                for _drv in getattr(_dd, "_drivers", []):
+                    if hasattr(_drv, "display_drv") and hasattr(_drv.display_drv, "show"):
+                        _drv.display_drv.show()
+except Exception:
+    pass
+
+_more
+`;
+      const more = await pyodide.runPythonAsync(pyWrapper);
+      isMoreLines = Boolean(more);
+
+      if (elReplPrompt) {
+        elReplPrompt.textContent = isMoreLines ? "..." : ">>>";
+      }
+      if (elReplInput) {
+        elReplInput.placeholder = isMoreLines
+          ? "Continue block (press Enter on empty line to execute)..."
+          : "Type Python expression or command (e.g. dir(), lv.screen_active()...)";
+      }
+    } catch (err) {
+      logConsole(`${err}\n`, "error");
+      isMoreLines = false;
+      if (elReplPrompt) elReplPrompt.textContent = ">>>";
+    }
+  }
+
+  function handleReplKeydown(e) {
+    if (e.key === "ArrowUp") {
+      if (replHistory.length === 0) return;
+      e.preventDefault();
+      if (replHistoryIdx > 0) replHistoryIdx--;
+      else replHistoryIdx = 0;
+      elReplInput.value = replHistory[replHistoryIdx] || "";
+    } else if (e.key === "ArrowDown") {
+      if (replHistory.length === 0) return;
+      e.preventDefault();
+      if (replHistoryIdx < replHistory.length - 1) {
+        replHistoryIdx++;
+        elReplInput.value = replHistory[replHistoryIdx] || "";
+      } else {
+        replHistoryIdx = replHistory.length;
+        elReplInput.value = "";
+      }
+    }
+  }
+
+  // =========================================================================
   // DOM Event Bindings
   // =========================================================================
 
@@ -530,6 +629,13 @@ if "display_driver" in sys.modules:
     if (elRunBtn) elRunBtn.addEventListener("click", runScript);
     if (elShareBtn) elShareBtn.addEventListener("click", shareCode);
     if (elClearConsoleBtn) elClearConsoleBtn.addEventListener("click", clearConsole);
+
+    if (elReplForm) {
+      elReplForm.addEventListener("submit", handleReplSubmit);
+    }
+    if (elReplInput) {
+      elReplInput.addEventListener("keydown", handleReplKeydown);
+    }
 
     if (elTemplateSelect) {
       elTemplateSelect.addEventListener("change", (e) => loadTemplate(e.target.value));

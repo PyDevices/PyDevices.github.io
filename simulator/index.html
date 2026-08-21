@@ -123,18 +123,22 @@
             <!-- Horizontal Drag Splitter -->
             <div class="sim-splitter-h" id="splitter-h" role="separator" aria-orientation="horizontal"></div>
 
-            <!-- Bottom Sub-Pane: Console / REPL Stream -->
-            <section class="sim-console-pane" id="console-pane" aria-label="Console Output">
+            <!-- Bottom Sub-Pane: Interactive REPL -->
+            <section class="sim-console-pane" id="console-pane" aria-label="Interactive Python REPL">
                 <div class="sim-pane-header">
                     <div class="sim-tab">
                         <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
-                        <span>Console Output</span>
+                        <span>REPL</span>
                     </div>
-                    <button type="button" class="sim-btn sim-icon-btn" id="clear-console-btn" title="Clear Console">
+                    <button type="button" class="sim-btn sim-icon-btn" id="clear-console-btn" title="Clear REPL Log">
                         <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                     </button>
                 </div>
                 <div class="sim-console-body" id="console-log"></div>
+                <form class="sim-repl-form" id="repl-form" autocomplete="off">
+                    <span class="sim-repl-prompt" id="repl-prompt">&gt;&gt;&gt;</span>
+                    <input type="text" class="sim-repl-input" id="repl-input" placeholder="Type Python expression or command (e.g. dir(), lv.screen_active()...)" spellcheck="false" autocomplete="off" autocapitalize="off">
+                </form>
             </section>
         </section>
     </main>
