@@ -49,29 +49,62 @@ def _font_for(size):
     return (font, 14) if font is not None else (None, 0)
 
 
-def _clean_obj(parent):
-    obj = lv.obj(parent)
+def _zero_styles(obj):
     try:
         obj.remove_style_all()
     except AttributeError:
         pass
-    obj.set_style_pad_all(0, 0)
-    try:
-        obj.set_style_margin_all(0, 0)
-    except AttributeError:
-        pass
-    try:
-        obj.set_style_border_width(0, 0)
-    except AttributeError:
-        pass
-    try:
-        obj.set_style_outline_width(0, 0)
-    except AttributeError:
-        pass
+    parts = (
+        0,
+        getattr(lv.PART, "MAIN", 0),
+        getattr(lv.PART, "ITEMS", 0),
+        getattr(lv.PART, "INDICATOR", 0),
+        getattr(lv.PART, "ANY", 0),
+    )
+    methods = (
+        "set_style_pad_all",
+        "set_style_pad_top",
+        "set_style_pad_bottom",
+        "set_style_pad_left",
+        "set_style_pad_right",
+        "set_style_pad_row",
+        "set_style_pad_column",
+        "set_style_margin_all",
+        "set_style_margin_top",
+        "set_style_margin_bottom",
+        "set_style_margin_left",
+        "set_style_margin_right",
+        "set_style_border_width",
+        "set_style_outline_width",
+        "set_style_outline_pad",
+        "set_style_shadow_width",
+        "set_style_shadow_spread",
+        "set_style_shadow_ofs_x",
+        "set_style_shadow_ofs_y",
+        "set_style_text_letter_space",
+        "set_style_text_line_space",
+    )
+    for part in parts:
+        for m in methods:
+            fn = getattr(obj, m, None)
+            if fn is not None:
+                try:
+                    fn(0, part)
+                except (TypeError, AttributeError):
+                    try:
+                        fn(0)
+                    except (TypeError, AttributeError):
+                        pass
     try:
         obj.remove_flag(lv.obj.FLAG.SCROLLABLE)
     except AttributeError:
         pass
+    return obj
+
+
+def _clean_obj(parent):
+    obj = lv.obj(parent)
+    _zero_styles(obj)
     try:
         obj.update_layout()
     except AttributeError:
@@ -81,28 +114,12 @@ def _clean_obj(parent):
 
 def _clean_label(parent, text, color, font_size):
     lbl = lv.label(parent)
-    try:
-        lbl.remove_style_all()
-    except AttributeError:
-        pass
+    _zero_styles(lbl)
     font, _ = _font_for(font_size)
     if font is not None:
         lbl.set_style_text_font(font, 0)
     lbl.set_style_text_color(_color(color), 0)
     lbl.set_style_text_align(lv.TEXT_ALIGN.CENTER, 0)
-    lbl.set_style_pad_all(0, 0)
-    try:
-        lbl.set_style_margin_all(0, 0)
-    except AttributeError:
-        pass
-    try:
-        lbl.set_style_border_width(0, 0)
-    except AttributeError:
-        pass
-    try:
-        lbl.set_style_outline_width(0, 0)
-    except AttributeError:
-        pass
     lbl.set_text(text)
     try:
         lbl.update_layout()
@@ -318,9 +335,9 @@ class PyDevicesWatch:
         # 8. Scale for Ticks & Analog Needles - Created AFTER dial & digital sub-dial
         # This guarantees that the tick ring and all rotating hands draw in FRONT of the digital display!
         self.scale = lv.scale(self.face)
+        _zero_styles(self.scale)
         self.scale.set_size(dial_size, dial_size)
         self.scale.center()
-        _plain(self.scale)
         self.scale.set_mode(lv.scale.MODE.ROUND_INNER)
         self.scale.set_range(0, 3600)
         self.scale.set_angle_range(360)
@@ -369,16 +386,16 @@ class PyDevicesWatch:
 
         # 10. Center Hub Cap - Created on top of the hands
         hub_size = max(10, int(dial_size * 0.065))
-        self.hub = lv.obj(self.face)
+        self.hub = _clean_obj(self.face)
         self.hub.set_size(hub_size, hub_size)
         self.hub.center()
         self.hub.set_style_radius(lv.RADIUS_CIRCLE, 0)
         self.hub.set_style_bg_color(_color(0xF54E00), 0)
         self.hub.set_style_bg_grad_color(_color(0x9A3412), 0)
         self.hub.set_style_bg_grad_dir(lv.GRAD_DIR.VER, 0)
+        self.hub.set_style_bg_opa(lv.OPA.COVER, 0)
         self.hub.set_style_border_color(_color(0xFFF7ED), 0)
         self.hub.set_style_border_width(1, 0)
-        _plain(self.hub)
 
         # First update and timer (~30 FPS: 33ms)
         self.update_time()
