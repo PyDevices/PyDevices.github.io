@@ -15,6 +15,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.5.0/lz-string.min.js"></script>
     <!-- Monaco Editor AMD Loader -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.js"></script>
+    <!-- PyScript Core & Terminal -->
+    <link rel="stylesheet" href="https://pyscript.net/releases/2024.11.1/core.css">
+    <script type="module" src="https://pyscript.net/releases/2024.11.1/core.js"></script>
 </head>
 <body>
     <!-- Top Global App Bar -->
@@ -63,8 +66,8 @@
             <!-- Runtime Engine Selector -->
             <div class="sim-select-wrap">
                 <select id="runtime-select" aria-label="Select Execution Runtime">
-                    <option value="pyodide" selected>Pyodide (CPython)</option>
-                    <option value="mpy">MicroPython</option>
+                    <option value="mpy" selected>MicroPython</option>
+                    <option value="pyodide">Pyodide (CPython)</option>
                 </select>
             </div>
         </div>
@@ -108,10 +111,10 @@
         </section>
 
         <!-- Vertical Drag Splitter -->
-        <div class="sim-splitter" id="splitter-v" role="separator" aria-orientation="vertical"></div>
+        <div class="sim-splitter-v" id="splitter-v" role="separator" aria-orientation="vertical"></div>
 
-        <!-- Right Pane: Simulator & Console -->
-        <section class="sim-preview-pane" id="preview-pane" aria-label="Simulator and Console Output">
+        <!-- Right Pane: Device Preview & Interactive REPL -->
+        <section class="sim-preview-pane" id="preview-pane" aria-label="Device Preview and Console">
             <!-- Top Sub-Pane: Hardware Canvas Bezel Stage -->
             <div class="sim-device-stage" id="device-stage">
                 <div class="sim-device-bezel" id="device-bezel">
@@ -123,8 +126,8 @@
             <!-- Horizontal Drag Splitter -->
             <div class="sim-splitter-h" id="splitter-h" role="separator" aria-orientation="horizontal"></div>
 
-            <!-- Bottom Sub-Pane: Interactive REPL -->
-            <section class="sim-console-pane" id="console-pane" aria-label="Interactive Python REPL">
+            <!-- Bottom Sub-Pane: Interactive PyScript Terminal REPL -->
+            <section class="sim-console-pane" id="console-pane" aria-label="Interactive Python Terminal REPL">
                 <div class="sim-pane-header">
                     <div class="sim-tab">
                         <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
@@ -134,11 +137,45 @@
                         <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                     </button>
                 </div>
-                <div class="sim-console-body" id="console-log"></div>
-                <form class="sim-repl-form" id="repl-form" autocomplete="off">
-                    <span class="sim-repl-prompt" id="repl-prompt">&gt;&gt;&gt;</span>
-                    <input type="text" class="sim-repl-input" id="repl-input" placeholder="Type Python expression or command (e.g. dir(), lv.screen_active()...)" spellcheck="false" autocomplete="off" autocapitalize="off">
-                </form>
+                <div class="sim-console-body sim-terminal-body" id="console-log">
+                    <script id="sim-terminal-script" type="mpy" terminal>
+import sys, os
+from pyscript import window
+
+def _save_main_file(code_content):
+    with open("main.py", "w") as f:
+        f.write(code_content)
+
+window._save_main_file = _save_main_file
+
+# Write initial main.py from editor / template
+try:
+    _initial_code = window.getEditorCode() if hasattr(window, "getEditorCode") else ""
+    if _initial_code:
+        _save_main_file(_initial_code)
+except Exception:
+    pass
+
+# Bootstrap core desktop stack via mip from PyDevices MIP index
+try:
+    import mip
+    mip.install("pydevices-desktop", index="https://PyDevices.github.io/mip")
+    try:
+        import utils.path
+    except Exception:
+        pass
+except Exception as _e:
+    print("MIP bootstrap:", _e)
+
+try:
+    import main
+except Exception as _e:
+    sys.print_exception(_e) if hasattr(sys, "print_exception") else print(_e)
+
+import code
+code.interact(local=globals())
+                    </script>
+                </div>
             </section>
         </section>
     </main>

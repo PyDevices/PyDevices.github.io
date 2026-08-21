@@ -403,51 +403,40 @@ html, body {
 .sim-console-body .log-prompt { color: var(--accent); font-weight: 600; }
 .sim-console-body .log-repl-out { color: #a5b4fc; }
 
-/* Interactive REPL Input Form */
-.sim-repl-form {
+.sim-terminal-body {
+  padding: 0;
+  overflow: hidden;
+  background: #080c14;
   display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 12px;
-  background: var(--bg-panel-subtle);
-  border-top: 1px solid var(--border-color);
-  font-family: var(--font-mono);
-  font-size: 0.84rem;
-  flex: none;
+  flex-direction: column;
 }
 
-[data-theme="light"] .sim-console-body {
-  background: #f8fafc;
-  color: #1e293b;
-}
-
-[data-theme="light"] .sim-console-body .log-repl-out {
-  color: #4338ca;
-}
-
-.sim-repl-prompt {
-  color: var(--accent);
-  font-weight: 700;
-  font-family: var(--font-mono);
-  user-select: none;
-  font-size: 0.85rem;
-}
-
-.sim-repl-input {
+.sim-terminal-body .py-terminal {
   flex: 1;
-  background: transparent;
-  border: none;
-  color: var(--text-main);
-  font-family: var(--font-mono);
-  font-size: 0.84rem;
-  outline: none;
-  padding: 4px 0;
+  height: 100% !important;
+  width: 100% !important;
+  display: block;
 }
 
-.sim-repl-input::placeholder {
-  color: var(--text-subtle);
-  font-style: italic;
-  font-size: 0.78rem;
+.sim-terminal-body .xterm {
+  height: 100% !important;
+  padding: 8px 12px;
+  background: #080c14 !important;
+}
+
+.sim-terminal-body .xterm-viewport {
+  overflow-y: auto !important;
+  background: #080c14 !important;
+}
+
+.sim-terminal-body .xterm-screen {
+  width: 100% !important;
+}
+
+[data-theme="light"] .sim-terminal-body,
+[data-theme="light"] .sim-terminal-body .xterm,
+[data-theme="light"] .sim-terminal-body .xterm-viewport {
+  background: #ffffff !important;
 }
 
 /* Status indicator pill in status bar */

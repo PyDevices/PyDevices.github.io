@@ -249,165 +249,49 @@ if "pyscript" not in sys.modules:
 
   async function runScript() {
     if (!monacoEditor) return;
-    if (isRunning) {
-      logConsole("[Runtime] Execution already in progress…\n", "warn");
-      return;
-    }
 
     const code = monacoEditor.getValue();
     if (!code.trim()) {
-      logConsole("[Runtime] Editor is empty.\n", "warn");
       return;
     }
 
-    isRunning = true;
-    setStatus("Executing script…", "busy");
-    logConsole(`\n--- Execution started (${new Date().toLocaleTimeString()}) ---\n`, "dim");
+    setStatus("Executing…", "busy");
 
-    const t0 = performance.now();
-    const runtime = elRuntimeSelect ? elRuntimeSelect.value : "pyodide";
+    // 1. Save code to main.py
+    if (typeof window._save_main_file === "function") {
+      window._save_main_file(code);
+    }
 
-    try {
-      if (runtime === "mpy") {
-        const mp = await getMicroPython();
+    // 2. Set Canvas Resolution
+    setCanvasResolution(currentResolution.width, currentResolution.height, currentResolution.shape);
 
-        setCanvasResolution(currentResolution.width, currentResolution.height, currentResolution.shape);
-
-        // Set MicroPython display environment
-        mp.runPython(`
-import sys, os
-if not hasattr(os, "environ"):
-    os.environ = {}
-os.environ["PYDEVICES_WIDTH"] = "${currentResolution.width}"
-os.environ["PYDEVICES_HEIGHT"] = "${currentResolution.height}"
-os.environ["PYDEVICES_CANVAS_ID"] = "display_canvas"
-`);
-
-        mp.FS.writeFile("main.py", code);
-        mp.runPython(code);
-
-        // Pump LVGL / display refresh
-        try {
-          mp.runPython(`
-import sys
-if "lvgl" in sys.modules:
-    lv = sys.modules["lvgl"]
-    if hasattr(lv, "task_handler"):
-        lv.task_handler()
-if "board_config" in sys.modules:
-    bc = sys.modules["board_config"]
-    if hasattr(bc, "display_drv") and hasattr(bc.display_drv, "show"):
-        bc.display_drv.show()
-`);
-        } catch (e) {}
-
-        const elapsed = ((performance.now() - t0) / 1000).toFixed(2);
-        logConsole(`--- Completed in ${elapsed}s ---\n`, "dim");
-        setStatus("Ready", "ready");
-        isRunning = false;
-        return;
+    // 3. Send import command to the PyScript terminal (with auto-mip dependencies if needed)
+    const termScript = document.getElementById("sim-terminal-script");
+    if (termScript && typeof termScript.process === "function") {
+      let cmd = "";
+      if (code.includes("palettes")) {
+        cmd += "try:\n import palettes\nexcept ImportError:\n import mip; mip.install('palettes', index='https://PyDevices.github.io/mip')\n\n";
       }
-
-      const pyodide = await getPyodide();
-
-      // Always install pydevices-desktop for all scenarios
-      const depsToInstall = ["pydevices-desktop"];
-      if (code.includes("lvgl") || code.includes("lv.") || code.includes("display_driver")) {
-        depsToInstall.push("pydevices-lvgl");
+      if (code.includes("pygraphics")) {
+        cmd += "try:\n import pygraphics\nexcept ImportError:\n import mip; mip.install('pygraphics', index='https://PyDevices.github.io/mip')\n\n";
       }
       if (code.includes("pdwidgets")) {
-        depsToInstall.push("pydevices-pdwidgets");
+        cmd += "try:\n import pdwidgets\nexcept ImportError:\n import mip; mip.install('pdwidgets', index='https://PyDevices.github.io/mip')\n\n";
       }
-      if (code.includes("pygraphics") || code.includes("palettes")) {
-        depsToInstall.push("pydevices-pygraphics", "pydevices-palettes");
-      }
-
-      const micropip = pyodide.pyimport("micropip");
-      micropip.set_index_urls(INDEX_URLS);
-      for (const dep of Array.from(new Set(depsToInstall))) {
-        try {
-          await micropip.install(dep);
-        } catch (err) {
-          console.error(`Package install ${dep} error:`, err);
-        }
-      }
-
-      // Ensure canvas dimensions match preset
-      setCanvasResolution(currentResolution.width, currentResolution.height, currentResolution.shape);
-
-      // Cleanly reset previous driver / event_loop state before user script runs
-      await pyodide.runPythonAsync(`
-import sys
-from displaydev import env_set
-
-env_set("PYDEVICES_WIDTH", ${currentResolution.width})
-env_set("PYDEVICES_HEIGHT", ${currentResolution.height})
-env_set("PYDEVICES_CANVAS_ID", "display_canvas")
-
-# Clean up active LVGL event loop / display driver if present
-if "display_driver" in sys.modules:
-    try:
-        dd = sys.modules["display_driver"]
-        if hasattr(dd, "event_loop"):
-            inst = dd.event_loop.current_instance()
-            if inst is not None:
-                inst.deinit()
-        if hasattr(dd, "app"):
-            dd.app.stop_timer()
-    except Exception:
-        pass
-    sys.modules.pop("display_driver", None)
-
-# Fully deinit LVGL to prevent orphaned displays and stale render pipelines
-try:
-    import lvgl as lv
-    if lv.is_initialized():
-        lv.deinit()
-except Exception:
-    pass
-
-if "board_config" in sys.modules:
-    sys.modules.pop("board_config", None)
-
-if "appdev" in sys.modules:
-    try:
-        appdev = sys.modules["appdev"]
-        if hasattr(appdev.App, "_instance"):
-            appdev.App._instance = None
-    except Exception:
-        pass
-`);
-
-      // Execute user script
-      await pyodide.runPythonAsync(code);
-
-      // If this is an LVGL script, pump task_handler to ensure immediate paint
-      if (code.includes("lvgl") || code.includes("lv.")) {
-        await pyodide.runPythonAsync(`
-try:
-    import lvgl as lv
-    if lv.is_initialized():
-        lv.task_handler()
-        if "display_driver" in sys.modules:
-            dd = sys.modules["display_driver"]
-            for drv in getattr(dd, "_drivers", []):
-                if hasattr(drv, "display_drv") and hasattr(drv.display_drv, "show"):
-                    drv.display_drv.show()
-except Exception:
-    pass
-`);
-      }
-
-      const elapsed = ((performance.now() - t0) / 1000).toFixed(2);
-      logConsole(`--- Completed in ${elapsed}s ---\n`, "success");
-      setStatus("Ready", "ready");
-    } catch (err) {
-      logConsole(`\n[Traceback Error]\n${err}\n`, "error");
-      setStatus("Error", "error");
-    } finally {
-      isRunning = false;
+      cmd += "import sys; sys.modules.pop('main', None); import main\r";
+      termScript.process(cmd);
     }
+
+    setStatus("Ready", "ready");
   }
+
+  window.getEditorCode = function() {
+    if (monacoEditor) return monacoEditor.getValue();
+    if (window.SIMULATOR_TEMPLATES && window.SIMULATOR_TEMPLATES["lvgl-counter"]) {
+      return window.SIMULATOR_TEMPLATES["lvgl-counter"].code;
+    }
+    return "";
+  };
 
   // =========================================================================
   // Canvas Resolution & Device Presets
@@ -587,7 +471,50 @@ if "display_driver" in sys.modules:
   }
 
   // =========================================================================
-  // Theme Switching
+  // Sharing via Compressed URL Hash
+  // =========================================================================
+
+  function shareCode() {
+    if (!monacoEditor || typeof LZString === "undefined") return;
+    const code = monacoEditor.getValue();
+    const compressed = LZString.compressToEncodedURIComponent(code);
+    const url = new URL(window.location.href);
+    url.hash = `code=${compressed}`;
+    navigator.clipboard.writeText(url.toString()).then(() => {
+      showToast("Link copied to clipboard!");
+    }).catch(() => {
+      showToast("URL hash updated");
+    });
+  }
+
+  function restoreFromHash() {
+    if (typeof LZString === "undefined") return false;
+    const hash = window.location.hash.slice(1);
+    if (!hash.startsWith("code=")) return false;
+    try {
+      const compressed = hash.slice(5);
+      const decompressed = LZString.decompressFromEncodedURIComponent(compressed);
+      if (decompressed && monacoEditor) {
+        monacoEditor.setValue(decompressed);
+        return true;
+      }
+    } catch (e) {
+      console.warn("Could not decompress URL code hash:", e);
+    }
+    return false;
+  }
+
+  function showToast(msg) {
+    if (!elToast) return;
+    elToast.textContent = `✓ ${msg}`;
+    elToast.classList.add("is-visible");
+    setTimeout(() => {
+      elToast.classList.remove("is-visible");
+    }, 2800);
+  }
+
+  // =========================================================================
+  // Theme Switching (Dark / Light)
   // =========================================================================
 
   const THEME_STORAGE_KEY = "pydevices-theme";
@@ -628,149 +555,6 @@ if "display_driver" in sys.modules:
   }
 
   // =========================================================================
-  // Interactive REPL Logic (code.InteractiveConsole)
-  // =========================================================================
-
-  let isMoreLines = false;
-
-  async function handleReplSubmit(e) {
-    if (e) e.preventDefault();
-    if (!elReplInput) return;
-
-    const line = elReplInput.value;
-    const trimmed = line.trim();
-
-    if (trimmed) {
-      replHistory.push(line);
-      replHistoryIdx = replHistory.length;
-    }
-    elReplInput.value = "";
-
-    const promptStr = isMoreLines ? "... " : ">>> ";
-    logConsole(`${promptStr}${line}\n`, "prompt");
-
-    const runtime = elRuntimeSelect ? elRuntimeSelect.value : "pyodide";
-
-    try {
-      if (runtime === "mpy") {
-        const mp = await getMicroPython();
-
-        const pyWrapper = `
-import sys
-
-_line_input = ${JSON.stringify(line)}
-
-try:
-    _res = eval(_line_input)
-    if _res is not None:
-        print(repr(_res))
-except SyntaxError:
-    try:
-        _parts = [p.strip() for p in _line_input.split(";") if p.strip()]
-        if len(_parts) > 1:
-            for _p in _parts[:-1]:
-                exec(_p)
-            _last = _parts[-1]
-            try:
-                _res = eval(_last)
-                if _res is not None:
-                    print(repr(_res))
-            except SyntaxError:
-                exec(_last)
-        else:
-            exec(_line_input)
-    except Exception as _e:
-        import sys
-        sys.print_exception(_e) if hasattr(sys, "print_exception") else print(_e)
-except Exception as _e:
-    import sys
-    sys.print_exception(_e) if hasattr(sys, "print_exception") else print(_e)
-
-try:
-    if "lvgl" in sys.modules:
-        _lv = sys.modules["lvgl"]
-        if hasattr(_lv, "task_handler"):
-            _lv.task_handler()
-    if "board_config" in sys.modules:
-        _bc = sys.modules["board_config"]
-        if hasattr(_bc, "display_drv") and hasattr(_bc.display_drv, "show"):
-            _bc.display_drv.show()
-except Exception:
-    pass
-`;
-        mp.runPython(pyWrapper);
-        return;
-      }
-
-      const pyodide = await getPyodide();
-
-      const pyWrapper = `
-import sys, code
-
-_line_input = ${JSON.stringify(line)}
-_main_mod = sys.modules.get("__main__")
-_main_dict = _main_mod.__dict__ if _main_mod else globals()
-
-if "_pydevices_console" not in globals() or _pydevices_console is None or _pydevices_console.locals is not _main_dict:
-    _pydevices_console = code.InteractiveConsole(locals=_main_dict)
-
-_more = _pydevices_console.push(_line_input)
-
-# Refresh display if LVGL is active
-try:
-    if "lvgl" in sys.modules:
-        _lv = sys.modules["lvgl"]
-        if _lv.is_initialized():
-            _lv.task_handler()
-            if "display_driver" in sys.modules:
-                _dd = sys.modules["display_driver"]
-                for _drv in getattr(_dd, "_drivers", []):
-                    if hasattr(_drv, "display_drv") and hasattr(_drv.display_drv, "show"):
-                        _drv.display_drv.show()
-except Exception:
-    pass
-
-_more
-`;
-      const more = await pyodide.runPythonAsync(pyWrapper);
-      isMoreLines = Boolean(more);
-
-      if (elReplPrompt) {
-        elReplPrompt.textContent = isMoreLines ? "..." : ">>>";
-      }
-      if (elReplInput) {
-        elReplInput.placeholder = isMoreLines
-          ? "Continue block (press Enter on empty line to execute)..."
-          : "Type Python expression or command (e.g. dir(), lv.screen_active()...)";
-      }
-    } catch (err) {
-      logConsole(`${err}\n`, "error");
-      isMoreLines = false;
-      if (elReplPrompt) elReplPrompt.textContent = ">>>";
-    }
-  }
-
-  function handleReplKeydown(e) {
-    if (e.key === "ArrowUp") {
-      if (replHistory.length === 0) return;
-      e.preventDefault();
-      if (replHistoryIdx > 0) replHistoryIdx--;
-      else replHistoryIdx = 0;
-      elReplInput.value = replHistory[replHistoryIdx] || "";
-    } else if (e.key === "ArrowDown") {
-      if (replHistory.length === 0) return;
-      e.preventDefault();
-      if (replHistoryIdx < replHistory.length - 1) {
-        replHistoryIdx++;
-        elReplInput.value = replHistory[replHistoryIdx] || "";
-      } else {
-        replHistoryIdx = replHistory.length;
-        elReplInput.value = "";
-      }
-    }
-  }
-
-  // =========================================================================
   // DOM Event Bindings
   // =========================================================================
 
@@ -782,27 +566,12 @@ _more
     if (elShareBtn) elShareBtn.addEventListener("click", shareCode);
     if (elClearConsoleBtn) elClearConsoleBtn.addEventListener("click", clearConsole);
 
-    if (elReplForm) {
-      elReplForm.addEventListener("submit", handleReplSubmit);
-    }
-    if (elReplInput) {
-      elReplInput.addEventListener("keydown", handleReplKeydown);
-    }
-
     if (elTemplateSelect) {
       elTemplateSelect.addEventListener("change", (e) => loadTemplate(e.target.value));
     }
 
     if (elResolutionSelect) {
       elResolutionSelect.addEventListener("change", (e) => handleResolutionChange(e.target.value));
-    }
-
-    if (elRuntimeSelect) {
-      elRuntimeSelect.addEventListener("change", (e) => {
-        const val = e.target.value;
-        const name = val === "mpy" ? "MicroPython" : "Pyodide (CPython)";
-        logConsole(`[Runtime] Active execution engine set to ${name}.\n`, "info");
-      });
     }
 
     const themeToggle = document.getElementById("theme-toggle");
