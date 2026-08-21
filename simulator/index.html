@@ -4,36 +4,35 @@
     <meta charset="utf-8">
     <script>try{if(localStorage.getItem('pydevices-theme')==='light'){document.documentElement.setAttribute('data-theme','light');}}catch(e){}</script>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>PyDevices Simulator — Live Python GUI & Embedded Playground</title>
-    <meta name="description" content="Interactive browser-based Python playground for LVGL v9, pdwidgets, pygraphics, and displaydev on MicroPython and Pyodide.">
-    <link rel="icon" type="image/svg+xml" href="https://pydevices.github.io/img/logo.svg">
+    <title>PyDevices Simulator — Interactive Python Device Playground</title>
+    <meta name="description" content="Interactive browser-based Python playground for LVGL, pdwidgets, pygraphics, and displaydev on MicroPython and Pyodide.">
+    <link rel="icon" type="image/svg+xml" href="/assets/img/logo.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap">
-    <link rel="stylesheet" href="./simulator.css">
-    <!-- LZ-String for compressed URL snippet sharing -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.4.4/lz-string.min.js"></script>
+    <link rel="stylesheet" href="simulator.css">
+    <!-- LZ-String for compressed URL hash sharing -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.5.0/lz-string.min.js"></script>
     <!-- Monaco Editor AMD Loader -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.js"></script>
 </head>
 <body>
-    <!-- Top Action & Navigation Header -->
+    <!-- Top Global App Bar -->
     <header class="sim-header">
         <div class="sim-header-left">
-            <a href="https://pydevices.github.io/" class="sim-brand" title="PyDevices Home">
-                <img src="https://pydevices.github.io/img/logo.svg" alt="PyDevices Logo" width="28" height="28">
-                <span>PyDevices</span>
+            <a href="/" class="sim-brand" aria-label="PyDevices Home">
+                <span class="sim-brand-title">PyDevices</span>
+                <span class="sim-brand-badge">SIMULATOR</span>
             </a>
-            <span class="sim-badge">Simulator</span>
         </div>
 
         <div class="sim-header-center">
             <!-- Preset Template Selector -->
             <div class="sim-select-wrap">
                 <select id="template-select" aria-label="Select Code Template">
-                    <optgroup label="LVGL v9">
-                        <option value="lvgl-counter" selected>LVGL v9: Interactive Counter</option>
-                        <option value="lvgl-thermostat">LVGL v9: Smart Thermostat Arc</option>
+                    <optgroup label="LVGL">
+                        <option value="lvgl-counter" selected>LVGL: Interactive Counter</option>
+                        <option value="lvgl-thermostat">LVGL: Smart Thermostat Arc</option>
                     </optgroup>
                     <optgroup label="pdwidgets">
                         <option value="pdwidgets-dashboard">pdwidgets: Sensor Deck Dashboard</option>
@@ -64,8 +63,8 @@
             <!-- Runtime Engine Selector -->
             <div class="sim-select-wrap">
                 <select id="runtime-select" aria-label="Select Execution Runtime">
-                    <option value="pyodide" selected>Pyodide (CPython 3.12)</option>
-                    <option value="mpy">MicroPython WASM</option>
+                    <option value="pyodide" selected>Pyodide (CPython)</option>
+                    <option value="mpy">MicroPython</option>
                 </select>
             </div>
         </div>

@@ -1,27 +1,29 @@
 /**
  * templates.js — Starter code snippets for the PyDevices Simulator.
  *
- * Provides ready-to-run interactive examples for LVGL v9, pdwidgets,
+ * Provides ready-to-run interactive examples for LVGL, pdwidgets,
  * pygraphics, and displaydev using standard pydevices-examples imports
  * and board_config.py from pydevices-desktop.
  */
 
 const SIMULATOR_TEMPLATES = {
-  // --- LVGL v9 Templates ---
+  // --- LVGL Templates ---
   "lvgl-counter": {
-    name: "LVGL v9: Interactive Counter",
-    category: "LVGL v9",
+    name: "LVGL: Interactive Counter",
+    category: "LVGL",
     runtime: "pyodide",
     width: 320,
     height: 240,
     shape: "rectangle",
     deps: ["pydevices-desktop", "pydevices-lvgl"],
-    code: `# LVGL v9: Interactive Counter & Buttons
+    code: `# LVGL: Interactive Counter & Buttons
 import display_driver
 import lvgl as lv
 from board_config import display_drv
 
-print("Initializing LVGL v9 Counter Demo...")
+# Query LVGL major.minor version dynamically from the bindings
+ver_str = f"v{lv.version_major()}.{lv.version_minor()}" if hasattr(lv, "version_major") else ""
+print(f"Initializing LVGL {ver_str} Counter Demo...".strip())
 
 def _font(size):
     for s in (size, 14, 16, 12, 20):
@@ -50,9 +52,9 @@ card.set_style_border_width(2, 0)
 card.set_style_radius(16, 0)
 card.set_style_pad_all(16, 0)
 
-# Title Label
+# Title Label with dynamic LVGL version
 title = lv.label(card)
-title.set_text("PyDevices - LVGL v9")
+title.set_text(f"PyDevices - LVGL {ver_str}".strip())
 title.set_style_text_color(lv.color_hex(0xF8FAFC), 0)
 title.align(lv.ALIGN.TOP_MID, 0, 0)
 
@@ -119,19 +121,20 @@ print("LVGL Counter initialized and active. Click buttons to interact!")
   },
 
   "lvgl-thermostat": {
-    name: "LVGL v9: Smart Thermostat Arc",
-    category: "LVGL v9",
+    name: "LVGL: Smart Thermostat Arc",
+    category: "LVGL",
     runtime: "pyodide",
     width: 240,
     height: 240,
     shape: "round",
     deps: ["pydevices-desktop", "pydevices-lvgl"],
-    code: `# LVGL v9: Smart Thermostat Dial (Round Watch UI)
+    code: `# LVGL: Smart Thermostat Dial (Round Watch UI)
 import display_driver
 import lvgl as lv
 from board_config import display_drv
 
-print("Initializing Smart Thermostat Dial...")
+ver_str = f"v{lv.version_major()}.{lv.version_minor()}" if hasattr(lv, "version_major") else ""
+print(f"Initializing Smart Thermostat Dial ({ver_str})...".strip())
 
 def _font(size):
     for s in (size, 28, 20, 16, 14, 12):
@@ -385,7 +388,7 @@ pg.circle(fb, cx, cy, 8, pal.WHITE if hasattr(pal, "WHITE") else 0xFFFF)
 # Header Badge and Text
 pg.fill_rect(fb, 10, 10, 150, 24, pal.DARKGREY if hasattr(pal, "DARKGREY") else 0x39E7)
 pg.rect(fb, 10, 10, 150, 24, pal.GREY if hasattr(pal, "GREY") else 0x7BEF)
-pg.text8(fb, "PyGraphics v1.0", 18, 18, pal.CYAN if hasattr(pal, "CYAN") else 0x07FF)
+pg.text8(fb, "PyGraphics", 18, 18, pal.CYAN if hasattr(pal, "CYAN") else 0x07FF)
 
 # Footer Badge
 pg.fill_rect(fb, 10, height - 34, 180, 24, pal.DARKGREY if hasattr(pal, "DARKGREY") else 0x39E7)
