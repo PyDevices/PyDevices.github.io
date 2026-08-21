@@ -332,17 +332,18 @@ class PyDevicesWatch:
         except AttributeError:
             pass
 
-        # 8. Scale for Ticks & Analog Needles - Created AFTER dial & digital sub-dial
-        # This guarantees that the tick ring and all rotating hands draw in FRONT of the digital display!
+        # 8. Scale for Ticks - Created AFTER dial & digital sub-dial
+        # In a 360-deg circle with 60 ticks, the arc from tick 0 to tick 59 spans 59 * 6 = 354 deg.
+        # This yields exactly 6.0000 deg per tick with NO duplicate 61st tick overlapping at 12 o'clock!
         self.scale = lv.scale(self.face)
         _zero_styles(self.scale)
         self.scale.set_size(dial_size, dial_size)
         self.scale.center()
         self.scale.set_mode(lv.scale.MODE.ROUND_INNER)
-        self.scale.set_range(0, 3600)
-        self.scale.set_angle_range(360)
+        self.scale.set_range(0, 3540)
+        self.scale.set_angle_range(354)
         self.scale.set_rotation(270)
-        self.scale.set_total_tick_count(61)
+        self.scale.set_total_tick_count(60)
         self.scale.set_major_tick_every(5)
         self.scale.set_label_show(False)
 
@@ -364,25 +365,37 @@ class PyDevicesWatch:
         self.scale.add_style(major_style, lv.PART.INDICATOR)
         self._styles.extend([minor_style, major_style])
 
-        # 9. Analog Hands (attached to self.scale)
+        # 9. Needle Scale (for 360-degree continuous hand rotation)
+        self.needle_scale = lv.scale(self.face)
+        _zero_styles(self.needle_scale)
+        self.needle_scale.set_size(dial_size, dial_size)
+        self.needle_scale.center()
+        self.needle_scale.set_mode(lv.scale.MODE.ROUND_INNER)
+        self.needle_scale.set_range(0, 3600)
+        self.needle_scale.set_angle_range(360)
+        self.needle_scale.set_rotation(270)
+        self.needle_scale.set_total_tick_count(0)
+        self.needle_scale.set_label_show(False)
+
+        # Analog Hands (attached to self.needle_scale)
         self.hands = {"hour": [], "minute": [], "second": []}
 
         # Hour hand layers (dark border + bright silver core + gold ridge)
         hour_len = int(r * 0.58)
-        self.hands["hour"].append((self._line(self.scale, 0x050709, max(4, int(dial_size * 0.025))), hour_len + 1))
-        self.hands["hour"].append((self._line(self.scale, 0xE2E8F0, max(3, int(dial_size * 0.018))), int(hour_len * 0.85)))
-        self.hands["hour"].append((self._line(self.scale, 0xF54E00, 1), hour_len))
+        self.hands["hour"].append((self._line(self.needle_scale, 0x050709, max(4, int(dial_size * 0.025))), hour_len + 1))
+        self.hands["hour"].append((self._line(self.needle_scale, 0xE2E8F0, max(3, int(dial_size * 0.018))), int(hour_len * 0.85)))
+        self.hands["hour"].append((self._line(self.needle_scale, 0xF54E00, 1), hour_len))
 
         # Minute hand layers
         min_len = int(r * 0.82)
-        self.hands["minute"].append((self._line(self.scale, 0x050709, max(3, int(dial_size * 0.018))), min_len + 1))
-        self.hands["minute"].append((self._line(self.scale, 0xF8FAFC, max(2, int(dial_size * 0.010))), int(min_len * 0.88)))
-        self.hands["minute"].append((self._line(self.scale, 0xF54E00, 1), min_len))
+        self.hands["minute"].append((self._line(self.needle_scale, 0x050709, max(3, int(dial_size * 0.018))), min_len + 1))
+        self.hands["minute"].append((self._line(self.needle_scale, 0xF8FAFC, max(2, int(dial_size * 0.010))), int(min_len * 0.88)))
+        self.hands["minute"].append((self._line(self.needle_scale, 0xF54E00, 1), min_len))
 
         # Second hand (sweeping brand orange/amber needle + dark outline)
         sec_len = int(r * 0.90)
-        self.hands["second"].append((self._line(self.scale, 0x1A0802, max(2, int(dial_size * 0.012))), sec_len + 1))
-        self.hands["second"].append((self._line(self.scale, 0xF54E00, 1), sec_len))
+        self.hands["second"].append((self._line(self.needle_scale, 0x1A0802, max(2, int(dial_size * 0.012))), sec_len + 1))
+        self.hands["second"].append((self._line(self.needle_scale, 0xF54E00, 1), sec_len))
 
         # 10. Center Hub Cap - Created on top of the hands
         hub_size = max(10, int(dial_size * 0.065))
@@ -410,11 +423,11 @@ class PyDevicesWatch:
         hour_val = int(((hour % 12) + minute / 60.0 + second / 3600.0) * 300) % 3600
 
         for hand, length in self.hands["hour"]:
-            self.scale.set_line_needle_value(hand, length, hour_val)
+            self.needle_scale.set_line_needle_value(hand, length, hour_val)
         for hand, length in self.hands["minute"]:
-            self.scale.set_line_needle_value(hand, length, min_val)
+            self.needle_scale.set_line_needle_value(hand, length, min_val)
         for hand, length in self.hands["second"]:
-            self.scale.set_line_needle_value(hand, length, sec_val)
+            self.needle_scale.set_line_needle_value(hand, length, sec_val)
 
         # Update digital readout
         time_str = f"{hour:02d}:{minute:02d}:{second:02d}"
