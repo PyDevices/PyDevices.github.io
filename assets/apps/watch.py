@@ -49,17 +49,67 @@ def _font_for(size):
     return (font, 14) if font is not None else (None, 0)
 
 
-def _set_font(label, target_size):
-    font, _ = _font_for(max(1, int(target_size)))
+def _clean_obj(parent):
+    obj = lv.obj(parent)
+    try:
+        obj.remove_style_all()
+    except AttributeError:
+        pass
+    obj.set_style_pad_all(0, 0)
+    try:
+        obj.set_style_margin_all(0, 0)
+    except AttributeError:
+        pass
+    try:
+        obj.set_style_border_width(0, 0)
+    except AttributeError:
+        pass
+    try:
+        obj.set_style_outline_width(0, 0)
+    except AttributeError:
+        pass
+    try:
+        obj.remove_flag(lv.obj.FLAG.SCROLLABLE)
+    except AttributeError:
+        pass
+    return obj
+
+
+def _clean_label(parent, text, color, font_size):
+    lbl = lv.label(parent)
+    try:
+        lbl.remove_style_all()
+    except AttributeError:
+        pass
+    lbl.set_text(text)
+    font, _ = _font_for(font_size)
     if font is not None:
-        label.set_style_text_font(font, 0)
-    label.set_style_pad_all(0, 0)
-    label.set_style_text_align(lv.TEXT_ALIGN.CENTER, 0)
+        lbl.set_style_text_font(font, 0)
+    lbl.set_style_text_color(_color(color), 0)
+    lbl.set_style_text_align(lv.TEXT_ALIGN.CENTER, 0)
+    lbl.set_style_pad_all(0, 0)
+    try:
+        lbl.set_style_margin_all(0, 0)
+    except AttributeError:
+        pass
+    try:
+        lbl.set_style_border_width(0, 0)
+    except AttributeError:
+        pass
+    try:
+        lbl.set_style_outline_width(0, 0)
+    except AttributeError:
+        pass
+    return lbl
 
 
 def _plain(obj):
     obj.set_style_border_width(0, 0)
     obj.set_style_pad_all(0, 0)
+    try:
+        obj.set_style_margin_all(0, 0)
+    except AttributeError:
+        pass
     obj.set_style_bg_opa(lv.OPA.TRANSP, 0)
     try:
         obj.remove_flag(lv.obj.FLAG.SCROLLABLE)
@@ -111,7 +161,7 @@ class PyDevicesWatch:
 
     def _build_watch(self):
         size = self.size
-        dial_size = int(size * 0.916)
+        dial_size = int(size * 0.90)
         r = dial_size // 2
 
         # 1. Base Screen Layer
@@ -119,85 +169,71 @@ class PyDevicesWatch:
         self.parent.set_style_bg_opa(lv.OPA.COVER, 0)
         self.parent.set_style_pad_all(0, 0)
         try:
+            self.parent.set_style_margin_all(0, 0)
+        except AttributeError:
+            pass
+        try:
             self.parent.remove_flag(lv.obj.FLAG.SCROLLABLE)
         except AttributeError:
             pass
 
         # 2. Outer Watch Bezel / Casing
-        self.bezel = lv.obj(self.parent)
+        self.bezel = _clean_obj(self.parent)
         self.bezel.set_size(size, size)
         self.bezel.center()
         self.bezel.set_style_radius(lv.RADIUS_CIRCLE, 0)
         self.bezel.set_style_bg_color(_color(0x1E242B), 0)
         self.bezel.set_style_bg_grad_color(_color(0x101418), 0)
         self.bezel.set_style_bg_grad_dir(lv.GRAD_DIR.VER, 0)
+        self.bezel.set_style_bg_opa(lv.OPA.COVER, 0)
         self.bezel.set_style_border_color(_color(0x3B444E), 0)
         self.bezel.set_style_border_width(max(2, int(size * 0.017)), 0)
-        self.bezel.set_style_pad_all(0, 0)
-        _plain(self.bezel)
 
         # 3. Inner Metallic Bezel Ring with Subtle Amber Accent
         inner_bezel_size = int(size * 0.95)
-        self.bezel_ring = lv.obj(self.parent)
+        self.bezel_ring = _clean_obj(self.parent)
         self.bezel_ring.set_size(inner_bezel_size, inner_bezel_size)
         self.bezel_ring.center()
         self.bezel_ring.set_style_radius(lv.RADIUS_CIRCLE, 0)
         self.bezel_ring.set_style_bg_color(_color(0x151A20), 0)
+        self.bezel_ring.set_style_bg_opa(lv.OPA.COVER, 0)
         self.bezel_ring.set_style_border_color(_color(0xF54E00), 0)
         self.bezel_ring.set_style_border_width(1, 0)
         self.bezel_ring.set_style_border_opa(lv.OPA._60, 0)
-        self.bezel_ring.set_style_pad_all(0, 0)
-        _plain(self.bezel_ring)
 
         # 4. Dial Face (Underlay for background elements)
-        self.face = lv.obj(self.parent)
+        self.face = _clean_obj(self.parent)
         self.face.set_size(dial_size, dial_size)
         self.face.center()
         self.face.set_style_radius(lv.RADIUS_CIRCLE, 0)
         self.face.set_style_bg_color(_color(0x0E1115), 0)
         self.face.set_style_bg_grad_color(_color(0x181F26), 0)
         self.face.set_style_bg_grad_dir(lv.GRAD_DIR.VER, 0)
+        self.face.set_style_bg_opa(lv.OPA.COVER, 0)
         self.face.set_style_border_color(_color(0x28323D), 0)
         self.face.set_style_border_width(1, 0)
-        self.face.set_style_pad_all(0, 0)
-        _plain(self.face)
 
         # 5. Roman Hour Numerals (XII, III, VI, IX)
         # XII & VI: horizontal center aligned to parent (x_offset = 0), calculated y_offset
         # IX & III: vertical center aligned to parent (y_offset = 0), calculated x_offset
         num_inset = int(dial_size * 0.08)
 
-        self.lbl_xii = lv.label(self.face)
-        self.lbl_xii.set_text("XII")
-        self.lbl_xii.set_style_text_color(_color(0xE2E8F0), 0)
-        _set_font(self.lbl_xii, 14)
+        self.lbl_xii = _clean_label(self.face, "XII", 0xE2E8F0, 14)
         self.lbl_xii.align(lv.ALIGN.TOP_MID, 0, num_inset)
 
-        self.lbl_vi = lv.label(self.face)
-        self.lbl_vi.set_text("VI")
-        self.lbl_vi.set_style_text_color(_color(0xE2E8F0), 0)
-        _set_font(self.lbl_vi, 14)
+        self.lbl_vi = _clean_label(self.face, "VI", 0xE2E8F0, 14)
         self.lbl_vi.align(lv.ALIGN.BOTTOM_MID, 0, -num_inset)
 
-        self.lbl_ix = lv.label(self.face)
-        self.lbl_ix.set_text("IX")
-        self.lbl_ix.set_style_text_color(_color(0xE2E8F0), 0)
-        _set_font(self.lbl_ix, 14)
+        self.lbl_ix = _clean_label(self.face, "IX", 0xE2E8F0, 14)
         self.lbl_ix.align(lv.ALIGN.LEFT_MID, num_inset, 0)
 
-        self.lbl_iii = lv.label(self.face)
-        self.lbl_iii.set_text("III")
-        self.lbl_iii.set_style_text_color(_color(0xE2E8F0), 0)
-        _set_font(self.lbl_iii, 14)
+        self.lbl_iii = _clean_label(self.face, "III", 0xE2E8F0, 14)
         self.lbl_iii.align(lv.ALIGN.RIGHT_MID, -num_inset, 0)
 
         # 6. Brand Label (Upper Dial Quadrant)
         # Horizontal center aligned to parent (x_offset = 0), calculated y_offset
         brand_top_offset = int(dial_size * 0.25)
-        self.brand_lbl = lv.label(self.face)
-        self.brand_lbl.set_text("PYDEVICES")
-        self.brand_lbl.set_style_text_color(_color(0xF54E00), 0)
-        _set_font(self.brand_lbl, 11)
+        self.brand_lbl = _clean_label(self.face, "PYDEVICES", 0xF54E00, 11)
         self.brand_lbl.align(lv.ALIGN.TOP_MID, 0, brand_top_offset)
 
         # 7. Digital Readout Sub-Dial (Lower Dial Quadrant) - Created on dial face behind hands
@@ -206,7 +242,7 @@ class PyDevicesWatch:
         pill_h = int(dial_size * 0.18)
         pill_bottom_offset = int(dial_size * 0.18)
 
-        self.pill = lv.obj(self.face)
+        self.pill = _clean_obj(self.face)
         self.pill.set_size(pill_w, pill_h)
         self.pill.align(lv.ALIGN.BOTTOM_MID, 0, -pill_bottom_offset)
         self.pill.set_style_radius(max(4, int(pill_h * 0.18)), 0)
@@ -214,24 +250,13 @@ class PyDevicesWatch:
         self.pill.set_style_bg_opa(lv.OPA._90, 0)
         self.pill.set_style_border_color(_color(0x28333E), 0)
         self.pill.set_style_border_width(1, 0)
-        self.pill.set_style_pad_all(0, 0)
-        try:
-            self.pill.remove_flag(lv.obj.FLAG.SCROLLABLE)
-        except AttributeError:
-            pass
 
         # Digital Time & Date inside sub-dial:
         # Both horizontal centers aligned to parent pill (x_offset = 0), calculated y_offsets
-        self.digital_time = lv.label(self.pill)
-        self.digital_time.set_text("00:00:00")
-        self.digital_time.set_style_text_color(_color(0xF8FAFC), 0)
-        _set_font(self.digital_time, 13)
+        self.digital_time = _clean_label(self.pill, "00:00:00", 0xF8FAFC, 13)
         self.digital_time.align(lv.ALIGN.TOP_MID, 0, 4)
 
-        self.digital_date = lv.label(self.pill)
-        self.digital_date.set_text("FRI  OCT 24")
-        self.digital_date.set_style_text_color(_color(0x94A3B8), 0)
-        _set_font(self.digital_date, 10)
+        self.digital_date = _clean_label(self.pill, "FRI  OCT 24", 0x94A3B8, 10)
         self.digital_date.align(lv.ALIGN.BOTTOM_MID, 0, -4)
 
         # 8. Scale for Ticks & Analog Needles - Created AFTER dial & digital sub-dial
