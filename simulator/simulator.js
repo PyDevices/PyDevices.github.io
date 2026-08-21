@@ -202,27 +202,45 @@ if "pyscript" not in sys.modules:
     try {
       const pyodide = await getPyodide();
 
-      // Detect dependencies from template or code imports
-      const depsToInstall = [];
-      if (code.includes("lvgl") || code.includes("lv.")) depsToInstall.push("pydevices", "pydevices-lvgl");
-      if (code.includes("pdwidgets")) depsToInstall.push("pydevices", "pydevices-pdwidgets");
-      if (code.includes("pygraphics")) depsToInstall.push("pydevices", "pydevices-pygraphics", "pydevices-palettes");
-      if (code.includes("displaydev") && !depsToInstall.includes("pydevices")) depsToInstall.push("pydevices");
+      // Always install pydevices-desktop for all scenarios
+      const depsToInstall = ["pydevices-desktop"];
+      if (code.includes("lvgl") || code.includes("lv.") || code.includes("display_driver")) {
+        depsToInstall.push("pydevices-lvgl");
+      }
+      if (code.includes("pdwidgets")) {
+        depsToInstall.push("pydevices-pdwidgets");
+      }
+      if (code.includes("pygraphics") || code.includes("palettes")) {
+        depsToInstall.push("pydevices-pygraphics", "pydevices-palettes");
+      }
 
-      if (depsToInstall.length > 0) {
-        const micropip = pyodide.pyimport("micropip");
-        micropip.set_index_urls(INDEX_URLS);
-        for (const dep of Array.from(new Set(depsToInstall))) {
-          try {
-            await micropip.install(dep);
-          } catch (err) {
-            console.error(`Package install ${dep} error:`, err);
-          }
+      const micropip = pyodide.pyimport("micropip");
+      micropip.set_index_urls(INDEX_URLS);
+      for (const dep of Array.from(new Set(depsToInstall))) {
+        try {
+          await micropip.install(dep);
+        } catch (err) {
+          console.error(`Package install ${dep} error:`, err);
         }
       }
 
       // Ensure canvas dimensions match preset
       setCanvasResolution(currentResolution.width, currentResolution.height, currentResolution.shape);
+
+      // Set environment variables for board_config.py before user script runs
+      await pyodide.runPythonAsync(`
+import sys
+from displaydev import env_set
+env_set("PYDEVICES_WIDTH", ${currentResolution.width})
+env_set("PYDEVICES_HEIGHT", ${currentResolution.height})
+env_set("PYDEVICES_CANVAS_ID", "display_canvas")
+
+# If board_config is already in sys.modules, reload or update its display_drv
+if "board_config" in sys.modules:
+    import importlib
+    import board_config
+    importlib.reload(board_config)
+`);
 
       // Execute user script
       await pyodide.runPythonAsync(code);

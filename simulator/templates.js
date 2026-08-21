@@ -2,7 +2,8 @@
  * templates.js — Starter code snippets for the PyDevices Simulator.
  *
  * Provides ready-to-run interactive examples for LVGL v9, pdwidgets,
- * pygraphics, and raw displaydev across both Pyodide and MicroPython WASM.
+ * pygraphics, and displaydev using standard pydevices-examples imports
+ * and board_config.py from pydevices-desktop.
  */
 
 const SIMULATOR_TEMPLATES = {
@@ -14,19 +15,11 @@ const SIMULATOR_TEMPLATES = {
     width: 320,
     height: 240,
     shape: "rectangle",
-    deps: ["pydevices", "pydevices-lvgl"],
+    deps: ["pydevices-desktop", "pydevices-lvgl"],
     code: `# LVGL v9: Interactive Counter & Buttons
-import types, sys
-from displaydev.psdisplay import PSDisplay
-
-# Synthesize board_config for hero / simulator canvas
-bc = types.ModuleType("board_config")
-bc.display_drv = PSDisplay("display_canvas", width=320, height=240)
-bc.get_events = bc.display_drv.get_events
-sys.modules["board_config"] = bc
-
 import display_driver
 import lvgl as lv
+from board_config import display_drv
 
 print("Initializing LVGL v9 Counter Demo...")
 
@@ -49,7 +42,7 @@ scr.set_style_bg_color(lv.color_hex(0x0F172A), 0)
 
 # Card Container
 card = lv.obj(scr)
-card.set_size(280, 200)
+card.set_size(min(display_drv.width - 40, 280), min(display_drv.height - 40, 200))
 card.center()
 card.set_style_bg_color(lv.color_hex(0x1E293B), 0)
 card.set_style_border_color(lv.color_hex(0x334155), 0)
@@ -132,19 +125,11 @@ print("LVGL Counter initialized and active. Click buttons to interact!")
     width: 240,
     height: 240,
     shape: "round",
-    deps: ["pydevices", "pydevices-lvgl"],
+    deps: ["pydevices-desktop", "pydevices-lvgl"],
     code: `# LVGL v9: Smart Thermostat Dial (Round Watch UI)
-import types, sys
-from displaydev.psdisplay import PSDisplay
-
-# Synthesize board_config
-bc = types.ModuleType("board_config")
-bc.display_drv = PSDisplay("display_canvas", width=240, height=240)
-bc.get_events = bc.display_drv.get_events
-sys.modules["board_config"] = bc
-
 import display_driver
 import lvgl as lv
+from board_config import display_drv
 
 print("Initializing Smart Thermostat Dial...")
 
@@ -162,8 +147,9 @@ scr.clean()
 scr.set_style_bg_color(lv.color_hex(0x0B0F19), 0)
 
 # Temperature Arc (Interactive drag)
+dim = min(display_drv.width, display_drv.height) - 30
 arc = lv.arc(scr)
-arc.set_size(210, 210)
+arc.set_size(dim, dim)
 arc.set_rotation(135)
 arc.set_bg_angles(0, 270)
 arc.set_range(16, 32)
@@ -216,17 +202,16 @@ print("Drag the outer ring to adjust temperature!")
     width: 240,
     height: 240,
     shape: "square",
-    deps: ["pydevices", "pydevices-pdwidgets"],
+    deps: ["pydevices-desktop", "pydevices-pdwidgets"],
     code: `# pdwidgets: Interactive Sensor Deck Dashboard
 import appdev
-from displaydev.psdisplay import PSDisplay
+import board_config
 import pdwidgets as pd
 
 print("Initializing pdwidgets Sensor Deck...")
 
-display_drv = PSDisplay("display_canvas", width=240, height=240)
-app = appdev.App(display_drv)
-display = pd.Display(display_drv, app)
+app = appdev.App(board_config)
+display = pd.Display(board_config.display_drv, app)
 
 # Screen background
 screen = pd.Screen(display, bg=0x0842)
@@ -304,7 +289,7 @@ prog = pd.ProgressBar(
     screen,
     x=16,
     y=134,
-    w=208,
+    w=display.width - 32,
     h=12,
     align=pd.ALIGN.TOP_LEFT,
     value=0.55,
@@ -328,7 +313,7 @@ slider = pd.Slider(
     screen,
     x=16,
     y=176,
-    w=208,
+    w=display.width - 32,
     h=20,
     align=pd.ALIGN.TOP_LEFT,
     value=0.72,
@@ -358,55 +343,57 @@ print("pdwidgets Sensor Deck is live! Move the slider or click buttons.")
     width: 320,
     height: 240,
     shape: "rectangle",
-    deps: ["pydevices", "pydevices-pygraphics", "pydevices-palettes"],
+    deps: ["pydevices-desktop", "pydevices-pygraphics", "pydevices-palettes"],
     code: `# pygraphics: High-Performance Vector & FrameBuffer Graphics
 import math
-from displaydev import color565
-from displaydev.psdisplay import PSDisplay
+from board_config import display_drv
+from palettes import get_palette
 import pygraphics as pg
 
 print("Initializing pygraphics vector canvas...")
 
-width, height = 320, 240
-drv = PSDisplay("display_canvas", width=width, height=height)
+width = display_drv.width
+height = display_drv.height
+
+# Define palette
+pal = get_palette()
 
 # Create 16-bit RGB565 frame buffer
 buf = bytearray(width * height * 2)
 fb = pg.FrameBuffer(buf, width, height, pg.RGB565)
 
-# Fill background with dark slate
-fb.fill(color565(15, 23, 42))
+# Fill background
+fb.fill(pal.NAVY if hasattr(pal, "NAVY") else 0x0842)
 
 cx, cy = width // 2, height // 2
 
 # Draw concentric geometric circles & ellipses
-for r in range(20, 110, 15):
-    c = color565(56, 189, int(200 + r / 2))
-    pg.ellipse(fb, cx, cy, r, int(r * 0.7), c)
+for r in range(20, min(cx, cy) - 10, 15):
+    pg.ellipse(fb, cx, cy, r, int(r * 0.7), pal.CYAN if hasattr(pal, "CYAN") else 0x07FF)
 
 # Radiating vector lines
 for i in range(16):
     angle = i * (2 * math.pi / 16)
-    x2 = int(cx + 100 * math.cos(angle))
-    y2 = int(cy + 70 * math.sin(angle))
-    pg.line(fb, cx, cy, x2, y2, color565(245, 158, 11))
+    x2 = int(cx + (cx - 20) * math.cos(angle))
+    y2 = int(cy + (cy - 20) * math.sin(angle))
+    pg.line(fb, cx, cy, x2, y2, pal.ORANGE if hasattr(pal, "ORANGE") else 0xFD20)
 
 # Central Orbs
-pg.circle(fb, cx, cy, 18, color565(239, 68, 68))
-pg.circle(fb, cx, cy, 8, color565(255, 255, 255))
+pg.circle(fb, cx, cy, 18, pal.RED if hasattr(pal, "RED") else 0xF800)
+pg.circle(fb, cx, cy, 8, pal.WHITE if hasattr(pal, "WHITE") else 0xFFFF)
 
 # Header Badge and Text
-pg.fill_rect(fb, 10, 10, 150, 24, color565(30, 41, 59))
-pg.rect(fb, 10, 10, 150, 24, color565(71, 85, 105))
-pg.text8(fb, "PyGraphics v1.0", 18, 18, color565(56, 189, 248))
+pg.fill_rect(fb, 10, 10, 150, 24, pal.DARKGREY if hasattr(pal, "DARKGREY") else 0x39E7)
+pg.rect(fb, 10, 10, 150, 24, pal.GREY if hasattr(pal, "GREY") else 0x7BEF)
+pg.text8(fb, "PyGraphics v1.0", 18, 18, pal.CYAN if hasattr(pal, "CYAN") else 0x07FF)
 
 # Footer Badge
-pg.fill_rect(fb, 10, height - 34, 180, 24, color565(30, 41, 59))
-pg.rect(fb, 10, height - 34, 180, 24, color565(71, 85, 105))
-pg.text8(fb, "RGB565 FrameBuffer", 18, height - 26, color565(74, 222, 128))
+pg.fill_rect(fb, 10, height - 34, 180, 24, pal.DARKGREY if hasattr(pal, "DARKGREY") else 0x39E7)
+pg.rect(fb, 10, height - 34, 180, 24, pal.GREY if hasattr(pal, "GREY") else 0x7BEF)
+pg.text8(fb, "RGB565 FrameBuffer", 18, height - 26, pal.GREEN if hasattr(pal, "GREEN") else 0x07E0)
 
 # Blit frame to canvas display
-drv.blit_rect(buf, 0, 0, width, height)
+display_drv.blit_rect(buf, 0, 0, width, height)
 print("Rendered pygraphics vector FrameBuffer successfully to display!")
 `
   },
@@ -419,27 +406,33 @@ print("Rendered pygraphics vector FrameBuffer successfully to display!")
     width: 320,
     height: 240,
     shape: "rectangle",
-    deps: ["pydevices"],
+    deps: ["pydevices-desktop", "pydevices-palettes"],
     code: `# displaydev: Low-Level Direct Display Driver
-from displaydev.psdisplay import PSDisplay
+from board_config import display_drv
+from palettes import get_palette
 
-print("Initializing bare PSDisplay driver...")
+print("Initializing bare display driver...")
 
-drv = PSDisplay("display_canvas", width=320, height=240)
+pal = get_palette()
 
 # Fill solid dark background
-drv.fill(0x050510)
+display_drv.fill(pal.BLACK if hasattr(pal, "BLACK") else 0x0000)
 
 # Draw color bars
 colors = [
-    0xFF0000, 0x00FF00, 0x0000FF, 
-    0xFFFF00, 0x00FFFF, 0xFF00FF, 
-    0xFFFFFF, 0x38BDF8
+    pal.RED if hasattr(pal, "RED") else 0xF800,
+    pal.GREEN if hasattr(pal, "GREEN") else 0x07E0,
+    pal.BLUE if hasattr(pal, "BLUE") else 0x001F,
+    pal.YELLOW if hasattr(pal, "YELLOW") else 0xFFE0,
+    pal.CYAN if hasattr(pal, "CYAN") else 0x07FF,
+    pal.MAGENTA if hasattr(pal, "MAGENTA") else 0xF81F,
+    pal.WHITE if hasattr(pal, "WHITE") else 0xFFFF,
+    pal.ORANGE if hasattr(pal, "ORANGE") else 0xFD20,
 ]
-bar_w = 320 // len(colors)
+bar_w = display_drv.width // len(colors)
 
 for i, color in enumerate(colors):
-    drv.fill_rect(i * bar_w, 20, bar_w, 140, color)
+    display_drv.fill_rect(i * bar_w, 20, bar_w, display_drv.height - 40, color)
 
 print("Rendered 8-bar test pattern directly to display hardware!")
 `
