@@ -6,20 +6,12 @@
  */
 
 (function () {
-  const PYODIDE_CDN = "https://cdn.jsdelivr.net/pyodide/v314.0.5/full/";
   const MONACO_CDN = "https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/";
-  const INDEX_URLS = [
-    "https://test.pypi.org/simple/{package_name}/",
-    "https://pypi.org/simple/{package_name}/"
-  ];
 
   let monacoEditor = null;
-  let pyodideInstance = null;
-  let isRunning = false;
   let currentResolution = { width: 320, height: 240, shape: "rectangle" };
 
   // DOM Elements
-  const elConsole = document.getElementById("console-log");
   const elStatusDot = document.getElementById("status-dot");
   const elStatusText = document.getElementById("status-text");
   const elTemplateSelect = document.getElementById("template-select");
@@ -31,12 +23,7 @@
   const elDeviceBezel = document.getElementById("device-bezel");
   const elCanvas = document.getElementById("display_canvas");
   const elToast = document.getElementById("sim-toast");
-  const elReplForm = document.getElementById("repl-form");
-  const elReplInput = document.getElementById("repl-input");
-  const elReplPrompt = document.getElementById("repl-prompt");
 
-  const replHistory = [];
-  let replHistoryIdx = -1;
 
   // =========================================================================
   // Status & Console Helpers
@@ -52,26 +39,9 @@
     }
   }
 
-  function logConsole(text, type = "normal") {
-    if (!elConsole) return;
-    const span = document.createElement("span");
-    if (type === "info") span.className = "log-info";
-    else if (type === "success") span.className = "log-success";
-    else if (type === "warn") span.className = "log-warn";
-    else if (type === "error") span.className = "log-err";
-    else if (type === "dim") span.className = "log-dim";
-    else if (type === "prompt") span.className = "log-prompt";
-    else if (type === "repl-out") span.className = "log-repl-out";
-
-    span.textContent = text;
-    elConsole.appendChild(span);
-    elConsole.scrollTop = elConsole.scrollHeight;
-  }
-
   function clearConsole() {
-    const termScript = document.getElementById("sim-terminal-script");
-    const pyTerm = document.querySelector("py-terminal");
-    const term = (termScript && termScript.terminal) || (pyTerm && pyTerm.terminal);
+    const script = document.querySelector('#console-log script[terminal]');
+    const term = script && script.terminal;
     if (term && typeof term.clear === "function") {
       term.clear();
       term.write(">>> ");
@@ -130,169 +100,146 @@
         } catch (e) {}
       });
 
-      logConsole("Monaco editor initialized. Press Ctrl+Enter to run code.\n", "dim");
     });
   }
 
   // =========================================================================
-  // Python Runtime Harness (Pyodide & MicroPython WASM)
+  // PyScript Runtime Mount
+  //
+  // The runtime <script> tag is built here rather than written into index.html
+  // because PyScript only honours an `interpreter` override supplied as an
+  // inline JSON `config` attribute at the moment it processes the tag; an
+  // external config file on a dynamically inserted tag is ignored outright.
+  // The Python itself lives in the <template> blocks in index.html, so mip and
+  // micropip installs stay in the page and never reach the REPL.
   // =========================================================================
 
-  let micropythonInstance = null;
-  let mpyPackagesInstalled = false;
+  const RUNTIME_STORAGE_KEY = "pydevices-simulator-runtime";
+  const RESOLUTION_STORAGE_KEY = "pydevices-simulator-resolution";
 
-  async function getMicroPython() {
-    if (micropythonInstance) return micropythonInstance;
+  const RUNTIMES = {
+    mpy: { type: "mpy", config: "./micropython.json", template: "bootstrap-mpy" },
+    pyodide: { type: "py", config: "./pyodide.json", template: "bootstrap-py" }
+  };
 
-    setStatus("Booting MicroPython engine…", "busy");
-    logConsole("[Runtime] Loading MicroPython WASM environment…\n", "info");
+  let pyscriptCoreLoaded = false;
+  let mountGeneration = 0;
 
-    const { loadMicroPython } = await import("https://cdn.jsdelivr.net/npm/@micropython/micropython-webassembly-pyscript/micropython.mjs");
-    micropythonInstance = await loadMicroPython({
-      stdout: (text) => logConsole(text + "\n"),
-      stderr: (text) => logConsole(text + "\n", "error"),
-      url: "https://cdn.jsdelivr.net/npm/@micropython/micropython-webassembly-pyscript/micropython.wasm"
-    });
-
-    // Setup sys.path and PyScript/DOM shims
-    try {
-      micropythonInstance.runPython(`
-import sys, os
-if "." not in sys.path:
-    sys.path.insert(0, ".")
-if "/lib" not in sys.path:
-    sys.path.append("/lib")
-
-# PyScript compatibility shims
-try:
-    import js
-    from js import document, window
-    class _PS:
-        pass
-    ps = _PS()
-    ps.document = document
-    ps.window = window
-    sys.modules["pyscript"] = ps
-except Exception:
-    pass
-`);
-    } catch (e) {
-      console.warn("MicroPython init shim:", e);
-    }
-
-    // Preload local mip.py into MicroPython filesystem
-    try {
-      const mipRes = await fetch("/vendor/pydevices-chrome/mip.py");
-      if (mipRes.ok) {
-        const mipCode = await mipRes.text();
-        micropythonInstance.FS.writeFile("mip.py", mipCode);
-      }
-    } catch (e) {
-      console.warn("Could not preload local mip.py for MicroPython:", e);
-    }
-
-    setStatus("Ready", "ready");
-    logConsole("[Runtime] MicroPython environment ready.\n", "success");
-    return micropythonInstance;
+  function templateSource(id) {
+    const el = document.getElementById(id);
+    return el ? el.innerHTML : "";
   }
 
-  async function getPyodide() {
-    if (pyodideInstance) return pyodideInstance;
-
-    setStatus("Booting Python engine…", "busy");
-    logConsole("[Runtime] Loading Pyodide WASM environment…\n", "info");
-
-    const { loadPyodide } = await import(PYODIDE_CDN + "pyodide.mjs");
-    pyodideInstance = await loadPyodide({
-      indexURL: PYODIDE_CDN,
-      stdout: (text) => logConsole(text + "\n"),
-      stderr: (text) => logConsole(text + "\n", "error")
-    });
-
-    setStatus("Loading package tools…", "busy");
-    await pyodideInstance.loadPackage("micropip");
-
-    // Setup sys.path and PyScript/DOM shims
-    await pyodideInstance.runPythonAsync(`
-import sys, os, types
-if "/home/pyodide" not in sys.path:
-    sys.path.insert(0, "/home/pyodide")
-if "." not in sys.path:
-    sys.path.insert(0, ".")
-
-# PyScript compatibility shims
-if "pyscript" not in sys.modules:
-    ps = types.ModuleType("pyscript")
-    ps_ffi = types.ModuleType("pyscript.ffi")
-    try:
-        import pyodide.ffi
-        ps_ffi.create_proxy = pyodide.ffi.create_proxy
-    except ImportError:
-        pass
-    from js import document, window
-    ps.document = document
-    ps.window = window
-    ps.ffi = ps_ffi
-    sys.modules["pyscript"] = ps
-    sys.modules["pyscript.ffi"] = ps_ffi
-`);
-
-    // Fetch portable mip.py from vendor chrome
-    try {
-      const mipRes = await fetch("/vendor/pydevices-chrome/mip.py");
-      if (mipRes.ok) {
-        const mipCode = await mipRes.text();
-        pyodideInstance.FS.writeFile("mip.py", mipCode);
-      }
-    } catch (e) {
-      console.warn("Could not preload local mip.py:", e);
-    }
-
-    setStatus("Ready", "ready");
-    logConsole("[Runtime] Python environment ready.\n", "success");
-    return pyodideInstance;
+  async function loadInterpreterConfig(url) {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`Unable to load ${url}: HTTP ${res.status}`);
+    return res.json();
   }
 
-  async function runScript() {
-    if (!monacoEditor) return;
+  // Mount the runtime for this page load. PyScript caches one interpreter per
+  // script type and ignores config differences when deciding whether to reuse
+  // it, so re-mounting cannot give a fresh VM -- see runScript() for how RESET
+  // handles that. `generation` is only a race guard against overlapping mounts.
+  async function mountRuntime(runtimeKey) {
+    const runtime = RUNTIMES[runtimeKey] || RUNTIMES.mpy;
+    const host = document.getElementById("console-log");
+    if (!host) return;
 
-    const code = monacoEditor.getValue();
-    if (!code.trim()) {
+    const generation = ++mountGeneration;
+    setStatus("Refreshing environment…", "busy");
+
+    // Tear down the previous runtime and its terminal.
+    host.querySelectorAll("script, .xterm, py-terminal, mpy-terminal").forEach((el) => el.remove());
+
+    let config;
+    try {
+      config = await loadInterpreterConfig(runtime.config);
+    } catch (err) {
+      console.error(err);
+      setStatus("Config error", "error");
       return;
     }
+    if (generation !== mountGeneration) return; // a newer mount superseded us
+    config.generation = generation;
 
-    setStatus("Resetting…", "busy");
-
-    // 1. Set Canvas Resolution & clear hardware screen
-    setCanvasResolution(currentResolution.width, currentResolution.height, currentResolution.shape);
-    clearCanvas();
-
-    // 2. Clear terminal output for fresh reset
-    const termScript = document.getElementById("sim-terminal-script");
-    const pyTerm = document.querySelector("py-terminal");
-    const term = (termScript && termScript.terminal) || (pyTerm && pyTerm.terminal);
-    if (term && typeof term.clear === "function") {
-      term.clear();
+    // In worker mode the interpreter is imported from worker scope, where a
+    // root-relative path is not a resolvable module specifier. Absolutise it
+    // here so the stub files can stay written against the site root.
+    if (config.interpreter) {
+      config.interpreter = new URL(config.interpreter, window.location.href).href;
     }
 
-    // 3. Trigger HTML Python reset function (_sim_reset)
-    if (typeof window._sim_reset === "function") {
-      try {
-        window._sim_reset();
-      } catch (err) {
-        console.error("Simulator reset error:", err);
-      }
+    const script = document.createElement("script");
+    script.type = runtime.type;
+    script.setAttribute("config", JSON.stringify(config));
+    script.setAttribute("terminal", "");
+    // Deliberately NOT `worker`. A worker would make Pyodide's REPL interactive
+    // (main-thread input() raises, so code.interact() cannot read a prompt), and
+    // cross-origin isolation for it is arrangeable on Pages via a service
+    // worker. But psdisplay cannot run in a worker: it stores a Python object on
+    // the canvas element (`canvas._ps_devices = self`) and attaches create_proxy
+    // callbacks to main-thread DOM events, and a PyProxy cannot be structured-
+    // cloned across the worker boundary -- it fails with DataCloneError, so the
+    // display never comes up. Main thread keeps the display working on both
+    // runtimes; see the notes on making the Pyodide REPL interactive.
+    script.textContent = templateSource(runtime.template) + templateSource("bootstrap-tail");
+    host.appendChild(script);
+
+    // core.js scans on import and observes the DOM afterwards, so it is safe to
+    // import once, lazily, only after the first tag exists.
+    if (!pyscriptCoreLoaded) {
+      pyscriptCoreLoaded = true;
+      await import("https://pyscript.net/releases/2024.11.1/core.js");
     }
 
     setStatus("Ready", "ready");
   }
 
+  // RESET. PyScript caches one interpreter per script type, so re-mounting the
+  // tag re-runs the bootstrap but keeps sys.modules -- stale LVGL objects, live
+  // timers and half-torn-down displays all survive. Reloading the page is the
+  // only way to get a genuinely fresh VM, and it is cheap: the editor contents,
+  // runtime and resolution are all persisted below, and every asset is cached.
+  // This mirrors sim.lvgl.io, whose Restart tears down and rebuilds its iframe.
+  function runScript() {
+    persistState();
+    window.location.reload();
+  }
+
+  function persistState() {
+    try {
+      if (monacoEditor) localStorage.setItem("pydevices-simulator-code", monacoEditor.getValue());
+      localStorage.setItem(RUNTIME_STORAGE_KEY, currentRuntime());
+      localStorage.setItem(RESOLUTION_STORAGE_KEY, JSON.stringify(currentResolution));
+    } catch (e) {}
+  }
+
+  function restoreResolution() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(RESOLUTION_STORAGE_KEY) || "null");
+      if (saved && saved.width > 0 && saved.height > 0) {
+        setCanvasResolution(saved.width, saved.height, saved.shape || "rectangle");
+        return true;
+      }
+    } catch (e) {}
+    return false;
+  }
+
+  function currentRuntime() {
+    return elRuntimeSelect && elRuntimeSelect.value === "pyodide" ? "pyodide" : "mpy";
+  }
+
+  // Called from the Python bootstrap. Monaco loads asynchronously, so fall back
+  // to the same hash/localStorage/template resolution the editor itself uses --
+  // otherwise an early mount would silently run the default template instead of
+  // the user's shared or saved code.
   window.getEditorCode = function() {
     if (monacoEditor) return monacoEditor.getValue();
-    if (window.SIMULATOR_TEMPLATES && window.SIMULATOR_TEMPLATES["lvgl-counter"]) {
-      return window.SIMULATOR_TEMPLATES["lvgl-counter"].code;
+    try {
+      return loadInitialCode();
+    } catch (e) {
+      return "";
     }
-    return "";
   };
 
   // =========================================================================
@@ -310,6 +257,9 @@ if "pyscript" not in sys.modules:
 
   function setCanvasResolution(width, height, shape = "rectangle") {
     currentResolution = { width, height, shape };
+    // Read by the Python bootstrap to pin the panel size; see _set_board_size().
+    window.SIM_WIDTH = width;
+    window.SIM_HEIGHT = height;
     if (!elCanvas) return;
 
     elCanvas.width = width;
@@ -323,24 +273,14 @@ if "pyscript" not in sys.modules:
         elDeviceBezel.classList.remove("is-round");
       }
     }
+  }
 
-    // Stop active background timers when resolution or template changes
-    if (pyodideInstance) {
-      pyodideInstance.runPythonAsync(`
-import sys
-if "display_driver" in sys.modules:
-    try:
-        dd = sys.modules["display_driver"]
-        if hasattr(dd, "event_loop"):
-            inst = dd.event_loop.current_instance()
-            if inst is not None:
-                inst.deinit()
-        if hasattr(dd, "app"):
-            dd.app.stop_timer()
-    except Exception:
-        pass
-`).catch(() => {});
-    }
+  function syncResolutionSelect() {
+    if (!elResolutionSelect) return;
+    const { width, height, shape } = currentResolution;
+    const suffix = shape === "round" ? "-round" : shape === "square" ? "-square" : "";
+    const key = `${width}x${height}${suffix}`;
+    if (elResolutionSelect.querySelector(`option[value="${key}"]`)) elResolutionSelect.value = key;
   }
 
   function handleResolutionChange(val) {
@@ -415,7 +355,6 @@ if "display_driver" in sys.modules:
       }
     }
 
-    logConsole(`[Template] Loaded "${tpl.name}". Click Run to execute.\n`, "info");
   }
 
   function shareCode() {
@@ -470,49 +409,6 @@ if "display_driver" in sys.modules:
         }
       });
     }
-  }
-
-  // =========================================================================
-  // Sharing via Compressed URL Hash
-  // =========================================================================
-
-  function shareCode() {
-    if (!monacoEditor || typeof LZString === "undefined") return;
-    const code = monacoEditor.getValue();
-    const compressed = LZString.compressToEncodedURIComponent(code);
-    const url = new URL(window.location.href);
-    url.hash = `code=${compressed}`;
-    navigator.clipboard.writeText(url.toString()).then(() => {
-      showToast("Link copied to clipboard!");
-    }).catch(() => {
-      showToast("URL hash updated");
-    });
-  }
-
-  function restoreFromHash() {
-    if (typeof LZString === "undefined") return false;
-    const hash = window.location.hash.slice(1);
-    if (!hash.startsWith("code=")) return false;
-    try {
-      const compressed = hash.slice(5);
-      const decompressed = LZString.decompressFromEncodedURIComponent(compressed);
-      if (decompressed && monacoEditor) {
-        monacoEditor.setValue(decompressed);
-        return true;
-      }
-    } catch (e) {
-      console.warn("Could not decompress URL code hash:", e);
-    }
-    return false;
-  }
-
-  function showToast(msg) {
-    if (!elToast) return;
-    elToast.textContent = `✓ ${msg}`;
-    elToast.classList.add("is-visible");
-    setTimeout(() => {
-      elToast.classList.remove("is-visible");
-    }, 2800);
   }
 
   // =========================================================================
@@ -576,6 +472,15 @@ if "display_driver" in sys.modules:
       elResolutionSelect.addEventListener("change", (e) => handleResolutionChange(e.target.value));
     }
 
+    // Switching runtime means a different interpreter, so it is a full remount.
+    if (elRuntimeSelect) {
+      elRuntimeSelect.addEventListener("change", runScript);
+      try {
+        const saved = localStorage.getItem(RUNTIME_STORAGE_KEY);
+        if (saved && RUNTIMES[saved]) elRuntimeSelect.value = saved === "pyodide" ? "pyodide" : "mpy";
+      } catch (e) {}
+    }
+
     const themeToggle = document.getElementById("theme-toggle");
     if (themeToggle) {
       themeToggle.addEventListener("click", toggleTheme);
@@ -585,5 +490,17 @@ if "display_driver" in sys.modules:
     window.addEventListener("resize", () => {
       if (monacoEditor) monacoEditor.layout();
     });
+
+    // Always apply a resolution, so window.SIM_WIDTH/SIM_HEIGHT are set before
+    // the bootstrap reads them -- the saved-draft path through loadInitialCode()
+    // returns without touching the canvas.
+    if (!restoreResolution()) {
+      const { width, height, shape } = currentResolution;
+      setCanvasResolution(width, height, shape);
+    }
+    syncResolutionSelect();
+
+    // Refresh the environment, run the editor's code, then open the REPL.
+    mountRuntime(currentRuntime());
   });
 })();

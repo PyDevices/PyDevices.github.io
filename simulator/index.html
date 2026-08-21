@@ -15,9 +15,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.5.0/lz-string.min.js"></script>
     <!-- Monaco Editor AMD Loader -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.js"></script>
-    <!-- PyScript Core & Terminal -->
+    <!-- PyScript Core & Terminal. core.js is imported by simulator.js *after*
+         the runtime <script> tag has been built, because PyScript only honours
+         an `interpreter` override that is present as an inline JSON `config`
+         attribute when the tag is processed. -->
     <link rel="stylesheet" href="https://pyscript.net/releases/2024.11.1/core.css">
-    <script type="module" src="https://pyscript.net/releases/2024.11.1/core.js"></script>
 </head>
 <body>
     <!-- Top Global App Bar -->
@@ -138,51 +140,150 @@
                     </button>
                 </div>
                 <div class="sim-console-body sim-terminal-body" id="console-log">
-                    <script id="sim-terminal-script" type="mpy" terminal>
-import sys, os, code
-from pyscript import window
-
-def _do_reset():
-    # 1. Save main.py from editor
-    try:
-        _code = window.getEditorCode() if hasattr(window, "getEditorCode") else ""
-        if _code:
-            with open("main.py", "w") as f:
-                f.write(_code)
-    except Exception as e:
-        print("Save error:", e)
-
-    # 2. Bootstrap pydevices-desktop via mip from PyDevices MIP index
-    try:
-        import mip
-        mip.install("pydevices-desktop", index="https://PyDevices.github.io/mip")
-        try:
-            import utils.path
-        except Exception:
-            pass
-    except Exception as e:
-        print("MIP bootstrap:", e)
-
-    # 3. Import or reload main
-    try:
-        if 'main' in sys.modules:
-            del sys.modules['main']
-        import main
-    except Exception as e:
-        sys.print_exception(e) if hasattr(sys, "print_exception") else print(e)
-
-window._sim_reset = _do_reset
-
-# Run initial bootstrap & import main on load
-_do_reset()
-
-# Drop into interactive REPL at >>> prompt
-code.interact(local=globals())
-                    </script>
+                    <!-- simulator.js mounts the runtime <script> tag here. -->
                 </div>
             </section>
         </section>
     </main>
+
+    <!--
+      Runtime bootstraps. These are the environment refresh that runs on load and
+      on RESET, before the REPL is handed to the user. Installs belong here, in
+      the page, and are never typed into the REPL.
+
+      MicroPython: the vendored interpreter in /vendor/micropython/ has lvgl,
+      display_driver, pdwidgets, palettes and pygraphics frozen in, so only
+      pydevices-desktop is missing. It comes from the PyDevices MIP index, where
+      packages carry no prefix -- pydevices-desktop is the one exception.
+
+      Pyodide: nothing is bundled, so every package is a micropip install from
+      TestPyPI, where they all carry the pydevices- pip prefix. The interpreter
+      is pinned to a Pyodide whose ABI (2026_0) matches the pyemscripten wheels
+      published for pydevices-lvgl and pydevices-pygraphics.
+    -->
+    <template id="bootstrap-mpy">
+import sys
+
+MIP_INDEX = "https://PyDevices.github.io/mip"
+
+
+def _refresh_environment():
+    """Install pydevices-desktop; everything else is frozen into the build."""
+    import mip
+
+    # mip narrates every file it copies. Silence it so the REPL starts clean.
+    _print = getattr(mip, "print", None)
+    mip.print = lambda *a, **k: None
+    try:
+        mip.install("pydevices-desktop", index=MIP_INDEX)
+    finally:
+        if _print is None:
+            del mip.print
+        else:
+            mip.print = _print
+
+
+_refresh_environment()
+</template>
+
+    <template id="bootstrap-py">
+import sys
+
+# TestPyPI first, PyPI as fallback -- the micropip translation of the documented
+# pip --index-url / --extra-index-url pair.
+INDEX_URLS = [
+    "https://test.pypi.org/simple/{package_name}/",
+    "https://pypi.org/simple/{package_name}/",
+]
+PACKAGES = [
+    "pydevices-desktop",
+    "pydevices-lvgl",
+    "pydevices-pdwidgets",
+    "pydevices-palettes",
+    "pydevices-pygraphics",
+]
+
+
+async def _ensure_micropip():
+    """micropip ships with Pyodide but is not loaded until asked for."""
+    try:
+        import micropip
+    except ImportError:
+        from pyodide_js import loadPackage
+
+        await loadPackage("micropip")
+        import micropip
+
+    return micropip
+
+
+async def _refresh_environment():
+    """Install the whole stack; Pyodide has none of it bundled."""
+    micropip = await _ensure_micropip()
+
+    for name in PACKAGES:
+        try:
+            await micropip.install(name, index_urls=INDEX_URLS)
+        except Exception as exc:
+            print("Could not install {}: {}".format(name, exc))
+
+
+await _refresh_environment()
+</template>
+
+    <!--
+      Shared tail, appended to whichever bootstrap above is in use: run the
+      editor's code as main.py, then drop into the interactive REPL. Kept
+      separate so the two bootstraps differ only in how they install.
+    -->
+    <template id="bootstrap-tail">
+def _set_board_size():
+    """Pin the panel size before board_config builds the display.
+
+    Without this, PSDisplay falls back to reading canvas.width/.height off the
+    DOM. In worker mode that read yields a JS proxy value rather than an int,
+    and assigning it back to canvas.height fails with "'set' on proxy: trap
+    returned falsish". Passing real ints through the environment sidesteps the
+    DOM round-trip entirely, and is what the PyScript gallery does too.
+    """
+    from displaydev import env_set
+    from pyscript import window
+
+    env_set("PYDEVICES_WIDTH", int(window.SIM_WIDTH))
+    env_set("PYDEVICES_HEIGHT", int(window.SIM_HEIGHT))
+
+
+def _run_user_code():
+    from pyscript import window
+
+    source = window.getEditorCode()
+    if not source:
+        return
+    with open("main.py", "w") as f:
+        f.write(source)
+    sys.modules.pop("main", None)
+    try:
+        import main  # noqa: F401
+    except Exception as exc:
+        _report(exc)
+
+
+def _report(exc):
+    if hasattr(sys, "print_exception"):
+        sys.print_exception(exc)
+    else:
+        import traceback
+
+        traceback.print_exception(type(exc), exc, exc.__traceback__)
+
+
+_set_board_size()
+_run_user_code()
+
+import code
+
+code.interact(local=globals())
+</template>
 
     <!-- Toast Notification -->
     <div class="sim-toast" id="sim-toast">✓ Link copied to clipboard!</div>
