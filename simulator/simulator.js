@@ -227,23 +227,68 @@ if "pyscript" not in sys.modules:
       // Ensure canvas dimensions match preset
       setCanvasResolution(currentResolution.width, currentResolution.height, currentResolution.shape);
 
-      // Set environment variables for board_config.py before user script runs
+      // Cleanly reset previous driver / event_loop state before user script runs
       await pyodide.runPythonAsync(`
 import sys
 from displaydev import env_set
+
 env_set("PYDEVICES_WIDTH", ${currentResolution.width})
 env_set("PYDEVICES_HEIGHT", ${currentResolution.height})
 env_set("PYDEVICES_CANVAS_ID", "display_canvas")
 
-# If board_config is already in sys.modules, reload or update its display_drv
+# Clean up active LVGL event loop / display driver if present
+if "display_driver" in sys.modules:
+    try:
+        dd = sys.modules["display_driver"]
+        if hasattr(dd, "event_loop"):
+            inst = dd.event_loop.current_instance()
+            if inst is not None:
+                inst.deinit()
+        if hasattr(dd, "app"):
+            dd.app.stop_timer()
+    except Exception:
+        pass
+    sys.modules.pop("display_driver", None)
+
+# Fully deinit LVGL to prevent orphaned displays and stale render pipelines
+try:
+    import lvgl as lv
+    if lv.is_initialized():
+        lv.deinit()
+except Exception:
+    pass
+
 if "board_config" in sys.modules:
-    import importlib
-    import board_config
-    importlib.reload(board_config)
+    sys.modules.pop("board_config", None)
+
+if "appdev" in sys.modules:
+    try:
+        appdev = sys.modules["appdev"]
+        if hasattr(appdev.App, "_instance"):
+            appdev.App._instance = None
+    except Exception:
+        pass
 `);
 
       // Execute user script
       await pyodide.runPythonAsync(code);
+
+      // If this is an LVGL script, pump task_handler to ensure immediate paint
+      if (code.includes("lvgl") || code.includes("lv.")) {
+        await pyodide.runPythonAsync(`
+try:
+    import lvgl as lv
+    if lv.is_initialized():
+        lv.task_handler()
+        if "display_driver" in sys.modules:
+            dd = sys.modules["display_driver"]
+            for drv in getattr(dd, "_drivers", []):
+                if hasattr(drv, "display_drv") and hasattr(drv.display_drv, "show"):
+                    drv.display_drv.show()
+except Exception:
+    pass
+`);
+      }
 
       const elapsed = ((performance.now() - t0) / 1000).toFixed(2);
       logConsole(`--- Completed in ${elapsed}s ---\n`, "success");
