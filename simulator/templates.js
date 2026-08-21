@@ -42,7 +42,9 @@ def _create_btn(parent):
     btn_cls = getattr(lv, "button", getattr(lv, "btn", None))
     return btn_cls(parent)
 
+# Clean active screen from previous runs
 scr = lv.screen_active()
+scr.clean()
 scr.set_style_bg_color(lv.color_hex(0x0F172A), 0)
 
 # Card Container
@@ -57,7 +59,7 @@ card.set_style_pad_all(16, 0)
 
 # Title Label
 title = lv.label(card)
-title.set_text("PyDevices · LVGL v9")
+title.set_text("PyDevices - LVGL v9")
 title.set_style_text_color(lv.color_hex(0xF8FAFC), 0)
 title.align(lv.ALIGN.TOP_MID, 0, 0)
 
@@ -154,7 +156,9 @@ def _font(size):
             return f() if callable(f) else f
     return lv.font_default() if hasattr(lv, "font_default") else None
 
+# Clean active screen from previous runs
 scr = lv.screen_active()
+scr.clean()
 scr.set_style_bg_color(lv.color_hex(0x0B0F19), 0)
 
 # Temperature Arc (Interactive drag)
@@ -173,7 +177,7 @@ arc.set_style_arc_color(lv.color_hex(0xEC4899), lv.PART.INDICATOR)
 
 # Labels
 lbl_temp = lv.label(scr)
-lbl_temp.set_text("22°C")
+lbl_temp.set_text("22 C")
 lbl_temp.set_style_text_color(lv.color_hex(0xF9FAFB), 0)
 f_temp = _font(28)
 if f_temp:
@@ -181,23 +185,23 @@ if f_temp:
 lbl_temp.align(lv.ALIGN.CENTER, 0, -10)
 
 lbl_status = lv.label(scr)
-lbl_status.set_text("COMFORT · HEATING")
+lbl_status.set_text("COMFORT - HEATING")
 lbl_status.set_style_text_color(lv.color_hex(0xF472B6), 0)
 lbl_status.align(lv.ALIGN.CENTER, 0, 24)
 
 def arc_event_cb(e):
     val = arc.get_value()
-    lbl_temp.set_text(f"{val}°C")
+    lbl_temp.set_text(f"{val} C")
     if val >= 25:
-        lbl_status.set_text("HIGH · WARMING")
+        lbl_status.set_text("HIGH - WARMING")
         arc.set_style_arc_color(lv.color_hex(0xEF4444), lv.PART.INDICATOR)
     elif val <= 18:
-        lbl_status.set_text("ECO · COOLING")
+        lbl_status.set_text("ECO - COOLING")
         arc.set_style_arc_color(lv.color_hex(0x3B82F6), lv.PART.INDICATOR)
     else:
-        lbl_status.set_text("COMFORT · BALANCED")
+        lbl_status.set_text("COMFORT - BALANCED")
         arc.set_style_arc_color(lv.color_hex(0xEC4899), lv.PART.INDICATOR)
-    print(f"Target Temperature: {val}°C")
+    print(f"Target Temperature: {val} C")
 
 arc.add_event_cb(arc_event_cb, lv.EVENT.VALUE_CHANGED, None)
 print("Drag the outer ring to adjust temperature!")
@@ -227,34 +231,121 @@ display = pd.Display(display_drv, app)
 # Screen background
 screen = pd.Screen(display, bg=0x0842)
 
-# Title Label
-lbl_title = pd.Label(screen, text="PYDEVICES SENSOR DECK", x=12, y=10, color=0x38BDF8)
+# Header Title
+lbl_title = pd.Label(
+    screen,
+    value="PDWIDGETS INSTRUMENT",
+    x=16,
+    y=12,
+    align=pd.ALIGN.TOP_LEFT,
+    text_height=pd.TEXT_SIZE.SMALL,
+    fg=0x8C71,
+    bg=screen.bg,
+)
+
+# Gauge Widget
+gauge = pd.Gauge(
+    screen,
+    x=16,
+    y=30,
+    w=78,
+    h=78,
+    align=pd.ALIGN.TOP_LEFT,
+    value=0.68,
+    fg=0x156A,
+    track_color=0x18E3,
+    label="68%",
+)
+
+# Switch Widget
+switch_label = pd.Label(
+    screen,
+    value="ONLINE",
+    x=124,
+    y=36,
+    align=pd.ALIGN.TOP_LEFT,
+    text_height=pd.TEXT_SIZE.SMALL,
+    fg=0xFFFF,
+    bg=screen.bg,
+)
+switch = pd.Switch(
+    screen,
+    x=124,
+    y=54,
+    w=68,
+    h=28,
+    align=pd.ALIGN.TOP_LEFT,
+    value=True,
+    on_color=0x04C6,
+    off_color=0x31A6,
+    knob_color=0xFFFF,
+)
+
+def on_switch_change(s):
+    switch_label.value = "ONLINE" if s.value else "MUTED"
+    switch_label.fg = 0xFFFF if s.value else 0x8C71
+    print(f"Switch toggled: {'ONLINE' if s.value else 'MUTED'}")
+
+switch.set_change_cb(on_switch_change)
 
 # Telemetry Readouts
-lbl_temp = pd.Label(screen, text="TEMP: 24.5 °C", x=12, y=34, color=0x4ADE80)
-lbl_pres = pd.Label(screen, text="PRES: 1013 hPa", x=12, y=54, color=0xFCD34D)
-lbl_hum  = pd.Label(screen, text="HUM : 48.0 %", x=12, y=74, color=0x60A5FA)
+lbl_telemetry = pd.Label(
+    screen,
+    value="BUS TELEMETRY: 48 kHz",
+    x=16,
+    y=116,
+    align=pd.ALIGN.TOP_LEFT,
+    text_height=pd.TEXT_SIZE.SMALL,
+    fg=0x35FA,
+    bg=screen.bg,
+)
+
+prog = pd.ProgressBar(
+    screen,
+    x=16,
+    y=134,
+    w=208,
+    h=12,
+    align=pd.ALIGN.TOP_LEFT,
+    value=0.55,
+    fg=0x35FA,
+    bg=0x1082,
+)
 
 # Interactive Slider
-lbl_slider = pd.Label(screen, text="OUTPUT GAIN: 65%", x=12, y=106, color=0xE2E8F0)
-slider = pd.Slider(screen, x=12, y=130, w=216, h=24, min_val=0, max_val=100, val=65)
+lbl_slider = pd.Label(
+    screen,
+    value="GAIN DAMPING: 72%",
+    x=16,
+    y=158,
+    align=pd.ALIGN.TOP_LEFT,
+    text_height=pd.TEXT_SIZE.SMALL,
+    fg=0xFD20,
+    bg=screen.bg,
+)
 
-def on_slider_change(val):
-    lbl_slider.text = f"OUTPUT GAIN: {int(val)}%"
-    print(f"Output Gain set to: {int(val)}%")
+slider = pd.Slider(
+    screen,
+    x=16,
+    y=176,
+    w=208,
+    h=20,
+    align=pd.ALIGN.TOP_LEFT,
+    value=0.72,
+    fg=0xF440,
+    bg=0x2124,
+    knob_color=0xFFFF,
+)
 
-slider.on_change = on_slider_change
+def on_slider_change(s):
+    pct = int(s.value * 100)
+    lbl_slider.value = f"GAIN DAMPING: {pct}%"
+    gauge.value = s.value
+    gauge.label = f"{pct}%"
+    print(f"Gain adjusted to: {pct}%")
 
-# Status Badge Button
-btn_status = pd.Button(screen, text="SYS: ACTIVE [OK]", x=12, y=175, w=216, h=36, bg=0x064E3B, fg=0x34D399)
+slider.set_change_cb(on_slider_change)
 
-def on_btn_click():
-    print("System health check requested - All sensors operational.")
-    btn_status.text = "SYS: HEALTHY 100%"
-
-btn_status.on_click = on_btn_click
-
-screen.show()
 print("pdwidgets Sensor Deck is live! Move the slider or click buttons.")
 `
   },
@@ -269,48 +360,54 @@ print("pdwidgets Sensor Deck is live! Move the slider or click buttons.")
     shape: "rectangle",
     deps: ["pydevices", "pydevices-pygraphics", "pydevices-palettes"],
     code: `# pygraphics: High-Performance Vector & FrameBuffer Graphics
-import math, time
-import pygraphics as pg
+import math
+from displaydev import color565
 from displaydev.psdisplay import PSDisplay
-from displaybuf import DisplayBuffer
+import pygraphics as pg
 
 print("Initializing pygraphics vector canvas...")
 
-display_drv = PSDisplay("display_canvas", width=320, height=240)
-ssd = DisplayBuffer(display_drv, DisplayBuffer.RGB565)
+width, height = 320, 240
+drv = PSDisplay("display_canvas", width=width, height=height)
 
-# Clear background to deep navy
-ssd.fill(pg.color565(10, 15, 30))
+# Create 16-bit RGB565 frame buffer
+buf = bytearray(width * height * 2)
+fb = pg.FrameBuffer(buf, width, height, pg.RGB565)
 
-cx, cy = 160, 120
+# Fill background with dark slate
+fb.fill(color565(15, 23, 42))
 
-# Draw animated geometric rings and starburst
+cx, cy = width // 2, height // 2
+
+# Draw concentric geometric circles & ellipses
 for r in range(20, 110, 15):
-    color = pg.color565(56, 189, int(200 + r / 2))
-    ssd.ellipse(cx, cy, r, int(r * 0.7), color, False)
+    c = color565(56, 189, int(200 + r / 2))
+    pg.ellipse(fb, cx, cy, r, int(r * 0.7), c)
 
-# Draw radiating lines
+# Radiating vector lines
 for i in range(16):
     angle = i * (2 * math.pi / 16)
     x2 = int(cx + 100 * math.cos(angle))
     y2 = int(cy + 70 * math.sin(angle))
-    ssd.line(cx, cy, x2, y2, pg.color565(245, 158, 11))
+    pg.line(fb, cx, cy, x2, y2, color565(245, 158, 11))
 
-# Central Orb
-ssd.fill_circle(cx, cy, 18, pg.color565(239, 68, 68))
-ssd.fill_circle(cx, cy, 8, pg.color565(255, 255, 255))
+# Central Orbs
+pg.circle(fb, cx, cy, 18, color565(239, 68, 68))
+pg.circle(fb, cx, cy, 8, color565(255, 255, 255))
 
-# Corner Badges
-ssd.fill_rect(10, 10, 130, 26, pg.color565(30, 41, 59))
-ssd.rect(10, 10, 130, 26, pg.color565(71, 85, 105))
-ssd.text("PyGraphics v1.0", 16, 18, pg.color565(56, 189, 248))
+# Header Badge and Text
+pg.fill_rect(fb, 10, 10, 150, 24, color565(30, 41, 59))
+pg.rect(fb, 10, 10, 150, 24, color565(71, 85, 105))
+pg.text8(fb, "PyGraphics v1.0", 18, 18, color565(56, 189, 248))
 
-ssd.fill_rect(10, 204, 150, 26, pg.color565(30, 41, 59))
-ssd.rect(10, 204, 150, 26, pg.color565(71, 85, 105))
-ssd.text("FPS: 60 | RGB565", 16, 212, pg.color565(74, 222, 128))
+# Footer Badge
+pg.fill_rect(fb, 10, height - 34, 180, 24, color565(30, 41, 59))
+pg.rect(fb, 10, height - 34, 180, 24, color565(71, 85, 105))
+pg.text8(fb, "RGB565 FrameBuffer", 18, height - 26, color565(74, 222, 128))
 
-ssd.show()
-print("Drawn vector frame to display successfully!")
+# Blit frame to canvas display
+drv.blit_rect(buf, 0, 0, width, height)
+print("Rendered pygraphics vector FrameBuffer successfully to display!")
 `
   },
 
