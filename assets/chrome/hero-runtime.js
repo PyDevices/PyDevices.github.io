@@ -91,24 +91,29 @@ if "pyscript" not in sys.modules:
       // 2. Fetch standalone .py app file
       setStatus(`Loading ${appName}…`);
       const localAppUrl = `${window.location.origin}/assets/apps/${appName}.py`;
-      await pyodide.runPythonAsync(`
-import os, sys, urllib.request
-_fetched = False
-for _url in ("${localAppUrl}", "${appUrl}", "https://raw.githubusercontent.com/PyDevices/dotgithub/main/assets/apps/${appName}.py"):
-    if not _url:
-        continue
-    try:
-        with urllib.request.urlopen(_url) as _resp:
-            with open("${appName}.py", "wb") as _f:
-                _f.write(_resp.read())
-            _fetched = True
-            break
-    except Exception as _e:
-        print(f"fetch from {_url} error:", _e)
-
-if not _fetched:
-    raise RuntimeError("Could not fetch ${appName}.py from any location")
-`);
+      const candidateUrls = [
+        localAppUrl,
+        appUrl,
+        `https://pydevices.github.io/assets/apps/${appName}.py`,
+        `https://raw.githubusercontent.com/PyDevices/dotgithub/main/assets/apps/${appName}.py`
+      ];
+      let appCode = "";
+      for (const u of candidateUrls) {
+        if (!u) continue;
+        try {
+          const res = await fetch(u);
+          if (res.ok) {
+            appCode = await res.text();
+            break;
+          }
+        } catch (e) {
+          console.warn(`fetch from ${u} error:`, e);
+        }
+      }
+      if (!appCode) {
+        throw new Error(`Could not fetch ${appName}.py from any location`);
+      }
+      pyodide.FS.writeFile(`${appName}.py`, appCode);
 
       // 3. Launch App on Canvas
       setStatus("Starting…");
