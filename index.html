@@ -37,7 +37,7 @@
         GitHub Org
       </a>
       <a class="btn" style="border-color: var(--tier-1-amber); color: var(--tier-1-amber);" href="https://pydevices.github.io/pydevices/">Get Started</a>
-      <a class="btn" style="border-color: var(--tier-1-amber); color: var(--tier-1-amber);" href="https://pydevices.github.io/pydevices-examples/pyscript/">PyScript Demos</a>
+      <a class="btn" style="border-color: var(--tier-1-amber); color: var(--tier-1-amber);" href="https://pydevices.github.io/pydevices-examples/gallery/">WebAssembly Gallery</a>
       <a class="btn" style="border-color: var(--tier-1-amber); color: var(--tier-1-amber);" href="https://pydevices.github.io/mip/">MIP Index</a>
       </div>
     </div>
@@ -67,7 +67,7 @@
           <span class="tag tag-tier-1">Core Flagship</span>
         </div>
         <h3>pydevices</h3>
-        <p>Unified pure-Python hardware abstraction layer and core device contract for MicroPython, CircuitPython, CPython, Pyodide WASM, and Android.</p>
+        <p>Unified pure-Python hardware abstraction layer and core device contract for MicroPython, CircuitPython, CPython, direct WebAssembly, Pyodide, and Android.</p>
         <span class="go">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
 
@@ -87,7 +87,7 @@
           <span class="tag tag-tier-1">Companion Showcase</span>
         </div>
         <h3>pydevices-examples</h3>
-        <p>Comprehensive example code, interactive PyScript browser demos, board configurations, and multi-interpreter showcase benchmarks.</p>
+        <p>Comprehensive example code, direct MicroPython WebAssembly demos, board configurations, and multi-interpreter showcase benchmarks.</p>
         <span class="go">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
     </div>
@@ -240,6 +240,23 @@
       </a>
     </div>
   <!-- PYDEVICES-PORTAL-GRIDS: END -->
+
+  <!-- PYDEVICES-ARCHITECTURE: START -->
+  <section class="section architecture" aria-labelledby="architecture-title">
+    <div class="section-head"><h2 id="architecture-title">Browser architecture</h2><span class="hint">Direct MicroPython first, Pyodide retained</span></div>
+    <div class="architecture-paths">
+      <div class="architecture-stack"><h3>Direct MicroPython WebAssembly</h3>
+        <div class="architecture-layer"><strong>Application / framework</strong><span>LVGL · pdwidgets · pygraphics · application code</span></div>
+        <div class="architecture-layer"><strong>appdev</strong><span>Application lifecycle, event dispatch, and neutral coordination</span></div>
+        <div class="architecture-layer"><strong>Device contracts</strong><span>displaydev · audiodev · multimer</span></div>
+        <div class="architecture-layer"><strong>Direct WebAssembly backends</strong><span>WasmDisplay · WasmPCMInput/Output · wasm.Timer</span></div>
+        <div class="architecture-layer"><strong>_wasm_bridge</strong><span>Framebuffer, input, audio, timers, Fetch, and MIP</span></div>
+        <div class="architecture-layer"><strong>Browser APIs</strong><span>Canvas · Pointer/Gamepad · Web Audio · Timers · Fetch</span></div>
+      </div>
+      <div class="architecture-alt"><h3>Alternative: PyScript / Pyodide</h3><p>Applications use the same device contracts through <code>PSDisplay</code>. PyScript owns the Pyodide and DOM integration on this supported alternative path.</p></div>
+    </div>
+  </section>
+  <!-- PYDEVICES-ARCHITECTURE: END -->
 
     <!-- Interpreter Compatibility Matrix -->
     <section class="section" style="margin-top: 40px;">

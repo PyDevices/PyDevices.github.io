@@ -1,7 +1,7 @@
 /**
  * simulator.js — Interactive PyDevices Python Simulator Engine
  *
- * Manages Monaco Editor, Pyodide/MicroPython runtime execution,
+ * Manages Monaco Editor, direct MicroPython and Pyodide runtime execution,
  * synthetic board_config binding, LZ-string sharing, and split layout.
  */
 
@@ -40,6 +40,8 @@
   }
 
   function clearConsole() {
+    const direct = document.getElementById("direct-runtime-output");
+    if (direct) direct.textContent = "";
     const script = document.querySelector('#console-log script[terminal]');
     const term = script && script.terminal;
     if (term && typeof term.clear === "function") {
@@ -118,11 +120,12 @@
   const RESOLUTION_STORAGE_KEY = "pydevices-simulator-resolution";
 
   const RUNTIMES = {
-    mpy: { type: "mpy", config: "./micropython.json", template: "bootstrap-mpy" },
+    mpy: { direct: true },
     pyodide: { type: "py", config: "./pyodide.json", template: "bootstrap-py" }
   };
 
   let pyscriptCoreLoaded = false;
+  let directMicroPython = null;
   let mountGeneration = 0;
 
   function templateSource(id) {
@@ -150,6 +153,50 @@
 
     // Tear down the previous runtime and its terminal.
     host.querySelectorAll("script, .xterm, py-terminal, mpy-terminal").forEach((el) => el.remove());
+
+    if (runtime.direct) {
+      host.replaceChildren();
+      const output = document.createElement("pre");
+      output.id = "direct-runtime-output";
+      output.className = "sim-direct-output";
+      host.appendChild(output);
+      const write = (line, stream) => {
+        output.textContent += `${line}\n`;
+        output.scrollTop = output.scrollHeight;
+        if (stream === "stderr") console.error(line);
+      };
+      try {
+        const { loadMicroPython } = await import("/vendor/micropython/micropython.mjs");
+        directMicroPython = await loadMicroPython({
+          stdout: (line) => write(line, "stdout"),
+          stderr: (line) => write(line, "stderr"),
+          heapsize: 16 * 1024 * 1024
+        });
+        const source = window.getEditorCode();
+        directMicroPython.FS.writeFile("/main.py", source);
+        await directMicroPython.runPythonAsync(`
+import os, sys
+from displaydev import env_set
+env_set("PYDEVICES_WIDTH", ${Number(window.SIM_WIDTH)})
+env_set("PYDEVICES_HEIGHT", ${Number(window.SIM_HEIGHT)})
+if "/lib" not in sys.path:
+    sys.path.insert(0, "/lib")
+import mip
+mip.install("pydevices-desktop", index="https://PyDevices.github.io/mip", target="/lib")
+os.chdir("/")
+with open("/main.py") as _source_file:
+    _source = _source_file.read()
+exec(compile(_source, "/main.py", "exec"), {"__name__": "__main__"})
+`);
+        window.__pydevicesSimulator = { phase: "ready", runtime: "micropython", mp: directMicroPython };
+        setStatus("Ready", "ready");
+      } catch (err) {
+        write(String(err && (err.stack || err)), "stderr");
+        window.__pydevicesSimulator = { phase: "failed", runtime: "micropython", error: String(err) };
+        setStatus("Runtime error", "error");
+      }
+      return;
+    }
 
     let config;
     try {
@@ -204,6 +251,26 @@
   function runScript() {
     persistState();
     window.location.reload();
+  }
+
+  async function enableAudio(microphone) {
+    const button = document.getElementById(microphone ? "enable-microphone" : "enable-audio");
+    if (!window.Module || !Module.pydevicesBridge) {
+      showToast("Direct MicroPython must be running");
+      return;
+    }
+    button.disabled = true;
+    try {
+      const permission = await Promise.race([
+        Module.pydevicesBridge.enableAudio(microphone),
+        new Promise((_, reject) => setTimeout(() => reject(new Error("Permission timed out")), 5000))
+      ]);
+      if (!permission.audio || (microphone && !permission.microphone)) throw new Error("Permission not granted");
+      button.textContent = microphone ? "Microphone Enabled" : "Audio Enabled";
+    } catch (err) {
+      button.disabled = false;
+      showToast(String(err.message || err));
+    }
   }
 
   function persistState() {
@@ -463,6 +530,8 @@
     if (elRunBtn) elRunBtn.addEventListener("click", runScript);
     if (elShareBtn) elShareBtn.addEventListener("click", shareCode);
     if (elClearConsoleBtn) elClearConsoleBtn.addEventListener("click", clearConsole);
+    document.getElementById("enable-audio")?.addEventListener("click", () => enableAudio(false));
+    document.getElementById("enable-microphone")?.addEventListener("click", () => enableAudio(true));
 
     if (elTemplateSelect) {
       elTemplateSelect.addEventListener("change", (e) => loadTemplate(e.target.value));

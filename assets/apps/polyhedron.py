@@ -10,17 +10,10 @@ import types
 import time
 import math
 
-try:
-    import js
-    from js import document, window
-    from pyodide.ffi import create_proxy
-except ImportError:
-    js = None
-    document = None
-    window = None
-    create_proxy = lambda fn: fn
+document = window = None
+create_proxy = lambda fn: fn
 
-from displaydev.psdisplay import PSDisplay
+from displaydev.auto import AutoDisplay
 
 
 class PolyhedronHero:
@@ -32,9 +25,9 @@ class PolyhedronHero:
         self.cx = size // 2
         self.cy = size // 2
 
-        # Initialize PSDisplay
+        # Initialize the automatic display backend.
         bc = types.ModuleType("board_config")
-        bc.display_drv = PSDisplay(canvas_id, width=size, height=size)
+        bc.display_drv = AutoDisplay(width=size, height=size, canvas_id=canvas_id)
         sys.modules["board_config"] = bc
         self.drv = bc.display_drv
 

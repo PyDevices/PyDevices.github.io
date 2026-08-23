@@ -13,17 +13,11 @@ import sys
 import time
 import types
 
-try:
-    import js
-    from js import window
-    from pyodide.ffi import create_proxy
-except ImportError:
-    js = None
-    window = None
-    create_proxy = lambda fn: fn
+window = None
+create_proxy = lambda fn: fn
 
 import appdev
-from displaydev.psdisplay import PSDisplay
+from displaydev.auto import AutoDisplay
 import pdwidgets as pd
 
 
@@ -32,8 +26,8 @@ class SensorDeckHero:
         self.canvas_id = canvas_id
         self.size = size
 
-        # 1. Initialize PSDisplay, App, and pdwidgets Display
-        self.display_drv = PSDisplay(canvas_id, width=size, height=size)
+        # 1. Initialize the automatic backend, App, and pdwidgets Display
+        self.display_drv = AutoDisplay(width=size, height=size, canvas_id=canvas_id)
         self.app = appdev.App(self.display_drv)
         self.display = pd.Display(self.display_drv, self.app)
 

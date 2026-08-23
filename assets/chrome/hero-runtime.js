@@ -1,154 +1,56 @@
-/**
- * hero-runtime.js — Pyodide background runtime for PyDevices hero canvas apps.
- *
- * Bootstraps Pyodide in the background, installs wheel dependencies from TestPyPI via micropip,
- * uses portable mip.py to fetch the standalone .py app from https://PyDevices.github.io/assets/apps/,
- * and mounts the app seamlessly into the 240x240 hero canvas.
- */
-
+/** Direct MicroPython host for generated PyDevices hero applications. */
 (function () {
-  const PYODIDE_URL = "https://cdn.jsdelivr.net/pyodide/v314.0.5/full/";
-  const INDEX_URLS = [
-    "https://test.pypi.org/simple/{package_name}/",
-    "https://pypi.org/simple/{package_name}/"
-  ];
-
-  let pyodidePromise = null;
-
-  async function getPyodide(onStatus) {
-    if (pyodidePromise) return pyodidePromise;
-
-    pyodidePromise = (async () => {
-      if (onStatus) onStatus("Booting Python engine…");
-
-      const { loadPyodide } = await import(PYODIDE_URL + "pyodide.mjs");
-      const pyodide = await loadPyodide({ indexURL: PYODIDE_URL });
-
-      if (onStatus) onStatus("Loading package tools…");
-      await pyodide.loadPackage("micropip");
-
-      // Setup sys.path and PyScript/DOM shims
-      await pyodide.runPythonAsync(`
-import sys, os, types
-if "/home/pyodide" not in sys.path:
-    sys.path.insert(0, "/home/pyodide")
-if "." not in sys.path:
-    sys.path.insert(0, ".")
-
-# PyScript compatibility shims
-if "pyscript" not in sys.modules:
-    ps = types.ModuleType("pyscript")
-    ps_ffi = types.ModuleType("pyscript.ffi")
-    try:
-        import pyodide.ffi
-        ps_ffi.create_proxy = pyodide.ffi.create_proxy
-    except ImportError:
-        pass
-    from js import document, window
-    ps.document = document
-    ps.window = window
-    ps.ffi = ps_ffi
-    sys.modules["pyscript"] = ps
-    sys.modules["pyscript.ffi"] = ps_ffi
-`);
-
-      return pyodide;
-    })();
-
-    return pyodidePromise;
-  }
-
-  async function launchHeroCanvas(container) {
-    const canvasId = container.getAttribute("data-hero-canvas") || "hero_canvas";
-    const appName = container.getAttribute("data-hero-app") || "watch";
-    const depsRaw = container.getAttribute("data-hero-deps") || "pydevices,pydevices-lvgl";
-    const appUrl = container.getAttribute("data-hero-app-url") ||
-      `https://PyDevices.github.io/assets/apps/${appName}.py`;
-    const statusEl = container.querySelector(".hero-canvas-status");
-
-    const setStatus = (msg) => {
-      if (statusEl) statusEl.textContent = msg;
-    };
-
+  const state = { phase: "idle", heroes: [], errors: [] };
+  window.__pydevicesHeroes = state;
+  async function launch(container) {
+    const canvasId = container.dataset.heroCanvas || "hero_canvas";
+    const appName = container.dataset.heroApp || "watch";
+    const status = container.querySelector(".hero-canvas-status");
+    const setStatus = (text) => { if (status) status.textContent = text; };
+    const record = { app: appName, canvas: canvasId, phase: "loading" };
+    state.heroes.push(record); state.phase = "loading";
     try {
-      const pyodide = await getPyodide(setStatus);
-
-      // 1. Install wheel dependencies from TestPyPI
-      const deps = depsRaw.split(",").map(s => s.trim()).filter(Boolean);
-      if (deps.length > 0) {
-        setStatus("Installing hardware packages…");
-        const micropip = pyodide.pyimport("micropip");
-        micropip.set_index_urls(INDEX_URLS);
-        for (const dep of deps) {
-          try {
-            await micropip.install(dep);
-          } catch (err) {
-            console.error(`micropip install ${dep} error:`, err);
-          }
-        }
-      }
-
-      // 2. Fetch standalone .py app file
+      setStatus("Booting direct MicroPython…");
+      const { loadMicroPython } = await import("/vendor/micropython/micropython.mjs");
+      const mp = await loadMicroPython({
+        stdout: (line) => console.log(`[${appName}] ${line}`),
+        stderr: (line) => console.error(`[${appName}] ${line}`),
+        heapsize: 16 * 1024 * 1024
+      });
       setStatus(`Loading ${appName}…`);
-      const localAppUrl = `${window.location.origin}/assets/apps/${appName}.py`;
-      const candidateUrls = [
-        localAppUrl,
-        appUrl,
-        `https://pydevices.github.io/assets/apps/${appName}.py`,
-        `https://raw.githubusercontent.com/PyDevices/dotgithub/main/assets/apps/${appName}.py`
-      ];
-      let appCode = "";
-      for (const u of candidateUrls) {
-        if (!u) continue;
-        try {
-          const res = await fetch(u);
-          if (res.ok) {
-            appCode = await res.text();
-            break;
-          }
-        } catch (e) {
-          console.warn(`fetch from ${u} error:`, e);
-        }
-      }
-      if (!appCode) {
-        throw new Error(`Could not fetch ${appName}.py from any location`);
-      }
-      pyodide.FS.writeFile(`${appName}.py`, appCode);
-
-      // 3. Launch App on Canvas
-      setStatus("Starting…");
-      const launchCode = `
-import importlib
-try:
-    _app_mod = importlib.import_module("${appName}")
-    if hasattr(_app_mod, "main"):
-        _app_mod.main("${canvasId}")
-    print("${appName} launched on ${canvasId}")
-except Exception as _e:
-    import traceback
-    traceback.print_exc()
-    raise
-`;
-      await pyodide.runPythonAsync(launchCode);
-
-      // 4. Reveal Canvas smoothly
+      const response = await fetch(`/assets/apps/${appName}.py`, { cache: "no-store" });
+      if (!response.ok) throw new Error(`${response.status} fetching ${appName}.py`);
+      mp.FS.writeFile(`/${appName}.py`, await response.text());
+      await mp.runPythonAsync(`
+import os, sys
+from displaydev import env_set
+env_set("PYDEVICES_CANVAS_ID", ${JSON.stringify(canvasId)})
+if "/" not in sys.path: sys.path.insert(0, "/")
+# MicroPython omits CPython's small types helper. Hero applications only
+# need ModuleType to publish a neutral board_config contract.
+if "types" not in sys.modules:
+    class _ModuleType:
+        def __init__(self, name): self.__name__ = name
+    _types = _ModuleType("types")
+    _types.ModuleType = _ModuleType
+    sys.modules["types"] = _types
+os.chdir("/")
+_hero = __import__(${JSON.stringify(appName)})
+if hasattr(_hero, "main"): _hero.main(${JSON.stringify(canvasId)})
+`);
+      record.phase = "ready"; record.mp = mp;
       container.classList.add("active");
-      if (statusEl) statusEl.remove();
-
-    } catch (err) {
-      console.error("Hero canvas app failed to start:", err);
-      if (statusEl) statusEl.textContent = "Live preview offline";
+      if (status) status.remove();
+      state.phase = state.heroes.every((hero) => hero.phase === "ready") ? "ready" : "loading";
+      window.dispatchEvent(new CustomEvent("pydevices-heroes-ready", { detail: record }));
+    } catch (error) {
+      record.phase = "failed"; record.error = String(error && (error.stack || error));
+      state.errors.push(record.error); state.phase = "failed";
+      setStatus("Live preview offline"); console.error("Direct hero failed:", error);
+      window.dispatchEvent(new CustomEvent("pydevices-heroes-failed", { detail: record }));
     }
   }
-
-  function initHeroCanvases() {
-    const containers = document.querySelectorAll("[data-hero-canvas]");
-    containers.forEach(launchHeroCanvas);
-  }
-
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initHeroCanvases);
-  } else {
-    initHeroCanvases();
-  }
+  function start() { document.querySelectorAll("[data-hero-canvas]").forEach(launch); }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start);
+  else start();
 })();

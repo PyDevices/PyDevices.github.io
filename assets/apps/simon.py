@@ -1,7 +1,7 @@
 """
 PyDevices Simon Memory Game (Hero Canvas App for pygraphics)
 ============================================================
-Classic 4-color memory game rendered in pure Python directly on PyDevices PSDisplay.
+Classic 4-color memory game rendered through the automatic PyDevices backend.
 Features idle attract mode and full interactive touch/click gameplay.
 """
 
@@ -11,17 +11,10 @@ import time
 import math
 from random import getrandbits
 
-try:
-    import js
-    from js import document, window
-    from pyodide.ffi import create_proxy
-except ImportError:
-    js = None
-    document = None
-    window = None
-    create_proxy = lambda fn: fn
+document = window = None
+create_proxy = lambda fn: fn
 
-from displaydev.psdisplay import PSDisplay
+from displaydev.auto import AutoDisplay
 
 # Color definitions (RGB565)
 BLACK = 0x0000
@@ -73,9 +66,9 @@ class SimonHero:
             ),
         )
 
-        # Initialize PSDisplay
+        # Initialize the automatic display backend.
         bc = types.ModuleType("board_config")
-        bc.display_drv = PSDisplay(canvas_id, width=size, height=size)
+        bc.display_drv = AutoDisplay(width=size, height=size, canvas_id=canvas_id)
         sys.modules["board_config"] = bc
         self.drv = bc.display_drv
 

@@ -402,6 +402,17 @@ html, body {
 .sim-console-body .log-dim { color: #64748b; }
 .sim-console-body .log-prompt { color: var(--accent); font-weight: 600; }
 .sim-console-body .log-repl-out { color: #a5b4fc; }
+.sim-direct-output {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+  padding: 12px;
+  overflow: auto;
+  white-space: pre-wrap;
+  color: var(--text-primary);
+  font: 12px/1.5 "JetBrains Mono", monospace;
+}
 
 .sim-terminal-body {
   padding: 0;

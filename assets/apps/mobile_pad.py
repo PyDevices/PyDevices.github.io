@@ -12,17 +12,10 @@ import sys
 import time
 import types
 
-try:
-    import js
-    from js import document, window
-    from pyodide.ffi import create_proxy
-except ImportError:
-    js = None
-    document = None
-    window = None
-    create_proxy = lambda fn: fn
+document = window = None
+create_proxy = lambda fn: fn
 
-from displaydev.psdisplay import PSDisplay
+from displaydev.auto import AutoDisplay
 
 
 class MobilePadHero:
@@ -33,7 +26,7 @@ class MobilePadHero:
         self.h = size
 
         bc = types.ModuleType("board_config")
-        bc.display_drv = PSDisplay(canvas_id, width=size, height=size)
+        bc.display_drv = AutoDisplay(width=size, height=size, canvas_id=canvas_id)
         sys.modules["board_config"] = bc
         self.drv = bc.display_drv
 

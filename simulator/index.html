@@ -18,10 +18,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.5.0/lz-string.min.js"></script>
     <!-- Monaco Editor AMD Loader -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.js"></script>
-    <!-- PyScript Core & Terminal. core.js is imported by simulator.js *after*
-         the runtime <script> tag has been built, because PyScript only honours
-         an `interpreter` override that is present as an inline JSON `config`
-         attribute when the tag is processed. -->
+    <!-- PyScript is retained only for the optional Pyodide runtime. -->
     <link rel="stylesheet" href="https://pyscript.net/releases/2024.11.1/core.css">
 </head>
 <body>
@@ -78,6 +75,8 @@
         </div>
 
         <div class="sim-header-right">
+            <button type="button" class="sim-btn" id="enable-audio">Enable Audio</button>
+            <button type="button" class="sim-btn" id="enable-microphone">Enable Microphone</button>
             <!-- Reset Button -->
             <button type="button" class="sim-btn sim-btn-primary" id="run-btn" title="Reset Simulator (Ctrl+Enter)">
                 <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
@@ -131,7 +130,7 @@
             <!-- Horizontal Drag Splitter -->
             <div class="sim-splitter-h" id="splitter-h" role="separator" aria-orientation="horizontal"></div>
 
-            <!-- Bottom Sub-Pane: Interactive PyScript Terminal REPL -->
+            <!-- Bottom Sub-Pane: runtime output / Pyodide terminal -->
             <section class="sim-console-pane" id="console-pane" aria-label="Interactive Python Terminal REPL">
                 <div class="sim-pane-header">
                     <div class="sim-tab">
@@ -150,45 +149,13 @@
     </main>
 
     <!--
-      Runtime bootstraps. These are the environment refresh that runs on load and
-      on RESET, before the REPL is handed to the user. Installs belong here, in
-      the page, and are never typed into the REPL.
-
-      MicroPython: the vendored interpreter in /vendor/micropython/ has lvgl,
-      display_driver, pdwidgets, palettes and pygraphics frozen in, so only
-      pydevices-desktop is missing. It comes from the PyDevices MIP index, where
-      packages carry no prefix -- pydevices-desktop is the one exception.
-
-      Pyodide: nothing is bundled, so every package is a micropip install from
+      Pyodide bootstrap. Direct MicroPython is booted by simulator.js using the
+      vendored runtime and the PyDevices MIP index. Pyodide has nothing bundled,
+      so every package is a micropip install from
       TestPyPI, where they all carry the pydevices- pip prefix. The interpreter
       is pinned to a Pyodide whose ABI (2026_0) matches the pyemscripten wheels
       published for pydevices-lvgl and pydevices-pygraphics.
     -->
-    <template id="bootstrap-mpy">
-import sys
-
-MIP_INDEX = "https://PyDevices.github.io/mip"
-
-
-def _refresh_environment():
-    """Install pydevices-desktop; everything else is frozen into the build."""
-    import mip
-
-    # mip narrates every file it copies. Silence it so the REPL starts clean.
-    _print = getattr(mip, "print", None)
-    mip.print = lambda *a, **k: None
-    try:
-        mip.install("pydevices-desktop", index=MIP_INDEX)
-    finally:
-        if _print is None:
-            del mip.print
-        else:
-            mip.print = _print
-
-
-_refresh_environment()
-</template>
-
     <template id="bootstrap-py">
 import sys
 
@@ -235,9 +202,8 @@ await _refresh_environment()
 </template>
 
     <!--
-      Shared tail, appended to whichever bootstrap above is in use: run the
-      editor's code as main.py, then drop into the interactive REPL. Kept
-      separate so the two bootstraps differ only in how they install.
+      Pyodide tail: run the editor's code as main.py, then open its output-only
+      main-thread REPL. Direct MicroPython execution is intentionally DOM-free.
     -->
     <template id="bootstrap-tail">
 def _set_board_size():

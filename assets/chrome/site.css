@@ -1701,6 +1701,32 @@ body.pydevices-drawer-open {
 
 /* ---------- Footer ---------- */
 
+.architecture-paths {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(240px, 1fr);
+  gap: 18px;
+}
+.architecture-stack, .architecture-alt {
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+}
+.architecture-stack h3, .architecture-alt h3 { margin-top: 0; }
+.architecture-layer {
+  display: grid;
+  grid-template-columns: minmax(150px, .8fr) minmax(0, 1.7fr);
+  gap: 14px;
+  padding: 11px 13px;
+  border-top: 1px solid var(--border-soft);
+}
+.architecture-layer:first-of-type { border-top: 0; }
+.architecture-layer span, .architecture-alt p { color: var(--muted); }
+@media (max-width: 760px) {
+  .architecture-paths { grid-template-columns: 1fr; }
+  .architecture-layer { grid-template-columns: 1fr; gap: 4px; }
+}
+
 .site-footer {
   border-top: 1px solid var(--border-soft);
   margin-top: 40px;

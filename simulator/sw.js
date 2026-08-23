@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // PyDevices Simulator PWA Service Worker with Cross-Origin Isolation (COI) support.
 
-const CACHE_NAME = "pydevices-simulator-v1";
+const CACHE_NAME = "pydevices-simulator-v2";
 
 const PRECACHE_ASSETS = [
   "./",
@@ -9,7 +9,6 @@ const PRECACHE_ASSETS = [
   "./simulator.css",
   "./simulator.js",
   "./templates.js",
-  "./micropython.json",
   "./pyodide.json",
   "./manifest.json",
   "/assets/img/logo.svg",

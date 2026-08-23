@@ -12,21 +12,14 @@ import sys
 import time
 import types
 
-try:
-    import js
-    from js import document, window
-    from pyodide.ffi import create_proxy
-except ImportError:
-    js = None
-    document = None
-    window = None
-    create_proxy = lambda fn: fn
+document = window = None
+create_proxy = lambda fn: fn
 
-from displaydev.psdisplay import PSDisplay
+from displaydev.auto import AutoDisplay
 
 # Provide synthetic board_config for display_driver in browser / standalone canvas
 bc = types.ModuleType("board_config")
-bc.display_drv = PSDisplay("hero_canvas", width=240, height=240)
+bc.display_drv = AutoDisplay(width=240, height=240, canvas_id="hero_canvas")
 bc.get_events = bc.display_drv.get_events
 sys.modules["board_config"] = bc
 
