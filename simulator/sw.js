@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // PyDevices Simulator PWA Service Worker with Cross-Origin Isolation (COI) support.
 
-const CACHE_NAME = "pydevices-simulator-v3";
+const CACHE_NAME = "pydevices-simulator-v4";
 
 const PRECACHE_ASSETS = [
   "./",
@@ -9,7 +9,6 @@ const PRECACHE_ASSETS = [
   "./simulator.css",
   "./simulator.js",
   "./templates.js",
-  "./pyodide.json",
   "./manifest.json",
   "/assets/img/logo.svg",
   "/assets/img/logo-512.png",
@@ -18,8 +17,6 @@ const PRECACHE_ASSETS = [
   "/vendor/micropython/micropython.wasm",
   "https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.5.0/lz-string.min.js",
   "https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.js",
-  "https://pyscript.net/releases/2024.11.1/core.css",
-  "https://pyscript.net/releases/2024.11.1/core.js",
 ];
 
 self.addEventListener("install", (event) => {

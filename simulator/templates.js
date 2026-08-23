@@ -11,7 +11,6 @@ const SIMULATOR_TEMPLATES = {
   "lvgl-counter": {
     name: "LVGL: Interactive Counter",
     category: "LVGL",
-    runtime: "pyodide",
     width: 320,
     height: 240,
     shape: "rectangle",
@@ -123,7 +122,6 @@ print("LVGL Counter initialized and active. Click buttons to interact!")
   "lvgl-thermostat": {
     name: "LVGL: Smart Thermostat Arc",
     category: "LVGL",
-    runtime: "pyodide",
     width: 240,
     height: 240,
     shape: "round",
@@ -201,7 +199,6 @@ print("Drag the outer ring to adjust temperature!")
   "pdwidgets-dashboard": {
     name: "pdwidgets: Sensor Deck Dashboard",
     category: "pdwidgets",
-    runtime: "pyodide",
     width: 240,
     height: 240,
     shape: "square",
@@ -342,7 +339,6 @@ print("pdwidgets Sensor Deck is live! Move the slider or click buttons.")
   "pygraphics-shapes": {
     name: "pygraphics: Vector & FrameBuffer Art",
     category: "pygraphics",
-    runtime: "pyodide",
     width: 320,
     height: 240,
     shape: "rectangle",
@@ -405,7 +401,6 @@ print("Rendered pygraphics vector FrameBuffer successfully to display!")
   "displaydev-raw": {
     name: "displaydev: Direct Pixel Painter",
     category: "displaydev",
-    runtime: "pyodide",
     width: 320,
     height: 240,
     shape: "rectangle",

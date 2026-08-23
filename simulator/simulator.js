@@ -1,7 +1,7 @@
 /**
  * simulator.js — Interactive PyDevices Python Simulator Engine
  *
- * Manages Monaco Editor, direct MicroPython and Pyodide runtime execution,
+ * Manages Monaco Editor, direct MicroPython runtime execution,
  * synthetic board_config binding, LZ-string sharing, and split layout.
  */
 
@@ -16,7 +16,6 @@
   const elStatusText = document.getElementById("status-text");
   const elTemplateSelect = document.getElementById("template-select");
   const elResolutionSelect = document.getElementById("resolution-select");
-  const elRuntimeSelect = document.getElementById("runtime-select");
   const elRunBtn = document.getElementById("run-btn");
   const elShareBtn = document.getElementById("share-btn");
   const elClearConsoleBtn = document.getElementById("clear-console-btn");
@@ -42,12 +41,6 @@
   function clearConsole() {
     const direct = document.getElementById("direct-runtime-output");
     if (direct) direct.textContent = "";
-    const script = document.querySelector('#console-log script[terminal]');
-    const term = script && script.terminal;
-    if (term && typeof term.clear === "function") {
-      term.clear();
-      term.write(">>> ");
-    }
   }
 
   function showToast(msg) {
@@ -146,75 +139,38 @@
   }
 
   // =========================================================================
-  // PyScript Runtime Mount
-  //
-  // The runtime <script> tag is built here rather than written into index.html
-  // because PyScript only honours an `interpreter` override supplied as an
-  // inline JSON `config` attribute at the moment it processes the tag; an
-  // external config file on a dynamically inserted tag is ignored outright.
-  // The Python itself lives in the <template> blocks in index.html, so mip and
-  // micropip installs stay in the page and never reach the REPL.
+  // Direct MicroPython Runtime Mount
   // =========================================================================
 
-  const RUNTIME_STORAGE_KEY = "pydevices-simulator-runtime";
   const RESOLUTION_STORAGE_KEY = "pydevices-simulator-resolution";
 
-  const RUNTIMES = {
-    mpy: { direct: true },
-    pyodide: { type: "py", config: "./pyodide.json", template: "bootstrap-py" }
-  };
-
-  let pyscriptCoreLoaded = false;
   let directMicroPython = null;
-  let mountGeneration = 0;
 
-  function templateSource(id) {
-    const el = document.getElementById(id);
-    return el ? el.innerHTML : "";
-  }
-
-  async function loadInterpreterConfig(url) {
-    const res = await fetch(url);
-    if (!res.ok) throw new Error(`Unable to load ${url}: HTTP ${res.status}`);
-    return res.json();
-  }
-
-  // Mount the runtime for this page load. PyScript caches one interpreter per
-  // script type and ignores config differences when deciding whether to reuse
-  // it, so re-mounting cannot give a fresh VM -- see runScript() for how RESET
-  // handles that. `generation` is only a race guard against overlapping mounts.
-  async function mountRuntime(runtimeKey) {
-    const runtime = RUNTIMES[runtimeKey] || RUNTIMES.mpy;
+  async function mountRuntime() {
     const host = document.getElementById("console-log");
     if (!host) return;
 
-    const generation = ++mountGeneration;
     setStatus("Refreshing environment…", "busy");
-
-    // Tear down the previous runtime and its terminal.
-    host.querySelectorAll("script, .xterm, py-terminal, mpy-terminal").forEach((el) => el.remove());
-
-    if (runtime.direct) {
-      host.replaceChildren();
-      const output = document.createElement("pre");
-      output.id = "direct-runtime-output";
-      output.className = "sim-direct-output";
-      host.appendChild(output);
-      const write = (line, stream) => {
-        output.textContent += `${line}\n`;
-        output.scrollTop = output.scrollHeight;
-        if (stream === "stderr") console.error(line);
-      };
-      try {
-        const { loadMicroPython } = await import("/vendor/micropython/micropython.mjs");
-        directMicroPython = await loadMicroPython({
-          stdout: (line) => write(line, "stdout"),
-          stderr: (line) => write(line, "stderr"),
-          heapsize: 16 * 1024 * 1024
-        });
-        const source = window.getEditorCode();
-        directMicroPython.FS.writeFile("/main.py", source);
-        await directMicroPython.runPythonAsync(`
+    host.replaceChildren();
+    const output = document.createElement("pre");
+    output.id = "direct-runtime-output";
+    output.className = "sim-direct-output";
+    host.appendChild(output);
+    const write = (line, stream) => {
+      output.textContent += `${line}\n`;
+      output.scrollTop = output.scrollHeight;
+      if (stream === "stderr") console.error(line);
+    };
+    try {
+      const { loadMicroPython } = await import("/vendor/micropython/micropython.mjs");
+      directMicroPython = await loadMicroPython({
+        stdout: (line) => write(line, "stdout"),
+        stderr: (line) => write(line, "stderr"),
+        heapsize: 16 * 1024 * 1024
+      });
+      const source = window.getEditorCode();
+      directMicroPython.FS.writeFile("/main.py", source);
+      await directMicroPython.runPythonAsync(`
 import os, sys
 from displaydev import env_set
 env_set("PYDEVICES_WIDTH", ${Number(window.SIM_WIDTH)})
@@ -228,66 +184,17 @@ with open("/main.py") as _source_file:
     _source = _source_file.read()
 exec(compile(_source, "/main.py", "exec"), {"__name__": "__main__"})
 `);
-        window.__pydevicesSimulator = { phase: "ready", runtime: "micropython", mp: directMicroPython };
-        setStatus("Ready", "ready");
-      } catch (err) {
-        write(String(err && (err.stack || err)), "stderr");
-        window.__pydevicesSimulator = { phase: "failed", runtime: "micropython", error: String(err) };
-        setStatus("Runtime error", "error");
-      }
-      return;
-    }
-
-    let config;
-    try {
-      config = await loadInterpreterConfig(runtime.config);
+      window.__pydevicesSimulator = { phase: "ready", runtime: "micropython", mp: directMicroPython };
+      setStatus("Ready", "ready");
     } catch (err) {
-      console.error(err);
-      setStatus("Config error", "error");
-      return;
+      write(String(err && (err.stack || err)), "stderr");
+      window.__pydevicesSimulator = { phase: "failed", runtime: "micropython", error: String(err) };
+      setStatus("Runtime error", "error");
     }
-    if (generation !== mountGeneration) return; // a newer mount superseded us
-    config.generation = generation;
-
-    // In worker mode the interpreter is imported from worker scope, where a
-    // root-relative path is not a resolvable module specifier. Absolutise it
-    // here so the stub files can stay written against the site root.
-    if (config.interpreter) {
-      config.interpreter = new URL(config.interpreter, window.location.href).href;
-    }
-
-    const script = document.createElement("script");
-    script.type = runtime.type;
-    script.setAttribute("config", JSON.stringify(config));
-    script.setAttribute("terminal", "");
-    // Deliberately NOT `worker`. A worker would make Pyodide's REPL interactive
-    // (main-thread input() raises, so code.interact() cannot read a prompt), and
-    // cross-origin isolation for it is arrangeable on Pages via a service
-    // worker. But psdisplay cannot run in a worker: it stores a Python object on
-    // the canvas element (`canvas._ps_devices = self`) and attaches create_proxy
-    // callbacks to main-thread DOM events, and a PyProxy cannot be structured-
-    // cloned across the worker boundary -- it fails with DataCloneError, so the
-    // display never comes up. Main thread keeps the display working on both
-    // runtimes; see the notes on making the Pyodide REPL interactive.
-    script.textContent = templateSource(runtime.template) + templateSource("bootstrap-tail");
-    host.appendChild(script);
-
-    // core.js scans on import and observes the DOM afterwards, so it is safe to
-    // import once, lazily, only after the first tag exists.
-    if (!pyscriptCoreLoaded) {
-      pyscriptCoreLoaded = true;
-      await import("https://pyscript.net/releases/2024.11.1/core.js");
-    }
-
-    setStatus("Ready", "ready");
   }
 
-  // RESET. PyScript caches one interpreter per script type, so re-mounting the
-  // tag re-runs the bootstrap but keeps sys.modules -- stale LVGL objects, live
-  // timers and half-torn-down displays all survive. Reloading the page is the
-  // only way to get a genuinely fresh VM, and it is cheap: the editor contents,
-  // runtime and resolution are all persisted below, and every asset is cached.
-  // This mirrors sim.lvgl.io, whose Restart tears down and rebuilds its iframe.
+  // RESET rebuilds the direct MicroPython VM. Editor contents and resolution
+  // are persisted, while LVGL objects, timers, and display state are discarded.
   function runScript() {
     persistState();
     window.location.reload();
@@ -316,7 +223,6 @@ exec(compile(_source, "/main.py", "exec"), {"__name__": "__main__"})
   function persistState() {
     try {
       if (monacoEditor) localStorage.setItem("pydevices-simulator-code", monacoEditor.getValue());
-      localStorage.setItem(RUNTIME_STORAGE_KEY, currentRuntime());
       localStorage.setItem(RESOLUTION_STORAGE_KEY, JSON.stringify(currentResolution));
     } catch (e) {}
   }
@@ -330,10 +236,6 @@ exec(compile(_source, "/main.py", "exec"), {"__name__": "__main__"})
       }
     } catch (e) {}
     return false;
-  }
-
-  function currentRuntime() {
-    return elRuntimeSelect && elRuntimeSelect.value === "pyodide" ? "pyodide" : "mpy";
   }
 
   // Called from the Python bootstrap. Monaco loads asynchronously, so fall back
@@ -592,15 +494,6 @@ exec(compile(_source, "/main.py", "exec"), {"__name__": "__main__"})
       elResolutionSelect.addEventListener("change", (e) => handleResolutionChange(e.target.value));
     }
 
-    // Switching runtime means a different interpreter, so it is a full remount.
-    if (elRuntimeSelect) {
-      elRuntimeSelect.addEventListener("change", runScript);
-      try {
-        const saved = localStorage.getItem(RUNTIME_STORAGE_KEY);
-        if (saved && RUNTIMES[saved]) elRuntimeSelect.value = saved === "pyodide" ? "pyodide" : "mpy";
-      } catch (e) {}
-    }
-
     const themeToggle = document.getElementById("theme-toggle");
     if (themeToggle) {
       themeToggle.addEventListener("click", toggleTheme);
@@ -630,6 +523,6 @@ exec(compile(_source, "/main.py", "exec"), {"__name__": "__main__"})
     }
 
     // Refresh the environment, run the editor's code, then open the REPL.
-    mountRuntime(currentRuntime());
+    mountRuntime();
   });
 })();

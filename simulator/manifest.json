@@ -1,7 +1,7 @@
 {
   "name": "PyDevices Simulator",
   "short_name": "Simulator",
-  "description": "Interactive Python Device Playground for LVGL, pdwidgets, pygraphics, and displaydev",
+  "description": "Interactive MicroPython WebAssembly playground for LVGL, pdwidgets, pygraphics, and displaydev",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
