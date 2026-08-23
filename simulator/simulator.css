@@ -225,6 +225,38 @@ html, body {
   height: 16px;
 }
 
+.sim-install-hint {
+  position: fixed;
+  z-index: 1000;
+  top: 58px;
+  right: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: min(420px, calc(100vw - 32px));
+  padding: 11px 13px;
+  border: 1px solid var(--accent);
+  border-radius: 10px;
+  background: var(--bg-panel);
+  color: var(--text-main);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+  font-size: 0.82rem;
+}
+
+.sim-install-hint[hidden] { display: none; }
+.sim-install-arrow { color: var(--accent); font-size: 1.4rem; line-height: 1; }
+.sim-install-dismiss {
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 1.2rem;
+}
+
+@media (max-width: 720px) {
+  .sim-install-hint { top: 72px; right: 8px; max-width: calc(100vw - 16px); }
+}
+
 /* ==========================================================================
    Workspace Main Layout & Split Panes
    ========================================================================== */

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // PyDevices Simulator PWA Service Worker with Cross-Origin Isolation (COI) support.
 
-const CACHE_NAME = "pydevices-simulator-v2";
+const CACHE_NAME = "pydevices-simulator-v3";
 
 const PRECACHE_ASSETS = [
   "./",
@@ -63,6 +63,31 @@ function withCoiHeaders(response) {
 self.addEventListener("fetch", (event) => {
   const { request } = event;
   if (request.method !== "GET") return;
+
+  const url = new URL(request.url);
+  const mutableSimulatorAsset = request.mode === "navigate" ||
+    (url.origin === self.location.origin && url.pathname.startsWith("/simulator/"));
+
+  if (mutableSimulatorAsset) {
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          if (response && response.status === 200) {
+            const copy = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
+          }
+          return withCoiHeaders(response);
+        })
+        .catch(() => caches.match(request).then((cached) => {
+          if (cached) return withCoiHeaders(cached);
+          if (request.mode === "navigate") {
+            return caches.match("./index.html").then(withCoiHeaders);
+          }
+          throw new Error("Network unavailable");
+        }))
+    );
+    return;
+  }
 
   event.respondWith(
     caches.match(request).then((cached) => {

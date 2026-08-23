@@ -77,6 +77,9 @@
         <div class="sim-header-right">
             <button type="button" class="sim-btn" id="enable-audio">Enable Audio</button>
             <button type="button" class="sim-btn" id="enable-microphone">Enable Microphone</button>
+            <button type="button" class="sim-btn" id="refresh-application" title="Clear the simulator cache and reload the latest version">
+                <span>Refresh app</span>
+            </button>
             <!-- Reset Button -->
             <button type="button" class="sim-btn sim-btn-primary" id="run-btn" title="Reset Simulator (Ctrl+Enter)">
                 <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
@@ -96,6 +99,12 @@
             </button>
         </div>
     </header>
+
+    <aside class="sim-install-hint" id="install-hint" role="status" hidden>
+        <span class="sim-install-arrow" aria-hidden="true">↗</span>
+        <span><strong>Install the simulator:</strong> select the Install app button in your browser's address bar.</span>
+        <button type="button" class="sim-install-dismiss" id="dismiss-install-hint" aria-label="Dismiss install message">×</button>
+    </aside>
 
     <!-- Main Resizable Workspace -->
     <main class="sim-workspace" id="workspace">

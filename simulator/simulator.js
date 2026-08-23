@@ -57,6 +57,46 @@
     setTimeout(() => elToast.classList.remove("is-active"), 2600);
   }
 
+  function isInstalledPwa() {
+    return window.matchMedia("(display-mode: standalone)").matches ||
+      window.navigator.standalone === true;
+  }
+
+  function showInstallHint() {
+    const hint = document.getElementById("install-hint");
+    if (hint && !isInstalledPwa() && sessionStorage.getItem("sim-install-hint-dismissed") !== "1") {
+      hint.hidden = false;
+    }
+  }
+
+  async function refreshApplication() {
+    const button = document.getElementById("refresh-application");
+    if (button) {
+      button.disabled = true;
+      button.textContent = "Refreshing…";
+    }
+    persistState();
+    try {
+      if ("caches" in window) {
+        const names = await caches.keys();
+        await Promise.all(names
+          .filter((name) => name.startsWith("pydevices-simulator-"))
+          .map((name) => caches.delete(name)));
+      }
+      if ("serviceWorker" in navigator) {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        const simulatorScope = new URL("./", location.href).href;
+        await Promise.all(registrations
+          .filter((registration) => registration.scope === simulatorScope)
+          .map((registration) => registration.unregister()));
+      }
+    } finally {
+      const url = new URL(location.href);
+      url.searchParams.set("app-refresh", Date.now().toString());
+      location.replace(url.href);
+    }
+  }
+
   // =========================================================================
   // Monaco Editor Initialization
   // =========================================================================
@@ -530,6 +570,17 @@ exec(compile(_source, "/main.py", "exec"), {"__name__": "__main__"})
     if (elRunBtn) elRunBtn.addEventListener("click", runScript);
     if (elShareBtn) elShareBtn.addEventListener("click", shareCode);
     if (elClearConsoleBtn) elClearConsoleBtn.addEventListener("click", clearConsole);
+    document.getElementById("refresh-application")?.addEventListener("click", refreshApplication);
+    document.getElementById("dismiss-install-hint")?.addEventListener("click", () => {
+      const hint = document.getElementById("install-hint");
+      if (hint) hint.hidden = true;
+      sessionStorage.setItem("sim-install-hint-dismissed", "1");
+    });
+    window.addEventListener("beforeinstallprompt", showInstallHint);
+    window.addEventListener("appinstalled", () => {
+      const hint = document.getElementById("install-hint");
+      if (hint) hint.hidden = true;
+    });
     document.getElementById("enable-audio")?.addEventListener("click", () => enableAudio(false));
     document.getElementById("enable-microphone")?.addEventListener("click", () => enableAudio(true));
 
@@ -570,7 +621,9 @@ exec(compile(_source, "/main.py", "exec"), {"__name__": "__main__"})
     // Register PWA Service Worker
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
-        navigator.serviceWorker.register("./sw.js").catch((err) => {
+        navigator.serviceWorker.register("./sw.js", { updateViaCache: "none" }).then((registration) => {
+          registration.update();
+        }).catch((err) => {
           console.warn("[Simulator] ServiceWorker registration failed:", err);
         });
       });
