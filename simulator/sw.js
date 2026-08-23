@@ -50,7 +50,7 @@ self.addEventListener("activate", (event) => {
 function withCoiHeaders(response) {
   if (!response || response.status === 0) return response;
   const newHeaders = new Headers(response.headers);
-  newHeaders.set("Cross-Origin-Embedder-Policy", "require-corp");
+  newHeaders.set("Cross-Origin-Embedder-Policy", "credentialless");
   newHeaders.set("Cross-Origin-Opener-Policy", "same-origin");
   newHeaders.set("Cross-Origin-Resource-Policy", "cross-origin");
 
