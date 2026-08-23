@@ -13,8 +13,10 @@ What follows is the mechanics.
 | Path | Role |
 |---|---|
 | `index.html` | The portal page. The regions between `<!-- PYDEVICES-…: START/END -->` markers are generated — edit the database, not the markup. |
-| `img/logo.svg` | Brand mark, synced from `dotgithub/assets/img/`. |
-| `vendor/pydevices-chrome/` | Shared chrome, synced from `dotgithub/assets/`: `site.css`, `site-chrome.js`, `theme-toggle.js`, `tree-nav.js`. |
+| `assets/img/` | Brand marks, synced from `dotgithub/assets/img/`: `logo.svg`, `logo-512.png`, `logo-avatar.png`. |
+| `assets/chrome/` | Shared first-party chrome, synced from `dotgithub/assets/`: `site.css`, `site-chrome.js`, `theme-toggle.js`, `hero-runtime.js`. |
+| `assets/apps/` | Interactive pure-Python apps, synced from `dotgithub/assets/apps/`. |
+| `vendor/` | True third-party dependencies (`micropython`, `xterm`). |
 | `.nojekyll` | Bypasses Jekyll on GitHub Pages. |
 
 ## Regenerating

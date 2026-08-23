@@ -14,9 +14,7 @@
  * script (before this stylesheet paints) to avoid a flash of the wrong
  * theme — see any page's <head> for the one-line snippet.
  *
- * Canonical copy: https://pydevices.github.io/assets/css/site.css
- * Repos vendor a copy under web/vendor/pydevices-chrome/site.css for
- * offline dev + CI; keep vendored copies in sync with this file.
+ * Canonical copy: https://pydevices.github.io/assets/chrome/site.css
  */
 
 :root {

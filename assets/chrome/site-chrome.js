@@ -11,14 +11,20 @@
 (function () {
   'use strict';
 
-  var LOGO = "https://pydevices.github.io/img/logo.svg";
-  var ROOT = "https://pydevices.github.io";
+  var chromeScript = document.querySelector('script[src*="site-chrome.js"]');
+  var chromeBase = chromeScript
+    ? chromeScript.src.replace(/\/site-chrome\.js.*$/, '')
+    : '/assets/chrome';
+  var ROOT = chromeBase.startsWith('http')
+    ? chromeBase.replace(/\/assets\/chrome.*$/, '')
+    : '';
+  var LOGO = (ROOT || '') + '/assets/img/logo.svg';
 
   var HEADER =
     '<header class="site-header">' +
     '<div class="wrap">' +
     '<a class="brand" href="' +
-    ROOT +
+    (ROOT || '/') +
     '/">' +
     '<span class="logo"><img src="' +
     LOGO +
@@ -31,7 +37,7 @@
     '/pydevices/">Core Stack</a>' +
     '<a href="' +
     ROOT +
-    '/pygraphics/">Toolkits</a>' +
+    '/simulator/">Simulator</a>' +
     '<a href="' +
     ROOT +
     '/displayif/">Native C</a>' +
@@ -414,6 +420,27 @@
     }
   }
 
+  function setupThemeToggle() {
+    var toggle = document.getElementById("theme-toggle");
+    if (!toggle || toggle.getAttribute("data-bound")) {
+      return;
+    }
+    toggle.setAttribute("data-bound", "true");
+    toggle.addEventListener("click", function () {
+      var root = document.documentElement;
+      var current = root.getAttribute("data-theme") === "light" ? "light" : "dark";
+      var next = current === "light" ? "dark" : "light";
+      if (next === "light") {
+        root.setAttribute("data-theme", "light");
+      } else {
+        root.removeAttribute("data-theme");
+      }
+      try {
+        localStorage.setItem("pydevices-theme", next);
+      } catch (e) {}
+    });
+  }
+
   function inject() {
     var headerMount = document.getElementById("pydevices-site-header");
     var footerMount = document.getElementById("pydevices-site-footer");
@@ -424,6 +451,9 @@
       footerMount.outerHTML = FOOTER;
     }
 
+    // Bind theme toggle on header
+    setupThemeToggle();
+
     // Inject Left-Side Navigation Drawer
     if (!document.getElementById("pydevices-nav-sidebar")) {
       document.body.insertAdjacentHTML("afterbegin", buildSidebarHtml());
@@ -431,12 +461,12 @@
       document.body.classList.add("has-pydevices-nav");
     }
 
-    var chromeScript = document.querySelector('script[src*="site-chrome.js"]');
-    var chromeBase = chromeScript ? chromeScript.src.replace(/\/site-chrome\.js.*$/, '') : '/vendor/pydevices-chrome';
+    var scriptEl = document.querySelector('script[src*="site-chrome.js"]');
+    var base = scriptEl ? scriptEl.src.replace(/\/site-chrome\.js.*$/, '') : '/assets/chrome';
 
     if (document.querySelector('[data-hero-canvas]') && !document.querySelector('script[src*="hero-runtime.js"]')) {
       var heroScript = document.createElement('script');
-      heroScript.src = chromeBase + '/hero-runtime.js';
+      heroScript.src = base + '/hero-runtime.js';
       document.head.appendChild(heroScript);
     }
   }

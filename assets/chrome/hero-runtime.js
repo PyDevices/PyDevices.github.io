@@ -52,17 +52,6 @@ if "pyscript" not in sys.modules:
     sys.modules["pyscript.ffi"] = ps_ffi
 `);
 
-      // Mount portable mip.py from vendor chrome if available
-      try {
-        const mipRes = await fetch("/vendor/pydevices-chrome/mip.py");
-        if (mipRes.ok) {
-          const mipCode = await mipRes.text();
-          pyodide.FS.writeFile("mip.py", mipCode);
-        }
-      } catch (e) {
-        console.warn("Could not preload local mip.py; using fallback:", e);
-      }
-
       return pyodide;
     })();
 
@@ -99,22 +88,23 @@ if "pyscript" not in sys.modules:
         }
       }
 
-      // 2. Fetch standalone .py file via mip.py
+      // 2. Fetch standalone .py app file
       setStatus(`Loading ${appName}…`);
       const localAppUrl = `${window.location.origin}/assets/apps/${appName}.py`;
       await pyodide.runPythonAsync(`
-import mip, os
+import os, sys, urllib.request
 _fetched = False
 for _url in ("${localAppUrl}", "${appUrl}", "https://raw.githubusercontent.com/PyDevices/dotgithub/main/assets/apps/${appName}.py"):
     if not _url:
         continue
     try:
-        mip.install(_url, target=".")
-        if os.path.exists("${appName}.py"):
+        with urllib.request.urlopen(_url) as _resp:
+            with open("${appName}.py", "wb") as _f:
+                _f.write(_resp.read())
             _fetched = True
             break
     except Exception as _e:
-        print(f"mip.install from {_url} error:", _e)
+        print(f"fetch from {_url} error:", _e)
 
 if not _fetched:
     raise RuntimeError("Could not fetch ${appName}.py from any location")
