@@ -166,8 +166,8 @@
     -->
     <template id="bootstrap-mpy">
 import sys
-
-MIP_INDEX = "https://PyDevices.github.io/mip"
+from js import window
+MIP_INDEX = window.location.origin + "/mip/" if window.location.hostname in ("127.0.0.1", "localhost") else "https://PyDevices.github.io/mip"
 
 
 def _refresh_environment():
