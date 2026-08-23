@@ -498,7 +498,14 @@
       const { width, height, shape } = currentResolution;
       setCanvasResolution(width, height, shape);
     }
-    syncResolutionSelect();
+    // Register PWA Service Worker
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./sw.js").catch((err) => {
+          console.warn("[Simulator] ServiceWorker registration failed:", err);
+        });
+      });
+    }
 
     // Refresh the environment, run the editor's code, then open the REPL.
     mountRuntime(currentRuntime());
