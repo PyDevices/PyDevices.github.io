@@ -10,12 +10,27 @@ Interactive NeoPixel-style RGB LED ring and capacitive touch dial:
 import math
 import sys
 import time
-import types
 
-document = window = None
-create_proxy = lambda fn: fn
+import appdev
+import events
+from displaydev.wasmdisplay import WasmDisplay
+import pygraphics
 
-from displaydev.auto import AutoDisplay
+
+def _rgb565(red, green, blue):
+    return (int(red) & 0xF8) << 8 | (int(green) & 0xFC) << 3 | int(blue) >> 3
+
+
+def _color(value):
+    value = value.lstrip("#")
+    return _rgb565(int(value[:2], 16), int(value[2:4], 16), int(value[4:], 16))
+
+
+def _text(display, value, x, y, color, align="center"):
+    value = str(value)
+    if align == "center": x -= len(value) * 4
+    elif align == "right": x -= len(value) * 8
+    pygraphics.text8(display, value, int(x), int(y) - 8, color)
 
 
 def hsl_to_rgb(h, s, l):
@@ -46,10 +61,8 @@ class CircuitDialHero:
         self.cx = size // 2
         self.cy = size // 2
 
-        bc = types.ModuleType("board_config")
-        bc.display_drv = AutoDisplay(width=size, height=size, canvas_id=canvas_id)
-        sys.modules["board_config"] = bc
-        self.drv = bc.display_drv
+        self.drv = WasmDisplay(width=size, height=size, canvas_id=canvas_id)
+        self.app = appdev.App(displays=(self.drv,), host_read=self.drv.get_events)
 
         self.num_leds = 16
         self.base_hue = 0.0
@@ -61,23 +74,15 @@ class CircuitDialHero:
         self.draw()
         self._bind_events()
 
-        self._tick_proxy = create_proxy(self._js_tick_cb) if window else None
-        self._tick_interval = window.setInterval(self._tick_proxy, 33) if window else None
+        self._tick_subscription = self.app.every(33, self._timer_tick)
 
-    def _js_tick_cb(self):
+    def _timer_tick(self, _timer):
         self.tick()
 
     def _bind_events(self):
-        if not document:
-            return
-        canvas = document.getElementById(self.canvas_id)
-        if not canvas:
-            return
-
         def update_from_pointer(event):
-            rect = canvas.getBoundingClientRect()
-            px = event.clientX - rect.left - rect.width / 2
-            py = event.clientY - rect.top - rect.height / 2
+            px = event.pos[0] - self.cx
+            py = event.pos[1] - self.cy
             dist = math.sqrt(px * px + py * py)
             if dist >= 25:
                 ang = (math.degrees(math.atan2(py, px)) + 360.0) % 360.0
@@ -87,26 +92,20 @@ class CircuitDialHero:
                 self.draw()
 
         def on_pointer_down(event):
-            event.preventDefault()
             self.is_dragging = True
             update_from_pointer(event)
 
         def on_pointer_move(event):
             if not self.is_dragging:
                 return
-            event.preventDefault()
             update_from_pointer(event)
 
         def on_pointer_up(event):
             self.is_dragging = False
 
-        self._p_down = create_proxy(on_pointer_down)
-        self._p_move = create_proxy(on_pointer_move)
-        self._p_up = create_proxy(on_pointer_up)
-
-        canvas.addEventListener("pointerdown", self._p_down)
-        window.addEventListener("pointermove", self._p_move)
-        window.addEventListener("pointerup", self._p_up)
+        self.app.on(events.MOUSEBUTTONDOWN, on_pointer_down)
+        self.app.on(events.MOUSEMOTION, on_pointer_move)
+        self.app.on(events.MOUSEBUTTONUP, on_pointer_up)
 
     def tick(self):
         now = time.time()
@@ -116,23 +115,15 @@ class CircuitDialHero:
             self.draw()
 
     def draw(self):
-        if not hasattr(self.drv, "_buf_ctx") or not self.drv._buf_ctx:
-            return
-        ctx = self.drv._buf_ctx
+        display = self.drv
         w, h, cx, cy = self.w, self.h, self.cx, self.cy
 
         # 1. Dark Circular Housing
-        ctx.fillStyle = "#0A0D14"
-        ctx.fillRect(0, 0, w, h)
+        display.fill(_color("#0A0D14"))
 
         # 2. Outer Bezel Track
-        ctx.beginPath()
-        ctx.arc(cx, cy, 106, 0, math.pi * 2)
-        ctx.fillStyle = "#111827"
-        ctx.fill()
-        ctx.strokeStyle = "#1F2937"
-        ctx.lineWidth = 2
-        ctx.stroke()
+        pygraphics.circle(display, cx, cy, 106, _color("#111827"), True)
+        pygraphics.circle(display, cx, cy, 106, _color("#1F2937"))
 
         # 3. 16 NeoPixel LEDs
         ring_r = 82
@@ -148,50 +139,28 @@ class CircuitDialHero:
             # Glow aura
             is_active = (i == self.selected_led)
             if is_active:
-                ctx.beginPath()
-                ctx.arc(lx, ly, 16, 0, math.pi * 2)
-                ctx.fillStyle = f"rgba({r}, {g}, {b}, 0.35)"
-                ctx.fill()
+                pygraphics.circle(display, int(lx), int(ly), 16, _rgb565(r // 3, g // 3, b // 3), True)
 
             # LED Bead
-            ctx.beginPath()
-            ctx.arc(lx, ly, 8 if not is_active else 10, 0, math.pi * 2)
-            ctx.fillStyle = f"rgb({r}, {g}, {b})"
-            ctx.fill()
-            ctx.strokeStyle = "#FFFFFF" if is_active else "rgba(255, 255, 255, 0.4)"
-            ctx.lineWidth = 1.5
-            ctx.stroke()
+            radius = 10 if is_active else 8
+            pygraphics.circle(display, int(lx), int(ly), radius, _rgb565(r, g, b), True)
+            pygraphics.circle(display, int(lx), int(ly), radius, _color("#FFFFFF" if is_active else "#64748B"))
 
         # 4. Center Display Hub
         hub_r = 54
-        ctx.beginPath()
-        ctx.arc(cx, cy, hub_r, 0, math.pi * 2)
-        ctx.fillStyle = "#0D131F"
-        ctx.fill()
-        ctx.strokeStyle = "#2563EB"
-        ctx.lineWidth = 1.5
-        ctx.stroke()
+        pygraphics.circle(display, cx, cy, hub_r, _color("#0D131F"), True)
+        pygraphics.circle(display, cx, cy, hub_r, _color("#2563EB"))
 
         # Hub Readouts
-        ctx.fillStyle = "#38BDF8"
-        ctx.font = "bold 9px system-ui, sans-serif"
-        ctx.textAlign = "center"
-        ctx.fillText("CIRCUITPYTHON", cx, cy - 22)
+        _text(display, "CIRCUITPYTHON", cx, cy - 22, _color("#38BDF8"))
 
         cur_r, cur_g, cur_b = hsl_to_rgb(self.base_hue, 1.0, 0.55)
-        ctx.fillStyle = "#F8FAFC"
-        ctx.font = "bold 15px monospace"
-        ctx.fillText(f"LED #{self.selected_led:02d}", cx, cy - 2)
+        _text(display, f"LED #{self.selected_led:02d}", cx, cy - 2, _color("#F8FAFC"))
 
         # Color Hex Badge
         hex_str = f"#{cur_r:02X}{cur_g:02X}{cur_b:02X}"
-        ctx.fillStyle = f"rgb({cur_r}, {cur_g}, {cur_b})"
-        ctx.font = "bold 9px monospace"
-        ctx.fillText(hex_str, cx, cy + 18)
-
-        ctx.fillStyle = "#94A3B8"
-        ctx.font = "8px system-ui, sans-serif"
-        ctx.fillText("TOUCH TO POSITION", cx, cy + 32)
+        _text(display, hex_str, cx, cy + 18, _rgb565(cur_r, cur_g, cur_b))
+        _text(display, "TOUCH TO POSITION", cx, cy + 32, _color("#94A3B8"))
 
         if hasattr(self.drv, "show"):
             self.drv.show()

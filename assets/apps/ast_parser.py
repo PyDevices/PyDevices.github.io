@@ -10,13 +10,27 @@ Interactive AST token parser stream and binding generator matrix.
 import math
 import sys
 import time
-import types
 from random import random, choice
 
-document = window = None
-create_proxy = lambda fn: fn
+import appdev
+import events
+from displaydev.wasmdisplay import WasmDisplay
+import pygraphics
 
-from displaydev.auto import AutoDisplay
+
+def _color(value):
+    value = value.lstrip("#")
+    red, green, blue = int(value[:2], 16), int(value[2:4], 16), int(value[4:], 16)
+    return (red & 0xF8) << 8 | (green & 0xFC) << 3 | blue >> 3
+
+
+def _text(display, value, x, y, color, align="left"):
+    value = str(value)
+    if align == "right":
+        x -= len(value) * 8
+    elif align == "center":
+        x -= len(value) * 4
+    pygraphics.text8(display, value, int(x), int(y) - 8, _color(color))
 
 
 C_TOKENS = [
@@ -42,10 +56,8 @@ class AstParserHero:
         self.w = size
         self.h = size
 
-        bc = types.ModuleType("board_config")
-        bc.display_drv = AutoDisplay(width=size, height=size, canvas_id=canvas_id)
-        sys.modules["board_config"] = bc
-        self.drv = bc.display_drv
+        self.drv = WasmDisplay(width=size, height=size, canvas_id=canvas_id)
+        self.app = appdev.App(displays=(self.drv,), host_read=self.drv.get_events)
 
         self.tokens_parsed = 4820
         self.schemas_gen = 142
@@ -60,21 +72,13 @@ class AstParserHero:
         self.draw()
         self._bind_events()
 
-        self._tick_proxy = create_proxy(self._js_tick_cb) if window else None
-        self._tick_interval = window.setInterval(self._tick_proxy, 33) if window else None
+        self._tick_subscription = self.app.every(33, self._timer_tick)
 
-    def _js_tick_cb(self):
+    def _timer_tick(self, _timer):
         self.tick()
 
     def _bind_events(self):
-        if not document:
-            return
-        canvas = document.getElementById(self.canvas_id)
-        if not canvas:
-            return
-
-        def on_pointer_down(event):
-            event.preventDefault()
+        def on_pointer_down(_event):
             self.tokens_parsed += 42
             self.schemas_gen += 1
             tok, col = choice(C_TOKENS)
@@ -82,8 +86,7 @@ class AstParserHero:
             self.log_lines.append((f"EMIT {tok}", col))
             self.draw()
 
-        self._p_down = create_proxy(on_pointer_down)
-        canvas.addEventListener("pointerdown", self._p_down)
+        self.app.on(events.MOUSEBUTTONDOWN, on_pointer_down)
 
     def tick(self):
         self.scan_line_y += 1.8
@@ -97,115 +100,54 @@ class AstParserHero:
         self.draw()
 
     def draw(self):
-        if not hasattr(self.drv, "_buf_ctx") or not self.drv._buf_ctx:
-            return
-        ctx = self.drv._buf_ctx
+        display = self.drv
         w, h = self.w, self.h
 
         # 1. Dark Blueprint Bezel Background
-        ctx.fillStyle = "#070B12"
-        ctx.fillRect(0, 0, w, h)
+        display.fill(_color("#070B12"))
 
         # Subtle Matrix Grid
-        ctx.strokeStyle = "rgba(30, 41, 59, 0.4)"
-        ctx.lineWidth = 1
         for gx in range(16, w, 20):
-            ctx.beginPath()
-            ctx.moveTo(gx, 0)
-            ctx.lineTo(gx, h)
-            ctx.stroke()
+            pygraphics.vline(display, gx, 0, h, _color("#111827"))
         for gy in range(16, h, 20):
-            ctx.beginPath()
-            ctx.moveTo(0, gy)
-            ctx.lineTo(w, gy)
-            ctx.stroke()
+            pygraphics.hline(display, 0, gy, w, _color("#111827"))
 
         # 2. Header Bar
-        ctx.fillStyle = "rgba(15, 23, 42, 0.92)"
-        ctx.fillRect(0, 0, w, 26)
-        ctx.strokeStyle = "#1E293B"
-        ctx.lineWidth = 1
-        ctx.beginPath()
-        ctx.moveTo(0, 26)
-        ctx.lineTo(w, 26)
-        ctx.stroke()
-
-        ctx.fillStyle = "#38BDF8"
-        ctx.font = "bold 9px system-ui, monospace"
-        ctx.textAlign = "left"
-        ctx.fillText("⚡ LVGL BINDINGS GEN", 10, 17)
-
-        ctx.fillStyle = "#10B981"
-        ctx.textAlign = "right"
-        ctx.fillText(f"AST: {self.schemas_gen}", w - 10, 17)
+        display.fill_rect(0, 0, w, 26, _color("#0F172A"))
+        pygraphics.hline(display, 0, 26, w, _color("#1E293B"))
+        _text(display, "LVGL BINDINGS GEN", 10, 17, "#38BDF8")
+        _text(display, f"AST: {self.schemas_gen}", w - 10, 17, "#10B981", "right")
 
         # 3. Token Matrix Window
         matrix_y = 32
         for i, (text, color) in enumerate(self.log_lines):
             row_y = matrix_y + i * 22
             # Terminal prompt pill
-            ctx.fillStyle = "rgba(15, 23, 42, 0.75)"
-            ctx.beginPath()
-            ctx.roundRect(10, row_y, w - 20, 18, 4)
-            ctx.fill()
-            ctx.strokeStyle = "rgba(56, 189, 248, 0.2)"
-            ctx.stroke()
-
-            ctx.fillStyle = "#64748B"
-            ctx.font = "8px monospace"
-            ctx.textAlign = "left"
-            ctx.fillText("›", 16, row_y + 12)
-
-            ctx.fillStyle = color
-            ctx.font = "bold 9px monospace"
-            ctx.fillText(text, 28, row_y + 12)
+            pygraphics.round_rect(display, 10, row_y, w - 20, 18, 4, _color("#0F172A"), True)
+            pygraphics.round_rect(display, 10, row_y, w - 20, 18, 4, _color("#164E63"))
+            _text(display, ">", 16, row_y + 12, "#64748B")
+            _text(display, text, 28, row_y + 12, color)
 
         # 4. Scanning Parse Beam
-        ctx.strokeStyle = "rgba(56, 189, 248, 0.85)"
-        ctx.lineWidth = 1.5
-        ctx.beginPath()
-        ctx.moveTo(12, self.scan_line_y)
-        ctx.lineTo(w - 12, self.scan_line_y)
-        ctx.stroke()
+        pygraphics.hline(display, 12, int(self.scan_line_y), w - 24, _color("#38BDF8"))
 
         # 5. Bottom Generation Telemetry Box
         bot_y = 135
-        ctx.fillStyle = "#0F172A"
-        ctx.beginPath()
-        ctx.roundRect(10, bot_y, w - 20, 94, 8)
-        ctx.fill()
-        ctx.strokeStyle = "#1E293B"
-        ctx.lineWidth = 1
-        ctx.stroke()
+        pygraphics.round_rect(display, 10, bot_y, w - 20, 94, 8, _color("#0F172A"), True)
+        pygraphics.round_rect(display, 10, bot_y, w - 20, 94, 8, _color("#1E293B"))
 
         # Telemetry Labels
-        ctx.fillStyle = "#94A3B8"
-        ctx.font = "8px system-ui, sans-serif"
-        ctx.textAlign = "left"
-        ctx.fillText("TOKENS PARSED", 18, bot_y + 16)
-        ctx.fillText("TARGETS", 18, bot_y + 40)
-        ctx.fillText("HEADER SOT", 18, bot_y + 64)
-
-        ctx.fillStyle = "#F8FAFC"
-        ctx.font = "bold 11px system-ui, monospace"
-        ctx.textAlign = "right"
-        ctx.fillText(f"{self.tokens_parsed:,}", w - 18, bot_y + 16)
-        ctx.fillStyle = "#818CF8"
-        ctx.font = "bold 9px system-ui, monospace"
-        ctx.fillText("CPython · MP · CP", w - 18, bot_y + 40)
-        ctx.fillStyle = "#34D399"
-        ctx.fillText("LVGL v9.2.2 C", w - 18, bot_y + 64)
+        _text(display, "TOKENS PARSED", 18, bot_y + 16, "#94A3B8")
+        _text(display, "TARGETS", 18, bot_y + 40, "#94A3B8")
+        _text(display, "HEADER SOT", 18, bot_y + 64, "#94A3B8")
+        _text(display, f"{self.tokens_parsed:,}", w - 18, bot_y + 16, "#F8FAFC", "right")
+        _text(display, "CPython / MP / CP", w - 18, bot_y + 40, "#818CF8", "right")
+        _text(display, "LVGL v9.2.2 C", w - 18, bot_y + 64, "#34D399", "right")
 
         # Progress bar
-        ctx.fillStyle = "#1E293B"
-        ctx.beginPath()
-        ctx.roundRect(18, bot_y + 76, w - 36, 6, 3)
-        ctx.fill()
-        ctx.fillStyle = "#38BDF8"
+        pygraphics.round_rect(display, 18, bot_y + 76, w - 36, 6, 3, _color("#1E293B"), True)
         prog_w = int((w - 36) * ((self.tokens_parsed % 500) / 500.0))
-        ctx.beginPath()
-        ctx.roundRect(18, bot_y + 76, max(6, prog_w), 6, 3)
-        ctx.fill()
+        pygraphics.round_rect(display, 18, bot_y + 76, max(6, prog_w), 6, 3, _color("#38BDF8"), True)
 
         if hasattr(self.drv, "show"):
             self.drv.show()

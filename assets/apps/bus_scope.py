@@ -6,15 +6,25 @@ hardware bus signals, clock pulses, frame throughput, and TE sync.
 """
 
 import sys
-import types
 import time
 import math
 from random import random
 
-document = window = None
-create_proxy = lambda fn: fn
+import appdev
+from displaydev.wasmdisplay import WasmDisplay
+import pygraphics
 
-from displaydev.auto import AutoDisplay
+
+def _color(value):
+    value = value.lstrip("#")
+    r, g, b = int(value[:2], 16), int(value[2:4], 16), int(value[4:], 16)
+    return (r & 0xF8) << 8 | (g & 0xFC) << 3 | b >> 3
+
+
+def _text(display, value, x, y, color, align="left"):
+    value = str(value)
+    if align == "right": x -= len(value) * 8
+    pygraphics.text8(display, value, int(x), int(y) - 8, _color(color))
 
 
 class BusScopeHero:
@@ -24,10 +34,8 @@ class BusScopeHero:
         self.w = size
         self.h = size
 
-        bc = types.ModuleType("board_config")
-        bc.display_drv = AutoDisplay(width=size, height=size, canvas_id=canvas_id)
-        sys.modules["board_config"] = bc
-        self.drv = bc.display_drv
+        self.drv = WasmDisplay(width=size, height=size, canvas_id=canvas_id)
+        self.app = appdev.App(displays=(self.drv,), host_read=self.drv.get_events)
 
         self.offset = 0.0
         self.fps = 60.0
@@ -35,10 +43,9 @@ class BusScopeHero:
         self.frame_cnt = 0
 
         self.draw()
-        self._tick_proxy = create_proxy(self._js_tick_cb) if window else None
-        self._tick_interval = window.setInterval(self._tick_proxy, 30) if window else None
+        self._tick_subscription = self.app.every(30, self._timer_tick)
 
-    def _js_tick_cb(self):
+    def _timer_tick(self, _timer):
         self.tick()
 
     def tick(self):
@@ -47,48 +54,23 @@ class BusScopeHero:
         self.draw()
 
     def draw(self):
-        if not hasattr(self.drv, "_buf_ctx") or not self.drv._buf_ctx:
-            return
-        ctx = self.drv._buf_ctx
+        display = self.drv
         w, h = self.w, self.h
 
         # 1. Oscilloscope Dark Grid Background
-        ctx.fillStyle = "#070A0E"
-        ctx.fillRect(0, 0, w, h)
+        display.fill(_color("#070A0E"))
 
         # Oscilloscope Grid Lines
-        ctx.strokeStyle = "rgba(30, 41, 59, 0.6)"
-        ctx.lineWidth = 1
         for gx in range(20, w, 20):
-            ctx.beginPath()
-            ctx.moveTo(gx, 0)
-            ctx.lineTo(gx, h)
-            ctx.stroke()
+            pygraphics.vline(display, gx, 0, h, _color("#172033"))
         for gy in range(20, h, 20):
-            ctx.beginPath()
-            ctx.moveTo(0, gy)
-            ctx.lineTo(w, gy)
-            ctx.stroke()
+            pygraphics.hline(display, 0, gy, w, _color("#172033"))
 
         # 2. Header Bar
-        ctx.fillStyle = "rgba(15, 23, 42, 0.9)"
-        ctx.fillRect(0, 0, w, 28)
-        ctx.strokeStyle = "#1E293B"
-        ctx.lineWidth = 1
-        ctx.beginPath()
-        ctx.moveTo(0, 28)
-        ctx.lineTo(w, 28)
-        ctx.stroke()
-
-        ctx.fillStyle = "#F54E00"
-        ctx.font = "bold 9px system-ui, monospace"
-        ctx.textAlign = "left"
-        ctx.fillText("● BUS TIMING", 10, 18)
-
-        ctx.fillStyle = "#38BDF8"
-        ctx.font = "9px system-ui, monospace"
-        ctx.textAlign = "right"
-        ctx.fillText(f"{self.mbps:.0f}M | 60FPS", w - 10, 18)
+        display.fill_rect(0, 0, w, 28, _color("#0F172A"))
+        pygraphics.hline(display, 0, 28, w, _color("#1E293B"))
+        _text(display, "BUS TIMING", 10, 18, "#F54E00")
+        _text(display, f"{self.mbps:.0f}M | 60FPS", w - 10, 18, "#38BDF8", "right")
 
         # 3. Waveform Channels (CS, SCK, MOSI, TE/VSYNC)
         channels = [
@@ -102,17 +84,10 @@ class BusScopeHero:
 
         for name, color, base_y, amp in channels:
             # Label
-            ctx.fillStyle = color
-            ctx.font = "bold 9px system-ui, monospace"
-            ctx.textAlign = "left"
-            ctx.fillText(name, 10, base_y + amp / 2 + 3)
-
-            # Trace Signal
-            ctx.beginPath()
-            ctx.strokeStyle = color
-            ctx.lineWidth = 1.5
+            _text(display, name, 10, base_y + amp / 2 + 3, color)
 
             plot_x_start = 42
+            previous_y = base_y + amp
             for x in range(plot_x_start, w - 8):
                 ph = (x + t)
                 if name == "CS":
@@ -129,38 +104,20 @@ class BusScopeHero:
                     val = 1 if (ph % 220 < 18) else 0
 
                 y = base_y + (0 if val == 1 else amp)
-                if x == plot_x_start:
-                    ctx.moveTo(x, y)
-                else:
-                    ctx.lineTo(x, y)
-
-            ctx.stroke()
+                if x > plot_x_start:
+                    pygraphics.line(display, x - 1, previous_y, x, y, _color(color))
+                previous_y = y
 
         # 4. Trigger Cursor
         trig_x = 130
-        ctx.beginPath()
-        ctx.setLineDash([3, 3])
-        ctx.moveTo(trig_x, 28)
-        ctx.lineTo(trig_x, 195)
-        ctx.strokeStyle = "rgba(255, 255, 255, 0.4)"
-        ctx.stroke()
-        ctx.setLineDash([])
+        for y in range(28, 195, 6):
+            pygraphics.vline(display, trig_x, y, 3, _color("#64748B"))
 
         # 5. Bottom Status Strip
-        ctx.fillStyle = "rgba(15, 23, 42, 0.9)"
-        ctx.fillRect(0, 198, w, 42)
-        ctx.strokeStyle = "#1E293B"
-        ctx.lineWidth = 1
-        ctx.beginPath()
-        ctx.moveTo(0, 198)
-        ctx.lineTo(w, 198)
-        ctx.stroke()
-
-        ctx.fillStyle = "#94A3B8"
-        ctx.font = "9px system-ui, monospace"
-        ctx.textAlign = "left"
-        ctx.fillText("BUS: QSPI / 8080 (DMA ACTIVE)", 10, 214)
-        ctx.fillText(f"FRAME_TX: #{self.frame_cnt:05d}  DROPPED: 0", 10, 228)
+        display.fill_rect(0, 198, w, 42, _color("#0F172A"))
+        pygraphics.hline(display, 0, 198, w, _color("#1E293B"))
+        _text(display, "BUS: QSPI / 8080 (DMA ACTIVE)", 10, 214, "#94A3B8")
+        _text(display, f"FRAME_TX: #{self.frame_cnt:05d}  DROPPED: 0", 10, 228, "#94A3B8")
 
         if hasattr(self.drv, "show"):
             self.drv.show()

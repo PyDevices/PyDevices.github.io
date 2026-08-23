@@ -8,20 +8,9 @@ touch-draggable knob, ambient status readout, and multi-state ECO leaf badge.
 import math
 import sys
 import time
-import types
 
-document = window = None
-create_proxy = lambda fn: fn
-
-from displaydev.auto import AutoDisplay
-
-# Provide synthetic board_config for display_driver in browser / standalone canvas
-bc = types.ModuleType("board_config")
-bc.display_drv = AutoDisplay(width=240, height=240, canvas_id="hero_canvas")
-bc.get_events = bc.display_drv.get_events
-sys.modules["board_config"] = bc
-
-import display_driver
+import appdev
+from displaydev.wasmdisplay import WasmDisplay
 import lvgl as lv
 
 
@@ -95,7 +84,6 @@ class LVGLThermostat:
         _zero_styles(self.parent)
 
         self._build_ui()
-        self._bind_canvas_events()
 
     def _build_ui(self):
         size = self.size
@@ -221,59 +209,21 @@ class LVGLThermostat:
         self.arc.set_value(val)
         self.lbl_target.set_text(f"{val}°")
 
-    def _bind_canvas_events(self):
-        if not document:
-            return
-        canvas = document.getElementById(self.canvas_id)
-        if not canvas:
-            return
-
-        def get_temp_from_event(event):
-            rect = canvas.getBoundingClientRect()
-            px = event.clientX - rect.left - rect.width / 2
-            py = event.clientY - rect.top - rect.height / 2
-            dist = math.sqrt(px * px + py * py)
-            if dist < 30 or dist > 115:
-                return None
-            ang = (math.degrees(math.atan2(py, px)) + 360.0) % 360.0
-            # Arc spans from 135 deg to 405 deg (45 deg) = 270 deg range
-            rel_ang = (ang - 135.0) % 360.0
-            if rel_ang > 270.0:
-                rel_ang = 0.0 if rel_ang > 315.0 else 270.0
-            temp = 50 + int((rel_ang / 270.0) * 40)
-            return temp
-
-        def on_pointer_down(event):
-            t = get_temp_from_event(event)
-            if t is not None:
-                self.is_dragging = True
-                self.set_target_temp(t)
-
-        def on_pointer_move(event):
-            if not self.is_dragging:
-                return
-            t = get_temp_from_event(event)
-            if t is not None:
-                self.set_target_temp(t)
-
-        def on_pointer_up(event):
-            self.is_dragging = False
-
-        self._p_down = create_proxy(on_pointer_down)
-        self._p_move = create_proxy(on_pointer_move)
-        self._p_up = create_proxy(on_pointer_up)
-
-        canvas.addEventListener("pointerdown", self._p_down)
-        window.addEventListener("pointermove", self._p_move)
-        window.addEventListener("pointerup", self._p_up)
-
-
 _thermostat_app = None
+_display_drv = None
+_app = None
+_display_driver = None
 
 
 def main(canvas_id="hero_canvas"):
-    global _thermostat_app
+    global _thermostat_app, _display_drv, _app, _display_driver
     print(f"Initializing PyDevices LVGL Thermostat on canvas '{canvas_id}'...")
+
+    _display_drv = WasmDisplay(width=240, height=240, canvas_id=canvas_id)
+    _app = appdev.App(displays=(_display_drv,), host_read=_display_drv.get_events)
+    import display_driver as _driver
+
+    _display_driver = _driver
 
     scr = lv.screen_active() if hasattr(lv, "screen_active") else lv.scr_act()
     _thermostat_app = LVGLThermostat(scr, size=240, canvas_id=canvas_id)

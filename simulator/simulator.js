@@ -17,6 +17,7 @@
   const elTemplateSelect = document.getElementById("template-select");
   const elResolutionSelect = document.getElementById("resolution-select");
   const elRunBtn = document.getElementById("run-btn");
+  const elResetVmBtn = document.getElementById("reset-vm");
   const elShareBtn = document.getElementById("share-btn");
   const elClearConsoleBtn = document.getElementById("clear-console-btn");
   const elDeviceBezel = document.getElementById("device-bezel");
@@ -145,31 +146,110 @@
   const RESOLUTION_STORAGE_KEY = "pydevices-simulator-resolution";
 
   let directMicroPython = null;
+  let replInput = null;
+  let replBusy = false;
+  const replHistory = [];
+  let replHistoryIndex = 0;
+
+  async function sendReplText(text) {
+    if (!directMicroPython || replBusy) return;
+    replBusy = true;
+    if (replInput) replInput.disabled = true;
+    try {
+      for (const character of text) {
+        await directMicroPython.replProcessCharWithAsyncify(character.charCodeAt(0));
+      }
+    } finally {
+      replBusy = false;
+      if (replInput) {
+        replInput.disabled = false;
+        replInput.focus();
+      }
+    }
+  }
+
+  async function submitRepl(command) {
+    if (!command.trim() && replBusy) return;
+    if (command.trim()) {
+      replHistory.push(command);
+      replHistoryIndex = replHistory.length;
+    }
+    await sendReplText(command + "\r");
+  }
+
+  function mountReplControls(host, output) {
+    const shell = document.createElement("div");
+    shell.className = "sim-repl-shell";
+    shell.appendChild(output);
+
+    const form = document.createElement("form");
+    form.className = "sim-repl-form";
+    const label = document.createElement("label");
+    label.htmlFor = "repl-input";
+    label.textContent = ">";
+    replInput = document.createElement("input");
+    replInput.id = "repl-input";
+    replInput.className = "sim-repl-input";
+    replInput.type = "text";
+    replInput.autocomplete = "off";
+    replInput.autocapitalize = "off";
+    replInput.spellcheck = false;
+    replInput.disabled = true;
+    replInput.setAttribute("aria-label", "MicroPython REPL command");
+    form.append(label, replInput);
+    shell.appendChild(form);
+    host.replaceChildren(shell);
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const command = replInput.value;
+      replInput.value = "";
+      await submitRepl(command);
+    });
+    replInput.addEventListener("keydown", (event) => {
+      if (event.key === "ArrowUp") {
+        event.preventDefault();
+        if (replHistoryIndex > 0) replHistoryIndex -= 1;
+        replInput.value = replHistory[replHistoryIndex] || "";
+      } else if (event.key === "ArrowDown") {
+        event.preventDefault();
+        if (replHistoryIndex < replHistory.length) replHistoryIndex += 1;
+        replInput.value = replHistory[replHistoryIndex] || "";
+      } else if (event.ctrlKey && event.key.toLowerCase() === "c") {
+        event.preventDefault();
+        sendReplText("\x03");
+      } else if (event.ctrlKey && event.key.toLowerCase() === "d") {
+        event.preventDefault();
+        sendReplText("\x04");
+      }
+    });
+  }
 
   async function mountRuntime() {
     const host = document.getElementById("console-log");
     if (!host) return;
 
     setStatus("Refreshing environment…", "busy");
-    host.replaceChildren();
     const output = document.createElement("pre");
     output.id = "direct-runtime-output";
     output.className = "sim-direct-output";
-    host.appendChild(output);
-    const write = (line, stream) => {
-      output.textContent += `${line}\n`;
+    mountReplControls(host, output);
+    const decoder = new TextDecoder();
+    const write = (chunk, stream) => {
+      const text = typeof chunk === "string" ? chunk : decoder.decode(chunk, { stream: true });
+      output.textContent += text;
       output.scrollTop = output.scrollHeight;
-      if (stream === "stderr") console.error(line);
+      if (stream === "stderr") console.error(text);
     };
     try {
+      const mipIndex = new URL("/mip", window.location.origin).href.replace(/\/$/, "");
       const { loadMicroPython } = await import("/vendor/micropython/micropython.mjs");
       directMicroPython = await loadMicroPython({
         stdout: (line) => write(line, "stdout"),
         stderr: (line) => write(line, "stderr"),
-        heapsize: 16 * 1024 * 1024
+        heapsize: 16 * 1024 * 1024,
+        linebuffer: false
       });
-      const source = window.getEditorCode();
-      directMicroPython.FS.writeFile("/main.py", source);
       await directMicroPython.runPythonAsync(`
 import os, sys
 from displaydev import env_set
@@ -178,13 +258,19 @@ env_set("PYDEVICES_HEIGHT", ${Number(window.SIM_HEIGHT)})
 if "/lib" not in sys.path:
     sys.path.insert(0, "/lib")
 import mip
-mip.install("pydevices-desktop", index="https://PyDevices.github.io/mip", target="/lib")
+mip.install("pydevices-desktop", index=${JSON.stringify(mipIndex)}, target="/lib")
 os.chdir("/")
-with open("/main.py") as _source_file:
-    _source = _source_file.read()
-exec(compile(_source, "/main.py", "exec"), {"__name__": "__main__"})
 `);
-      window.__pydevicesSimulator = { phase: "ready", runtime: "micropython", mp: directMicroPython };
+      directMicroPython.replInit();
+      replInput.disabled = false;
+      replInput.focus();
+      window.__pydevicesSimulator = {
+        phase: "ready",
+        runtime: "micropython",
+        mp: directMicroPython,
+        runEditor: runScript,
+        sendRepl: submitRepl
+      };
       setStatus("Ready", "ready");
     } catch (err) {
       write(String(err && (err.stack || err)), "stderr");
@@ -193,9 +279,26 @@ exec(compile(_source, "/main.py", "exec"), {"__name__": "__main__"})
     }
   }
 
-  // RESET rebuilds the direct MicroPython VM. Editor contents and resolution
-  // are persisted, while LVGL objects, timers, and display state are discarded.
-  function runScript() {
+  // Execute the editor through the REPL so it uses the persistent __main__
+  // namespace. Imports and assignments remain available at the next prompt.
+  async function runScript() {
+    if (!directMicroPython || replBusy) return;
+    persistState();
+    const source = window.getEditorCode();
+    directMicroPython.FS.writeFile("/main.py", source);
+    setStatus("Running…", "busy");
+    if (elRunBtn) elRunBtn.disabled = true;
+    try {
+      await submitRepl(
+        "exec(compile(open('/main.py').read(), '/main.py', 'exec'), globals(), globals())"
+      );
+    } finally {
+      if (elRunBtn) elRunBtn.disabled = false;
+      setStatus("Ready", "ready");
+    }
+  }
+
+  function resetVm() {
     persistState();
     window.location.reload();
   }
@@ -470,6 +573,7 @@ exec(compile(_source, "/main.py", "exec"), {"__name__": "__main__"})
     initSplitters();
 
     if (elRunBtn) elRunBtn.addEventListener("click", runScript);
+    if (elResetVmBtn) elResetVmBtn.addEventListener("click", resetVm);
     if (elShareBtn) elShareBtn.addEventListener("click", shareCode);
     if (elClearConsoleBtn) elClearConsoleBtn.addEventListener("click", clearConsole);
     document.getElementById("refresh-application")?.addEventListener("click", refreshApplication);
@@ -522,7 +626,7 @@ exec(compile(_source, "/main.py", "exec"), {"__name__": "__main__"})
       });
     }
 
-    // Refresh the environment, run the editor's code, then open the REPL.
+    // Refresh the environment, then open a REPL before editor code is run.
     mountRuntime();
   });
 })();

@@ -6,15 +6,25 @@ decaying phosphor persistence, anti-aliased range rings, and moving target blips
 """
 
 import sys
-import types
 import time
 import math
 from random import random
 
-document = window = None
-create_proxy = lambda fn: fn
+import appdev
+from displaydev.wasmdisplay import WasmDisplay
+import pygraphics
 
-from displaydev.auto import AutoDisplay
+
+def _color(value):
+    value = value.lstrip("#")
+    r, g, b = int(value[:2], 16), int(value[2:4], 16), int(value[4:], 16)
+    return (r & 0xF8) << 8 | (g & 0xFC) << 3 | b >> 3
+
+
+def _text(display, value, x, y, color, align="left"):
+    value = str(value)
+    if align == "center": x -= len(value) * 4
+    pygraphics.text8(display, value, int(x), int(y) - 8, _color(color))
 
 
 class RadarScopeHero:
@@ -26,10 +36,8 @@ class RadarScopeHero:
         self.cx = size // 2
         self.cy = size // 2
 
-        bc = types.ModuleType("board_config")
-        bc.display_drv = AutoDisplay(width=size, height=size, canvas_id=canvas_id)
-        sys.modules["board_config"] = bc
-        self.drv = bc.display_drv
+        self.drv = WasmDisplay(width=size, height=size, canvas_id=canvas_id)
+        self.app = appdev.App(displays=(self.drv,), host_read=self.drv.get_events)
 
         self.sweep_ang = 0.0
         self.targets = [
@@ -39,10 +47,9 @@ class RadarScopeHero:
         ]
 
         self.draw()
-        self._tick_proxy = create_proxy(self._js_tick_cb) if window else None
-        self._tick_interval = window.setInterval(self._tick_proxy, 30) if window else None
+        self._tick_subscription = self.app.every(30, self._timer_tick)
 
-    def _js_tick_cb(self):
+    def _timer_tick(self, _timer):
         self.tick()
 
     def tick(self):
@@ -50,57 +57,30 @@ class RadarScopeHero:
         self.draw()
 
     def draw(self):
-        if not hasattr(self.drv, "_buf_ctx") or not self.drv._buf_ctx:
-            return
-        ctx = self.drv._buf_ctx
+        display = self.drv
         w, h, cx, cy = self.w, self.h, self.cx, self.cy
 
         # 1. Dark Phosphor Background
-        ctx.fillStyle = "#060A08"
-        ctx.fillRect(0, 0, w, h)
+        display.fill(_color("#060A08"))
 
         # 2. Radar Grid & Range Rings
         max_r = 108
-        ctx.strokeStyle = "rgba(16, 185, 129, 0.25)"
-        ctx.lineWidth = 1
-
         for r_step in (35, 70, 105):
-            ctx.beginPath()
-            ctx.arc(cx, cy, r_step, 0, math.pi * 2)
-            ctx.stroke()
+            pygraphics.circle(display, cx, cy, r_step, _color("#0D4B3A"))
 
         # Crosshairs
-        ctx.beginPath()
-        ctx.moveTo(cx - max_r, cy)
-        ctx.lineTo(cx + max_r, cy)
-        ctx.moveTo(cx, cy - max_r)
-        ctx.lineTo(cx, cy + max_r)
-        ctx.stroke()
+        pygraphics.hline(display, cx - max_r, cy, max_r * 2, _color("#0D4B3A"))
+        pygraphics.vline(display, cx, cy - max_r, max_r * 2, _color("#0D4B3A"))
 
         # 3. Rotating Phosphor Sweep Cone
         rad_sweep = math.radians(self.sweep_ang)
-        cone_span = math.radians(45)
-
-        sweep_grad = ctx.createRadialGradient(cx, cy, 5, cx, cy, max_r)
-        sweep_grad.addColorStop(0.0, "rgba(16, 185, 129, 0.4)")
-        sweep_grad.addColorStop(1.0, "rgba(5, 150, 105, 0.05)")
-
-        ctx.save()
-        ctx.beginPath()
-        ctx.moveTo(cx, cy)
-        ctx.arc(cx, cy, max_r, rad_sweep - cone_span, rad_sweep)
-        ctx.closePath()
-        ctx.fillStyle = sweep_grad
-        ctx.fill()
+        for trailing in range(0, 46, 3):
+            angle = rad_sweep - math.radians(trailing)
+            color = _color("#0D5B42") if trailing < 15 else _color("#093326")
+            pygraphics.line(display, cx, cy, int(cx + math.cos(angle) * max_r), int(cy + math.sin(angle) * max_r), color)
 
         # Leading Edge Line
-        ctx.beginPath()
-        ctx.moveTo(cx, cy)
-        ctx.lineTo(cx + math.cos(rad_sweep) * max_r, cy + math.sin(rad_sweep) * max_r)
-        ctx.strokeStyle = "#34D399"
-        ctx.lineWidth = 2
-        ctx.stroke()
-        ctx.restore()
+        pygraphics.line(display, cx, cy, int(cx + math.cos(rad_sweep) * max_r), int(cy + math.sin(rad_sweep) * max_r), _color("#34D399"))
 
         # 4. Target Blips
         for tgt in self.targets:
@@ -113,46 +93,22 @@ class RadarScopeHero:
             if diff < 60:
                 # Target is lit up by recent sweep
                 alpha = 1.0 - (diff / 60.0)
-                ctx.beginPath()
-                ctx.arc(tx, ty, 4, 0, math.pi * 2)
-                ctx.fillStyle = f"rgba(52, 211, 153, {alpha})"
-                ctx.fill()
-                ctx.strokeStyle = f"rgba(255, 255, 255, {alpha})"
-                ctx.lineWidth = 1
-                ctx.stroke()
-
-                # Target ID Tag
-                ctx.fillStyle = f"rgba(52, 211, 153, {alpha})"
-                ctx.font = "8px system-ui, monospace"
-                ctx.textAlign = "left"
-                ctx.fillText(tgt["id"], tx + 6, ty - 4)
+                pygraphics.circle(display, int(tx), int(ty), 4, _color("#34D399"), True)
+                pygraphics.circle(display, int(tx), int(ty), 4, _color("#FFFFFF"))
+                _text(display, tgt["id"], tx + 6, ty - 4, "#34D399")
             else:
                 # Dim background ping
-                ctx.beginPath()
-                ctx.arc(tx, ty, 2, 0, math.pi * 2)
-                ctx.fillStyle = "rgba(16, 185, 129, 0.3)"
-                ctx.fill()
+                pygraphics.circle(display, int(tx), int(ty), 2, _color("#0D5B42"), True)
 
         # 5. Outer Bezel & Cardinal Degree Markings
-        ctx.beginPath()
-        ctx.arc(cx, cy, max_r + 4, 0, math.pi * 2)
-        ctx.strokeStyle = "#059669"
-        ctx.lineWidth = 2
-        ctx.stroke()
-
-        ctx.fillStyle = "#10B981"
-        ctx.font = "bold 8px system-ui, monospace"
-        ctx.textAlign = "center"
-        ctx.fillText("000°", cx, cy - max_r - 6)
-        ctx.fillText("090°", cx + max_r + 14, cy + 3)
-        ctx.fillText("180°", cx, cy + max_r + 12)
-        ctx.fillText("270°", cx - max_r - 14, cy + 3)
+        pygraphics.circle(display, cx, cy, max_r + 4, _color("#059669"))
+        _text(display, "000", cx, cy - max_r - 6, "#10B981", "center")
+        _text(display, "090", cx + max_r + 14, cy + 3, "#10B981", "center")
+        _text(display, "180", cx, cy + max_r + 12, "#10B981", "center")
+        _text(display, "270", cx - max_r - 14, cy + 3, "#10B981", "center")
 
         # 6. Status Strip
-        ctx.fillStyle = "#34D399"
-        ctx.font = "9px system-ui, monospace"
-        ctx.textAlign = "left"
-        ctx.fillText(f"HDG: {int(self.sweep_ang):03d}° | SCAN 24 RPM", 12, 22)
+        _text(display, f"HDG: {int(self.sweep_ang):03d} | SCAN 24 RPM", 12, 22, "#34D399")
 
         if hasattr(self.drv, "show"):
             self.drv.show()

@@ -10,12 +10,24 @@ Interactive Android handheld touchscreen gamepad controller:
 import math
 import sys
 import time
-import types
 
-document = window = None
-create_proxy = lambda fn: fn
+import appdev
+import events
+from displaydev.wasmdisplay import WasmDisplay
+import pygraphics
 
-from displaydev.auto import AutoDisplay
+
+def _color(value):
+    value = value.lstrip("#")
+    r, g, b = int(value[:2], 16), int(value[2:4], 16), int(value[4:], 16)
+    return (r & 0xF8) << 8 | (g & 0xFC) << 3 | b >> 3
+
+
+def _text(display, value, x, y, color, align="left"):
+    value = str(value)
+    if align == "right": x -= len(value) * 8
+    elif align == "center": x -= len(value) * 4
+    pygraphics.text8(display, value, int(x), int(y) - 8, _color(color))
 
 
 class MobilePadHero:
@@ -25,10 +37,8 @@ class MobilePadHero:
         self.w = size
         self.h = size
 
-        bc = types.ModuleType("board_config")
-        bc.display_drv = AutoDisplay(width=size, height=size, canvas_id=canvas_id)
-        sys.modules["board_config"] = bc
-        self.drv = bc.display_drv
+        self.drv = WasmDisplay(width=size, height=size, canvas_id=canvas_id)
+        self.app = appdev.App(displays=(self.drv,), host_read=self.drv.get_events)
 
         # Player avatar on virtual screen (x: 20..220, y: 32..112)
         self.avatar_x = 120.0
@@ -40,23 +50,14 @@ class MobilePadHero:
         self.draw()
         self._bind_events()
 
-        self._tick_proxy = create_proxy(self._js_tick_cb) if window else None
-        self._tick_interval = window.setInterval(self._tick_proxy, 33) if window else None
+        self._tick_subscription = self.app.every(33, self._timer_tick)
 
-    def _js_tick_cb(self):
+    def _timer_tick(self, _timer):
         self.tick()
 
     def _bind_events(self):
-        if not document:
-            return
-        canvas = document.getElementById(self.canvas_id)
-        if not canvas:
-            return
-
         def handle_touch(event):
-            rect = canvas.getBoundingClientRect()
-            x = (event.clientX - rect.left) * (self.size / rect.width)
-            y = (event.clientY - rect.top) * (self.size / rect.height)
+            x, y = event.pos
 
             # D-Pad (Center: 64, 180; radius 40)
             d_cx, d_cy = 64, 180
@@ -99,18 +100,14 @@ class MobilePadHero:
                 return
 
         def on_pointer_down(event):
-            event.preventDefault()
             handle_touch(event)
 
         def on_pointer_up(event):
             self.active_btn = None
             self.draw()
 
-        self._p_down = create_proxy(on_pointer_down)
-        self._p_up = create_proxy(on_pointer_up)
-
-        canvas.addEventListener("pointerdown", self._p_down)
-        window.addEventListener("pointerup", self._p_up)
+        self.app.on(events.MOUSEBUTTONDOWN, on_pointer_down)
+        self.app.on(events.MOUSEBUTTONUP, on_pointer_up)
 
     def tick(self):
         # Subtle idle bob
@@ -119,109 +116,55 @@ class MobilePadHero:
             self.draw()
 
     def draw(self):
-        if not hasattr(self.drv, "_buf_ctx") or not self.drv._buf_ctx:
-            return
-        ctx = self.drv._buf_ctx
+        display = self.drv
         w, h = self.w, self.h
 
         # 1. Dark Handheld Console Frame Background
-        ctx.fillStyle = "#0F172A"
-        ctx.fillRect(0, 0, w, h)
+        display.fill(_color("#0F172A"))
 
         # 2. Virtual LCD Viewport (x: 16, y: 14, w: 208, h: 104)
         vx, vy, vw, vh = 16, 14, 208, 104
-        ctx.fillStyle = "#020617"
-        ctx.beginPath()
-        ctx.roundRect(vx, vy, vw, vh, 8)
-        ctx.fill()
-        ctx.strokeStyle = "#334155"
-        ctx.lineWidth = 1.5
-        ctx.stroke()
+        pygraphics.round_rect(display, vx, vy, vw, vh, 8, _color("#020617"), True)
+        pygraphics.round_rect(display, vx, vy, vw, vh, 8, _color("#334155"))
 
         # Viewport Header
-        ctx.fillStyle = "#A855F7"
-        ctx.font = "bold 9px system-ui, sans-serif"
-        ctx.textAlign = "left"
-        ctx.fillText("● ANDROID P4A", vx + 10, vy + 16)
-
-        ctx.fillStyle = "#38BDF8"
-        ctx.font = "bold 9px system-ui, monospace"
-        ctx.textAlign = "right"
-        ctx.fillText(f"PTS: {self.score}", vx + vw - 10, vy + 16)
+        _text(display, "ANDROID P4A", vx + 10, vy + 16, "#A855F7")
+        _text(display, f"PTS: {self.score}", vx + vw - 10, vy + 16, "#38BDF8", "right")
 
         # Viewport Starfield / Grid
-        ctx.strokeStyle = "rgba(51, 65, 85, 0.4)"
-        ctx.lineWidth = 1
         for gy in range(vy + 26, vy + vh, 18):
-            ctx.beginPath()
-            ctx.moveTo(vx + 6, gy)
-            ctx.lineTo(vx + vw - 6, gy)
-            ctx.stroke()
+            pygraphics.hline(display, vx + 6, gy, vw - 12, _color("#1E293B"))
 
         # Animated Player Avatar
         ax, ay = self.avatar_x, self.avatar_y
-        ctx.beginPath()
-        ctx.arc(ax, ay, 10, 0, math.pi * 2)
-        ctx.fillStyle = self.avatar_color
-        ctx.fill()
-        ctx.strokeStyle = "#FFFFFF"
-        ctx.lineWidth = 2
-        ctx.stroke()
-
-        # Avatar Glow
-        ctx.beginPath()
-        ctx.arc(ax, ay, 16, 0, math.pi * 2)
-        ctx.fillStyle = "rgba(56, 189, 248, 0.2)"
-        ctx.fill()
+        pygraphics.circle(display, int(ax), int(ay), 16, _color("#123247"), True)
+        pygraphics.circle(display, int(ax), int(ay), 10, _color(self.avatar_color), True)
+        pygraphics.circle(display, int(ax), int(ay), 10, _color("#FFFFFF"))
 
         # 3. 4-Way D-Pad on Left (Center: 64, 180)
         d_cx, d_cy = 64, 180
         pad_size = 72
-        ctx.fillStyle = "#1E293B"
-        # Cross Horizontal
-        ctx.beginPath()
-        ctx.roundRect(d_cx - pad_size / 2, d_cy - 12, pad_size, 24, 6)
-        ctx.fill()
-        # Cross Vertical
-        ctx.beginPath()
-        ctx.roundRect(d_cx - 12, d_cy - pad_size / 2, 24, pad_size, 6)
-        ctx.fill()
+        pygraphics.round_rect(display, int(d_cx - pad_size / 2), d_cy - 12, pad_size, 24, 6, _color("#1E293B"), True)
+        pygraphics.round_rect(display, d_cx - 12, int(d_cy - pad_size / 2), 24, pad_size, 6, _color("#1E293B"), True)
 
         # D-Pad Arrows
-        ctx.fillStyle = "#94A3B8"
-        ctx.font = "bold 10px monospace"
-        ctx.textAlign = "center"
-        ctx.fillText("▲", d_cx, d_cy - 22)
-        ctx.fillText("▼", d_cx, d_cy + 28)
-        ctx.fillText("◀", d_cx - 24, d_cy + 4)
-        ctx.fillText("▶", d_cx + 24, d_cy + 4)
+        _text(display, "^", d_cx, d_cy - 22, "#94A3B8", "center")
+        _text(display, "v", d_cx, d_cy + 28, "#94A3B8", "center")
+        _text(display, "<", d_cx - 24, d_cy + 4, "#94A3B8", "center")
+        _text(display, ">", d_cx + 24, d_cy + 4, "#94A3B8", "center")
 
         # 4. Action Buttons A & B on Right
         # B Button
         bx, by = 156, 192
-        ctx.beginPath()
-        ctx.arc(bx, by, 16, 0, math.pi * 2)
-        ctx.fillStyle = "#9333EA" if self.active_btn == "B" else "#6B21A8"
-        ctx.fill()
-        ctx.strokeStyle = "#C084FC"
-        ctx.lineWidth = 1.5
-        ctx.stroke()
-        ctx.fillStyle = "#FFFFFF"
-        ctx.font = "bold 11px system-ui"
-        ctx.textAlign = "center"
-        ctx.fillText("B", bx, by + 4)
+        pygraphics.circle(display, bx, by, 16, _color("#9333EA" if self.active_btn == "B" else "#6B21A8"), True)
+        pygraphics.circle(display, bx, by, 16, _color("#C084FC"))
+        _text(display, "B", bx, by + 4, "#FFFFFF", "center")
 
         # A Button
         ax_btn, ay_btn = 192, 162
-        ctx.beginPath()
-        ctx.arc(ax_btn, ay_btn, 16, 0, math.pi * 2)
-        ctx.fillStyle = "#059669" if self.active_btn == "A" else "#065F46"
-        ctx.fill()
-        ctx.strokeStyle = "#34D399"
-        ctx.lineWidth = 1.5
-        ctx.stroke()
-        ctx.fillStyle = "#FFFFFF"
-        ctx.fillText("A", ax_btn, ay_btn + 4)
+        pygraphics.circle(display, ax_btn, ay_btn, 16, _color("#059669" if self.active_btn == "A" else "#065F46"), True)
+        pygraphics.circle(display, ax_btn, ay_btn, 16, _color("#34D399"))
+        _text(display, "A", ax_btn, ay_btn + 4, "#FFFFFF", "center")
 
         if hasattr(self.drv, "show"):
             self.drv.show()

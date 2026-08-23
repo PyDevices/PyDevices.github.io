@@ -1,20 +1,19 @@
 """
 PyDevices Simon Memory Game (Hero Canvas App for pygraphics)
 ============================================================
-Classic 4-color memory game rendered through the automatic PyDevices backend.
+Classic 4-color memory game rendered in pure Python directly on PyDevices PSDisplay.
 Features idle attract mode and full interactive touch/click gameplay.
 """
 
 import sys
-import types
 import time
 import math
 from random import getrandbits
 
-document = window = None
-create_proxy = lambda fn: fn
-
-from displaydev.auto import AutoDisplay
+import appdev
+import events
+from displaydev.wasmdisplay import WasmDisplay
+import pygraphics
 
 # Color definitions (RGB565)
 BLACK = 0x0000
@@ -66,11 +65,9 @@ class SimonHero:
             ),
         )
 
-        # Initialize the automatic display backend.
-        bc = types.ModuleType("board_config")
-        bc.display_drv = AutoDisplay(width=size, height=size, canvas_id=canvas_id)
-        sys.modules["board_config"] = bc
-        self.drv = bc.display_drv
+        # Initialize PSDisplay
+        self.drv = WasmDisplay(width=size, height=size, canvas_id=canvas_id)
+        self.app = appdev.App(displays=(self.drv,), host_read=self.drv.get_events)
 
         # Game state
         self.state = IDLE
@@ -89,29 +86,18 @@ class SimonHero:
         # Bind touch/mouse events
         self._bind_events()
 
-        # Start animation / tick loop via JS setInterval
-        self._tick_proxy = create_proxy(self._js_tick_cb) if window else None
-        self._tick_interval = window.setInterval(self._tick_proxy, 33) if window else None
+        # Start the animation through the direct WebAssembly timer backend.
+        self._tick_subscription = self.app.every(33, self._timer_tick)
 
-    def _js_tick_cb(self):
+    def _timer_tick(self, _timer):
         self.tick()
 
     def _bind_events(self):
-        if not document:
-            return
-        canvas = document.getElementById(self.canvas_id)
-        if not canvas:
-            return
-
         def on_pointer_down(event):
-            event.preventDefault()
-            rect = canvas.getBoundingClientRect()
-            x = int((event.clientX - rect.left) * (self.size / rect.width))
-            y = int((event.clientY - rect.top) * (self.size / rect.height))
+            x, y = event.pos
             self.handle_touch(x, y)
 
-        self._pointer_down_proxy = create_proxy(on_pointer_down)
-        canvas.addEventListener("pointerdown", self._pointer_down_proxy)
+        self.app.on(events.MOUSEBUTTONDOWN, on_pointer_down)
 
     def draw_pad(self, pad_idx, is_lit=False):
         color = LIT_COLORS[pad_idx] if is_lit else DIM_COLORS[pad_idx]
@@ -132,18 +118,21 @@ class SimonHero:
         hy = self.cy - hh // 2
         self.drv.fill_rect(hx, hy, hw, hh, 0x080B)
 
-        # Draw Hub Text (Canvas context for crisp typography)
-        if hasattr(self.drv, "_buf_ctx") and self.drv._buf_ctx:
-            ctx = self.drv._buf_ctx
-            ctx.fillStyle = "#F8FAFC"
-            ctx.font = "bold 13px system-ui, -apple-system, sans-serif"
-            ctx.textAlign = "center"
-            ctx.textBaseline = "middle"
-            ctx.fillText(hub_title, self.cx, self.cy - 7)
-
-            ctx.fillStyle = "#94A3B8"
-            ctx.font = "10px system-ui, -apple-system, sans-serif"
-            ctx.fillText(hub_sub, self.cx, self.cy + 9)
+        # Draw hub text directly into the display framebuffer.
+        pygraphics.text8(
+            self.drv,
+            hub_title,
+            self.cx - len(hub_title) * 4,
+            self.cy - 11,
+            WHITE,
+        )
+        pygraphics.text8(
+            self.drv,
+            hub_sub,
+            self.cx - len(hub_sub) * 4,
+            self.cy + 5,
+            GREY_TEXT,
+        )
 
         if hasattr(self.drv, "show"):
             self.drv.show()

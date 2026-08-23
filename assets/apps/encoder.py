@@ -6,14 +6,24 @@ rotational drag physics, tactile momentary push-button switch, and live telemetr
 """
 
 import sys
-import types
 import time
 import math
 
-document = window = None
-create_proxy = lambda fn: fn
+import appdev
+import events
+from displaydev.wasmdisplay import WasmDisplay
+import pygraphics
 
-from displaydev.auto import AutoDisplay
+
+def _color(value):
+    value = value.lstrip("#")
+    r, g, b = int(value[:2], 16), int(value[2:4], 16), int(value[4:], 16)
+    return (r & 0xF8) << 8 | (g & 0xFC) << 3 | b >> 3
+
+
+def _text(display, value, x, y, color):
+    value = str(value)
+    pygraphics.text8(display, value, int(x) - len(value) * 4, int(y) - 4, _color(color))
 
 
 class EncoderHero:
@@ -25,11 +35,9 @@ class EncoderHero:
         self.cx = size // 2
         self.cy = size // 2
 
-        # Initialize the automatic display backend.
-        bc = types.ModuleType("board_config")
-        bc.display_drv = AutoDisplay(width=size, height=size, canvas_id=canvas_id)
-        sys.modules["board_config"] = bc
-        self.drv = bc.display_drv
+        # Initialize PSDisplay
+        self.drv = WasmDisplay(width=size, height=size, canvas_id=canvas_id)
+        self.app = appdev.App(displays=(self.drv,), host_read=self.drv.get_events)
 
         # Encoder state
         self.angle_deg = 45.0
@@ -49,28 +57,19 @@ class EncoderHero:
         self._bind_events()
         self.draw()
 
-        self._tick_proxy = create_proxy(self._js_tick_cb) if window else None
-        self._tick_interval = window.setInterval(self._tick_proxy, 25) if window else None
+        self._tick_subscription = self.app.every(25, self._timer_tick)
 
-    def _js_tick_cb(self):
+    def _timer_tick(self, _timer):
         self.tick()
 
     def _bind_events(self):
-        if not document:
-            return
-        canvas = document.getElementById(self.canvas_id)
-        if not canvas:
-            return
-
         def get_angle_from_event(event):
-            rect = canvas.getBoundingClientRect()
-            px = event.clientX - rect.left - rect.width / 2
-            py = event.clientY - rect.top - rect.height / 2
+            px = event.pos[0] - self.cx
+            py = event.pos[1] - self.cy
             ang = math.degrees(math.atan2(py, px))
             return (ang + 360.0) % 360.0, math.sqrt(px * px + py * py)
 
         def on_pointer_down(event):
-            event.preventDefault()
             ang, dist = get_angle_from_event(event)
             self.last_interaction_time = time.time()
             if dist <= 38:
@@ -84,7 +83,6 @@ class EncoderHero:
         def on_pointer_move(event):
             if not self.is_dragging:
                 return
-            event.preventDefault()
             ang, dist = get_angle_from_event(event)
             self.last_interaction_time = time.time()
             delta = ang - self.last_pointer_angle
@@ -108,13 +106,9 @@ class EncoderHero:
             self.step_idx = int(nearest_detent) % self.detents
             self.draw()
 
-        self._pointer_down_proxy = create_proxy(on_pointer_down)
-        self._pointer_move_proxy = create_proxy(on_pointer_move)
-        self._pointer_up_proxy = create_proxy(on_pointer_up)
-
-        canvas.addEventListener("pointerdown", self._pointer_down_proxy)
-        window.addEventListener("pointermove", self._pointer_move_proxy)
-        window.addEventListener("pointerup", self._pointer_up_proxy)
+        self.app.on(events.MOUSEBUTTONDOWN, on_pointer_down)
+        self.app.on(events.MOUSEMOTION, on_pointer_move)
+        self.app.on(events.MOUSEBUTTONUP, on_pointer_up)
 
     def tick(self):
         now = time.time()
@@ -135,24 +129,16 @@ class EncoderHero:
                 self.draw()
 
     def draw(self):
-        if not hasattr(self.drv, "_buf_ctx") or not self.drv._buf_ctx:
-            return
-        ctx = self.drv._buf_ctx
+        display = self.drv
         w, h, cx, cy = self.w, self.h, self.cx, self.cy
 
         # 1. Base Panel Background
-        ctx.fillStyle = "#0B0E12"
-        ctx.fillRect(0, 0, w, h)
+        display.fill(_color("#0B0E12"))
 
         # 2. Outer Bezel & Detent Ring
         outer_r = 108
-        ctx.beginPath()
-        ctx.arc(cx, cy, outer_r, 0, math.pi * 2)
-        ctx.fillStyle = "#141920"
-        ctx.fill()
-        ctx.strokeStyle = "#2A3441"
-        ctx.lineWidth = 2
-        ctx.stroke()
+        pygraphics.circle(display, cx, cy, outer_r, _color("#141920"), True)
+        pygraphics.circle(display, cx, cy, outer_r, _color("#2A3441"))
 
         # Detent Tick Marks (24 ticks around the perimeter)
         for i in range(self.detents):
@@ -166,107 +152,59 @@ class EncoderHero:
             x1 = cx + math.cos(rad) * r_inner
             y1 = cy + math.sin(rad) * r_inner
 
-            ctx.beginPath()
-            ctx.moveTo(x0, y0)
-            ctx.lineTo(x1, y1)
-            ctx.strokeStyle = "#F54E00" if is_active else "#475569"
-            ctx.lineWidth = 3 if is_active else 1.5
-            ctx.stroke()
+            color = _color("#F54E00" if is_active else "#475569")
+            pygraphics.line(display, int(x0), int(y0), int(x1), int(y1), color)
+            if is_active:
+                pygraphics.line(display, int(x0) + 1, int(y0), int(x1) + 1, int(y1), color)
 
         # 3. 3D Knurled Aluminum Knob (Rotates with self.angle_deg)
         knob_r = 82
         rad_rot = math.radians(self.angle_deg)
 
-        # Radial Metallic Gradient Shading
-        grad = ctx.createLinearGradient(cx - knob_r, cy - knob_r, cx + knob_r, cy + knob_r)
-        grad.addColorStop(0.0, "#334155")
-        grad.addColorStop(0.3, "#1E293B")
-        grad.addColorStop(0.7, "#475569")
-        grad.addColorStop(1.0, "#0F172A")
-
-        ctx.save()
-        ctx.translate(cx, cy)
-        ctx.rotate(rad_rot)
-
         # Draw Knurl Teeth around the perimeter
         teeth_count = 36
         for t in range(teeth_count):
-            t_ang = t * (math.pi * 2 / teeth_count)
-            tx = math.cos(t_ang) * (knob_r - 2)
-            ty = math.sin(t_ang) * (knob_r - 2)
-            ctx.beginPath()
-            ctx.arc(tx, ty, 2.5, 0, math.pi * 2)
-            ctx.fillStyle = "#64748B" if t % 2 == 0 else "#1E293B"
-            ctx.fill()
+            t_ang = rad_rot + t * (math.pi * 2 / teeth_count)
+            tx = cx + math.cos(t_ang) * (knob_r - 2)
+            ty = cy + math.sin(t_ang) * (knob_r - 2)
+            pygraphics.circle(display, int(tx), int(ty), 2, _color("#64748B" if t % 2 == 0 else "#1E293B"), True)
 
         # Knob Main Body
-        ctx.beginPath()
-        ctx.arc(0, 0, knob_r - 4, 0, math.pi * 2)
-        ctx.fillStyle = grad
-        ctx.fill()
-        ctx.strokeStyle = "#64748B"
-        ctx.lineWidth = 1.5
-        ctx.stroke()
+        pygraphics.circle(display, cx, cy, knob_r - 4, _color("#334155"), True)
+        for radius, color in ((70, "#293648"), (62, "#1E293B")):
+            pygraphics.circle(display, cx, cy, radius, _color(color), True)
+        pygraphics.circle(display, cx, cy, knob_r - 4, _color("#64748B"))
 
         # Recessed Dial Dish
         dish_r = 58
-        dish_grad = ctx.createRadialGradient(-10, -10, 5, 0, 0, dish_r)
-        dish_grad.addColorStop(0.0, "#1E293B")
-        dish_grad.addColorStop(1.0, "#090D11")
-        ctx.beginPath()
-        ctx.arc(0, 0, dish_r, 0, math.pi * 2)
-        ctx.fillStyle = dish_grad
-        ctx.fill()
-        ctx.strokeStyle = "#0F172A"
-        ctx.lineWidth = 2
-        ctx.stroke()
+        pygraphics.circle(display, cx, cy, dish_r, _color("#090D11"), True)
+        pygraphics.circle(display, cx - 6, cy - 6, dish_r - 8, _color("#111923"), True)
+        pygraphics.circle(display, cx, cy, dish_r, _color("#0F172A"))
 
         # Tactile Indicator Notch / Line (Pointing to current angle)
-        ctx.beginPath()
-        ctx.moveTo(dish_r - 18, 0)
-        ctx.lineTo(dish_r - 2, 0)
-        ctx.strokeStyle = "#F54E00"
-        ctx.lineWidth = 4
-        ctx.lineCap = "round"
-        ctx.stroke()
-
-        ctx.restore()
+        notch_start = dish_r - 18
+        notch_end = dish_r - 2
+        x0 = cx + math.cos(rad_rot) * notch_start
+        y0 = cy + math.sin(rad_rot) * notch_start
+        x1 = cx + math.cos(rad_rot) * notch_end
+        y1 = cy + math.sin(rad_rot) * notch_end
+        for offset in (-1, 0, 1):
+            pygraphics.line(display, int(x0), int(y0) + offset, int(x1), int(y1) + offset, _color("#F54E00"))
 
         # 4. Center Momentary Push-Button Hub
         hub_r = 34 if not self.is_pressed else 32
-        hub_grad = ctx.createRadialGradient(cx - 5, cy - 5, 2, cx, cy, hub_r)
-        if self.is_pressed:
-            hub_grad.addColorStop(0.0, "#F54E00")
-            hub_grad.addColorStop(1.0, "#9A3412")
-        else:
-            hub_grad.addColorStop(0.0, "#293544")
-            hub_grad.addColorStop(1.0, "#111822")
-
-        ctx.beginPath()
-        ctx.arc(cx, cy, hub_r, 0, math.pi * 2)
-        ctx.fillStyle = hub_grad
-        ctx.fill()
-        ctx.strokeStyle = "#FF8C42" if self.is_pressed else "#475569"
-        ctx.lineWidth = 1.5
-        ctx.stroke()
+        hub_color = "#9A3412" if self.is_pressed else "#111822"
+        pygraphics.circle(display, cx, cy, hub_r, _color(hub_color), True)
+        pygraphics.circle(display, cx - 4, cy - 4, hub_r - 6, _color("#F54E00" if self.is_pressed else "#293544"), True)
+        pygraphics.circle(display, cx, cy, hub_r, _color("#FF8C42" if self.is_pressed else "#475569"))
 
         # 5. Center Telemetry Readout
-        ctx.textAlign = "center"
-        ctx.textBaseline = "middle"
-
         if self.is_pressed:
-            ctx.fillStyle = "#FFFFFF"
-            ctx.font = "bold 10px system-ui, sans-serif"
-            ctx.fillText("CLICK", cx, cy)
+            _text(display, "CLICK", cx, cy, "#FFFFFF")
         else:
             pct = int((self.step_idx / self.detents) * 100)
-            ctx.fillStyle = "#F8FAFC"
-            ctx.font = "bold 13px system-ui, sans-serif"
-            ctx.fillText(f"{self.step_idx:02d}", cx, cy - 6)
-
-            ctx.fillStyle = "#94A3B8"
-            ctx.font = "9px system-ui, sans-serif"
-            ctx.fillText(f"{pct}%", cx, cy + 8)
+            _text(display, f"{self.step_idx:02d}", cx, cy - 6, "#F8FAFC")
+            _text(display, f"{pct}%", cx, cy + 8, "#94A3B8")
 
         if hasattr(self.drv, "show"):
             self.drv.show()

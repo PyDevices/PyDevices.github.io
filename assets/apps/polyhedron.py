@@ -6,14 +6,28 @@ depth sorting, light-source vector dot-product shading, and interactive touch tu
 """
 
 import sys
-import types
 import time
 import math
 
-document = window = None
-create_proxy = lambda fn: fn
+import appdev
+import events
+from displaydev.wasmdisplay import WasmDisplay
+import pygraphics
 
-from displaydev.auto import AutoDisplay
+
+def _rgb565(red, green, blue):
+    return (int(red) & 0xF8) << 8 | (int(green) & 0xFC) << 3 | int(blue) >> 3
+
+
+def _color(value):
+    value = value.lstrip("#")
+    return _rgb565(int(value[:2], 16), int(value[2:4], 16), int(value[4:], 16))
+
+
+def _text(display, value, x, y, color, align="left"):
+    value = str(value)
+    if align == "right": x -= len(value) * 8
+    pygraphics.text8(display, value, int(x), int(y) - 8, _color(color))
 
 
 class PolyhedronHero:
@@ -25,11 +39,9 @@ class PolyhedronHero:
         self.cx = size // 2
         self.cy = size // 2
 
-        # Initialize the automatic display backend.
-        bc = types.ModuleType("board_config")
-        bc.display_drv = AutoDisplay(width=size, height=size, canvas_id=canvas_id)
-        sys.modules["board_config"] = bc
-        self.drv = bc.display_drv
+        # Initialize PSDisplay
+        self.drv = WasmDisplay(width=size, height=size, canvas_id=canvas_id)
+        self.app = appdev.App(displays=(self.drv,), host_read=self.drv.get_events)
 
         # 3D Model: Icosahedron (12 vertices, 20 triangular faces)
         phi = (1.0 + math.sqrt(5.0)) / 2.0  # Golden ratio 1.618
@@ -72,34 +84,23 @@ class PolyhedronHero:
         self._bind_events()
         self.draw()
 
-        self._tick_proxy = create_proxy(self._js_tick_cb) if window else None
-        self._tick_interval = window.setInterval(self._tick_proxy, 30) if window else None
+        self._tick_subscription = self.app.every(30, self._timer_tick)
 
-    def _js_tick_cb(self):
+    def _timer_tick(self, _timer):
         self.tick()
 
     def _bind_events(self):
-        if not document:
-            return
-        canvas = document.getElementById(self.canvas_id)
-        if not canvas:
-            return
-
         def on_pointer_down(event):
-            event.preventDefault()
             self.is_dragging = True
-            self.last_mouse_x = event.clientX
-            self.last_mouse_y = event.clientY
+            self.last_mouse_x, self.last_mouse_y = event.pos
             self.last_interaction_time = time.time()
 
         def on_pointer_move(event):
             if not self.is_dragging:
                 return
-            event.preventDefault()
-            dx = event.clientX - self.last_mouse_x
-            dy = event.clientY - self.last_mouse_y
-            self.last_mouse_x = event.clientX
-            self.last_mouse_y = event.clientY
+            dx = event.pos[0] - self.last_mouse_x
+            dy = event.pos[1] - self.last_mouse_y
+            self.last_mouse_x, self.last_mouse_y = event.pos
             self.rot_y += dx * 0.015
             self.rot_x += dy * 0.015
             self.vel_y = dx * 0.008
@@ -110,13 +111,9 @@ class PolyhedronHero:
         def on_pointer_up(event):
             self.is_dragging = False
 
-        self._pointer_down_proxy = create_proxy(on_pointer_down)
-        self._pointer_move_proxy = create_proxy(on_pointer_move)
-        self._pointer_up_proxy = create_proxy(on_pointer_up)
-
-        canvas.addEventListener("pointerdown", self._pointer_down_proxy)
-        window.addEventListener("pointermove", self._pointer_move_proxy)
-        window.addEventListener("pointerup", self._pointer_up_proxy)
+        self.app.on(events.MOUSEBUTTONDOWN, on_pointer_down)
+        self.app.on(events.MOUSEMOTION, on_pointer_move)
+        self.app.on(events.MOUSEBUTTONUP, on_pointer_up)
 
     def tick(self):
         if not self.is_dragging:
@@ -154,27 +151,16 @@ class PolyhedronHero:
         return (x3, y3, z2)
 
     def draw(self):
-        if not hasattr(self.drv, "_buf_ctx") or not self.drv._buf_ctx:
-            return
-        ctx = self.drv._buf_ctx
+        display = self.drv
         w, h, cx, cy = self.w, self.h, self.cx, self.cy
 
         # 1. High-Tech Background
-        ctx.fillStyle = "#0A0D11"
-        ctx.fillRect(0, 0, w, h)
+        display.fill(_color("#0A0D11"))
 
         # Subtle Wire Grid
-        ctx.strokeStyle = "rgba(40, 52, 68, 0.4)"
-        ctx.lineWidth = 1
         for g in range(30, 240, 30):
-            ctx.beginPath()
-            ctx.moveTo(g, 0)
-            ctx.lineTo(g, h)
-            ctx.stroke()
-            ctx.beginPath()
-            ctx.moveTo(0, g)
-            ctx.lineTo(w, g)
-            ctx.stroke()
+            pygraphics.vline(display, g, 0, h, _color("#18212D"))
+            pygraphics.hline(display, 0, g, w, _color("#18212D"))
 
         # 2. Transform all vertices
         t_verts = [self.rotate_point(v) for v in self.vertices]
@@ -247,25 +233,15 @@ class PolyhedronHero:
                 g_c = int(132 + t * (78 - 132))
                 b_c = int(199 + t * (0 - 199))
 
-            ctx.beginPath()
-            ctx.moveTo(x0, y0)
-            ctx.lineTo(x1, y1)
-            ctx.lineTo(x2, y2)
-            ctx.closePath()
-
-            ctx.fillStyle = f"rgb({r_c},{g_c},{b_c})"
-            ctx.fill()
-            ctx.strokeStyle = "rgba(255, 255, 255, 0.25)"
-            ctx.lineWidth = 1.2
-            ctx.stroke()
+            pygraphics.triangle(display, int(x0), int(y0), int(x1), int(y1), int(x2), int(y2), _rgb565(r_c, g_c, b_c), True)
+            edge = _color("#64748B")
+            pygraphics.line(display, int(x0), int(y0), int(x1), int(y1), edge)
+            pygraphics.line(display, int(x1), int(y1), int(x2), int(y2), edge)
+            pygraphics.line(display, int(x2), int(y2), int(x0), int(y0), edge)
 
         # 6. Tech HUD Overlay
-        ctx.fillStyle = "rgba(148, 163, 184, 0.8)"
-        ctx.font = "9px system-ui, sans-serif"
-        ctx.textAlign = "left"
-        ctx.fillText("CMODS 3D ENGINE", 12, 20)
-        ctx.textAlign = "right"
-        ctx.fillText("60 FPS", w - 12, 20)
+        _text(display, "CMODS 3D ENGINE", 12, 20, "#94A3B8")
+        _text(display, "60 FPS", w - 12, 20, "#94A3B8", "right")
 
         if hasattr(self.drv, "show"):
             self.drv.show()

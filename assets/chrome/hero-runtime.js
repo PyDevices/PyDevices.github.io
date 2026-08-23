@@ -26,14 +26,6 @@ import os, sys
 from displaydev import env_set
 env_set("PYDEVICES_CANVAS_ID", ${JSON.stringify(canvasId)})
 if "/" not in sys.path: sys.path.insert(0, "/")
-# MicroPython omits CPython's small types helper. Hero applications only
-# need ModuleType to publish a neutral board_config contract.
-if "types" not in sys.modules:
-    class _ModuleType:
-        def __init__(self, name): self.__name__ = name
-    _types = _ModuleType("types")
-    _types.ModuleType = _ModuleType
-    sys.modules["types"] = _types
 os.chdir("/")
 _hero = __import__(${JSON.stringify(appName)})
 if hasattr(_hero, "main"): _hero.main(${JSON.stringify(canvasId)})

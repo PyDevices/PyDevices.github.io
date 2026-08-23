@@ -10,13 +10,24 @@ Interactive dual-pane serial FTP and hex data transfer monitor:
 import math
 import sys
 import time
-import types
 from random import randint, choice
 
-document = window = None
-create_proxy = lambda fn: fn
+import appdev
+import events
+from displaydev.wasmdisplay import WasmDisplay
+import pygraphics
 
-from displaydev.auto import AutoDisplay
+
+def _color(value):
+    value = value.lstrip("#")
+    r, g, b = int(value[:2], 16), int(value[2:4], 16), int(value[4:], 16)
+    return (r & 0xF8) << 8 | (g & 0xFC) << 3 | b >> 3
+
+
+def _text(display, value, x, y, color, align="left"):
+    value = str(value)
+    if align == "right": x -= len(value) * 8
+    pygraphics.text8(display, value, int(x), int(y) - 8, _color(color))
 
 
 SAMPLE_FILES = [
@@ -34,10 +45,8 @@ class FtpScopeHero:
         self.w = size
         self.h = size
 
-        bc = types.ModuleType("board_config")
-        bc.display_drv = AutoDisplay(width=size, height=size, canvas_id=canvas_id)
-        sys.modules["board_config"] = bc
-        self.drv = bc.display_drv
+        self.drv = WasmDisplay(width=size, height=size, canvas_id=canvas_id)
+        self.app = appdev.App(displays=(self.drv,), host_read=self.drv.get_events)
 
         self.file_idx = 0
         self.cur_file, self.cur_size = SAMPLE_FILES[self.file_idx]
@@ -48,29 +57,20 @@ class FtpScopeHero:
         self.draw()
         self._bind_events()
 
-        self._tick_proxy = create_proxy(self._js_tick_cb) if window else None
-        self._tick_interval = window.setInterval(self._tick_proxy, 33) if window else None
+        self._tick_subscription = self.app.every(33, self._timer_tick)
 
-    def _js_tick_cb(self):
+    def _timer_tick(self, _timer):
         self.tick()
 
     def _bind_events(self):
-        if not document:
-            return
-        canvas = document.getElementById(self.canvas_id)
-        if not canvas:
-            return
-
-        def on_pointer_down(event):
-            event.preventDefault()
+        def on_pointer_down(_event):
             self.file_idx = (self.file_idx + 1) % len(SAMPLE_FILES)
             self.cur_file, self.cur_size = SAMPLE_FILES[self.file_idx]
             self.bytes_transferred = 0
             self.hex_offset += 0x0040
             self.draw()
 
-        self._p_down = create_proxy(on_pointer_down)
-        canvas.addEventListener("pointerdown", self._p_down)
+        self.app.on(events.MOUSEBUTTONDOWN, on_pointer_down)
 
     def tick(self):
         if self.bytes_transferred < self.cur_size:
@@ -84,82 +84,40 @@ class FtpScopeHero:
         self.draw()
 
     def draw(self):
-        if not hasattr(self.drv, "_buf_ctx") or not self.drv._buf_ctx:
-            return
-        ctx = self.drv._buf_ctx
+        display = self.drv
         w, h = self.w, self.h
 
         # 1. Dark Terminal Background
-        ctx.fillStyle = "#0A0D14"
-        ctx.fillRect(0, 0, w, h)
+        display.fill(_color("#0A0D14"))
 
         # 2. Header Bar
-        ctx.fillStyle = "rgba(15, 23, 42, 0.95)"
-        ctx.fillRect(0, 0, w, 28)
-        ctx.strokeStyle = "#1E293B"
-        ctx.lineWidth = 1
-        ctx.beginPath()
-        ctx.moveTo(0, 28)
-        ctx.lineTo(w, 28)
-        ctx.stroke()
-
-        ctx.fillStyle = "#94A3B8"
-        ctx.font = "bold 9px system-ui, monospace"
-        ctx.textAlign = "left"
-        ctx.fillText("⚡ MPFTP SERIAL REPL", 10, 18)
-
-        ctx.fillStyle = "#10B981"
-        ctx.textAlign = "right"
-        ctx.fillText("USB CDC · 115k", w - 10, 18)
+        display.fill_rect(0, 0, w, 28, _color("#0F172A"))
+        pygraphics.hline(display, 0, 28, w, _color("#1E293B"))
+        _text(display, "MPFTP SERIAL REPL", 10, 18, "#94A3B8")
+        _text(display, "USB CDC / 115k", w - 10, 18, "#10B981", "right")
 
         # 3. Virtual Remote File Bar (x: 12, y: 36, w: 216, h: 48)
         fx, fy, fw, fh = 12, 36, 216, 50
-        ctx.fillStyle = "#0F172A"
-        ctx.beginPath()
-        ctx.roundRect(fx, fy, fw, fh, 6)
-        ctx.fill()
-        ctx.strokeStyle = "#334155"
-        ctx.lineWidth = 1
-        ctx.stroke()
-
-        ctx.fillStyle = "#38BDF8"
-        ctx.font = "bold 9px monospace"
-        ctx.textAlign = "left"
-        ctx.fillText(f"📁 {self.cur_file}", fx + 10, fy + 17)
+        pygraphics.round_rect(display, fx, fy, fw, fh, 6, _color("#0F172A"), True)
+        pygraphics.round_rect(display, fx, fy, fw, fh, 6, _color("#334155"))
+        _text(display, self.cur_file, fx + 10, fy + 17, "#38BDF8")
 
         pct = int((self.bytes_transferred / self.cur_size) * 100)
-        ctx.fillStyle = "#94A3B8"
-        ctx.font = "9px monospace"
-        ctx.textAlign = "right"
-        ctx.fillText(f"{pct}% ({self.cur_size}B)", fx + fw - 10, fy + 17)
+        _text(display, f"{pct}% ({self.cur_size}B)", fx + fw - 10, fy + 17, "#94A3B8", "right")
 
         # Progress Track
-        ctx.fillStyle = "#1E293B"
-        ctx.beginPath()
-        ctx.roundRect(fx + 10, fy + 28, fw - 20, 8, 4)
-        ctx.fill()
+        pygraphics.round_rect(display, fx + 10, fy + 28, fw - 20, 8, 4, _color("#1E293B"), True)
 
         # Progress Active Bar
         prog_w = int((fw - 20) * (self.bytes_transferred / self.cur_size))
-        ctx.fillStyle = "#38BDF8" if pct < 100 else "#10B981"
-        ctx.beginPath()
-        ctx.roundRect(fx + 10, fy + 28, max(6, prog_w), 8, 4)
-        ctx.fill()
+        progress_color = "#38BDF8" if pct < 100 else "#10B981"
+        pygraphics.round_rect(display, fx + 10, fy + 28, max(6, prog_w), 8, 4, _color(progress_color), True)
 
         # 4. Hex Dump Stream Pane (x: 12, y: 94, w: 216, h: 134)
         hx, hy, hw, hh = 12, 94, 216, 134
-        ctx.fillStyle = "#020617"
-        ctx.beginPath()
-        ctx.roundRect(hx, hy, hw, hh, 6)
-        ctx.fill()
-        ctx.strokeStyle = "#1E293B"
-        ctx.lineWidth = 1
-        ctx.stroke()
-
-        ctx.fillStyle = "#64748B"
-        ctx.font = "8px monospace"
-        ctx.textAlign = "left"
-        ctx.fillText("OFFSET   HEX STREAM          ASCII", hx + 8, hy + 14)
+        pygraphics.round_rect(display, hx, hy, hw, hh, 6, _color("#020617"), True)
+        pygraphics.round_rect(display, hx, hy, hw, hh, 6, _color("#1E293B"))
+        _text(display, "OFFSET   HEX STREAM     ASCII", hx + 8, hy + 14, "#64748B")
 
         # Generate 5 lines of realistic MicroPython bytecode hex
         hex_data = [
@@ -174,18 +132,10 @@ class FtpScopeHero:
             row_y = hy + 32 + i * 19
             # Row highlight
             if i == 2:
-                ctx.fillStyle = "rgba(56, 189, 248, 0.12)"
-                ctx.fillRect(hx + 4, row_y - 10, hw - 8, 16)
-
-            ctx.fillStyle = "#F59E0B"
-            ctx.font = "9px monospace"
-            ctx.fillText(f"{int(off, 16) + self.hex_offset:04X}", hx + 8, row_y)
-
-            ctx.fillStyle = "#E2E8F0"
-            ctx.fillText(bytes_str, hx + 48, row_y)
-
-            ctx.fillStyle = "#34D399"
-            ctx.fillText(asc_str, hx + 168, row_y)
+                display.fill_rect(hx + 4, row_y - 10, hw - 8, 16, _color("#0C3548"))
+            _text(display, f"{int(off, 16) + self.hex_offset:04X}", hx + 8, row_y, "#F59E0B")
+            _text(display, bytes_str, hx + 48, row_y, "#E2E8F0")
+            _text(display, asc_str, hx + 168, row_y, "#34D399")
 
         if hasattr(self.drv, "show"):
             self.drv.show()

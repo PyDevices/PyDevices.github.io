@@ -10,20 +10,9 @@ Interactive round LVGL v9 micro-benchmark console:
 import math
 import sys
 import time
-import types
 
-document = window = None
-create_proxy = lambda fn: fn
-
-from displaydev.auto import AutoDisplay
-
-# Provide synthetic board_config for display_driver in browser / standalone canvas
-bc = types.ModuleType("board_config")
-bc.display_drv = AutoDisplay(width=240, height=240, canvas_id="hero_canvas")
-bc.get_events = bc.display_drv.get_events
-sys.modules["board_config"] = bc
-
-import display_driver
+import appdev
+from displaydev.wasmdisplay import WasmDisplay
 import lvgl as lv
 
 
@@ -98,7 +87,6 @@ class MPConsoleHero:
         _zero_styles(self.parent)
 
         self._build_ui()
-        self._bind_events()
 
     def _build_ui(self):
         size = self.size
@@ -208,31 +196,20 @@ class MPConsoleHero:
         self.heap_free_kb = 120 + (self.tap_count * 7) % 60
         self.lbl_heap.set_text(f"GC HEAP: {self.heap_free_kb} KB")
 
-    def _bind_events(self):
-        if not document:
-            return
-        canvas = document.getElementById(self.canvas_id)
-        if not canvas:
-            return
-
-        def on_pointer_down(event):
-            rect = canvas.getBoundingClientRect()
-            px = event.clientX - rect.left - rect.width / 2
-            py = event.clientY - rect.top - rect.height / 2
-            dist = math.sqrt(px * px + py * py)
-            if dist <= 35:
-                self.cycle_theme()
-
-        self._p_down = create_proxy(on_pointer_down)
-        canvas.addEventListener("pointerdown", self._p_down)
-
-
 _mp_app = None
+_display_drv = None
+_app = None
+_display_driver = None
 
 
 def main(canvas_id="hero_canvas"):
-    global _mp_app
+    global _mp_app, _display_drv, _app, _display_driver
     print(f"Initializing PyDevices MP Console on canvas '{canvas_id}'...")
+    _display_drv = WasmDisplay(width=240, height=240, canvas_id=canvas_id)
+    _app = appdev.App(displays=(_display_drv,), host_read=_display_drv.get_events)
+    import display_driver as _driver
+
+    _display_driver = _driver
     scr = lv.screen_active() if hasattr(lv, "screen_active") else lv.scr_act()
     _mp_app = MPConsoleHero(scr, size=240, canvas_id=canvas_id)
     print("PyDevices MP Console running successfully!")

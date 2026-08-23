@@ -6,14 +6,13 @@ RGB565 / RGB888 precision math, and smooth gradient ramps.
 """
 
 import sys
-import types
 import time
 import math
 
-document = window = None
-create_proxy = lambda fn: fn
-
-from displaydev.auto import AutoDisplay
+import appdev
+import events
+from displaydev.wasmdisplay import WasmDisplay
+import pygraphics
 
 
 def hsl_to_rgb(h, s, l):
@@ -40,6 +39,16 @@ def rgb_to_rgb565(r, g, b):
     return ((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3)
 
 
+def _color(value):
+    value = value.lstrip("#")
+    return rgb_to_rgb565(int(value[:2], 16), int(value[2:4], 16), int(value[4:], 16))
+
+
+def _text(display, value, x, y, color):
+    value = str(value)
+    pygraphics.text8(display, value, int(x) - len(value) * 4, int(y) - 8, color)
+
+
 class PaletteOrbHero:
     def __init__(self, canvas_id="hero_canvas", size=240):
         self.canvas_id = canvas_id
@@ -49,10 +58,8 @@ class PaletteOrbHero:
         self.cx = size // 2
         self.cy = size // 2
 
-        bc = types.ModuleType("board_config")
-        bc.display_drv = AutoDisplay(width=size, height=size, canvas_id=canvas_id)
-        sys.modules["board_config"] = bc
-        self.drv = bc.display_drv
+        self.drv = WasmDisplay(width=size, height=size, canvas_id=canvas_id)
+        self.app = appdev.App(displays=(self.drv,), host_read=self.drv.get_events)
 
         self.base_hue = 25.0  # Warm amber start
         self.is_dragging = False
@@ -61,25 +68,16 @@ class PaletteOrbHero:
         self._bind_events()
         self.draw()
 
-        self._tick_proxy = create_proxy(self._js_tick_cb) if window else None
-        self._tick_interval = window.setInterval(self._tick_proxy, 30) if window else None
+        self._tick_subscription = self.app.every(30, self._timer_tick)
 
-    def _js_tick_cb(self):
+    def _timer_tick(self, _timer):
         self.tick()
 
     def _bind_events(self):
-        if not document:
-            return
-        canvas = document.getElementById(self.canvas_id)
-        if not canvas:
-            return
-
         def on_pointer_down(event):
-            event.preventDefault()
             self.is_dragging = True
-            rect = canvas.getBoundingClientRect()
-            px = event.clientX - rect.left - rect.width / 2
-            py = event.clientY - rect.top - rect.height / 2
+            px = event.pos[0] - self.cx
+            py = event.pos[1] - self.cy
             self.base_hue = (math.degrees(math.atan2(py, px)) + 360.0) % 360.0
             self.last_interaction_time = time.time()
             self.draw()
@@ -87,10 +85,8 @@ class PaletteOrbHero:
         def on_pointer_move(event):
             if not self.is_dragging:
                 return
-            event.preventDefault()
-            rect = canvas.getBoundingClientRect()
-            px = event.clientX - rect.left - rect.width / 2
-            py = event.clientY - rect.top - rect.height / 2
+            px = event.pos[0] - self.cx
+            py = event.pos[1] - self.cy
             self.base_hue = (math.degrees(math.atan2(py, px)) + 360.0) % 360.0
             self.last_interaction_time = time.time()
             self.draw()
@@ -98,13 +94,9 @@ class PaletteOrbHero:
         def on_pointer_up(event):
             self.is_dragging = False
 
-        self._pointer_down_proxy = create_proxy(on_pointer_down)
-        self._pointer_move_proxy = create_proxy(on_pointer_move)
-        self._pointer_up_proxy = create_proxy(on_pointer_up)
-
-        canvas.addEventListener("pointerdown", self._pointer_down_proxy)
-        window.addEventListener("pointermove", self._pointer_move_proxy)
-        window.addEventListener("pointerup", self._pointer_up_proxy)
+        self.app.on(events.MOUSEBUTTONDOWN, on_pointer_down)
+        self.app.on(events.MOUSEMOTION, on_pointer_move)
+        self.app.on(events.MOUSEBUTTONUP, on_pointer_up)
 
     def tick(self):
         now = time.time()
@@ -113,14 +105,11 @@ class PaletteOrbHero:
             self.draw()
 
     def draw(self):
-        if not hasattr(self.drv, "_buf_ctx") or not self.drv._buf_ctx:
-            return
-        ctx = self.drv._buf_ctx
+        display = self.drv
         w, h, cx, cy = self.w, self.h, self.cx, self.cy
 
         # 1. Dark Base
-        ctx.fillStyle = "#0B0E12"
-        ctx.fillRect(0, 0, w, h)
+        display.fill(_color("#0B0E12"))
 
         # 2. Outer Chromatic Spectrum Ring
         ring_r_outer = 106
@@ -132,25 +121,20 @@ class PaletteOrbHero:
             hue = (i * (360.0 / segments)) % 360.0
             r, g, b = hsl_to_rgb(hue, 0.9, 0.52)
 
-            ctx.beginPath()
-            ctx.arc(cx, cy, ring_r_outer, ang0, ang1)
-            ctx.arc(cx, cy, ring_r_inner, ang1, ang0, True)
-            ctx.closePath()
-            ctx.fillStyle = f"rgb({r},{g},{b})"
-            ctx.fill()
+            for radius in range(ring_r_inner, ring_r_outer + 1):
+                x0 = int(cx + math.cos(ang0) * radius)
+                y0 = int(cy + math.sin(ang0) * radius)
+                x1 = int(cx + math.cos(ang1) * radius)
+                y1 = int(cy + math.sin(ang1) * radius)
+                pygraphics.line(display, x0, y0, x1, y1, rgb_to_rgb565(r, g, b))
 
         # 3. Inner Dial Body
         inner_r = ring_r_inner - 2
-        dial_grad = ctx.createRadialGradient(cx - 10, cy - 10, 5, cx, cy, inner_r)
-        dial_grad.addColorStop(0.0, "#1A222C")
-        dial_grad.addColorStop(1.0, "#0A0D11")
-        ctx.beginPath()
-        ctx.arc(cx, cy, inner_r, 0, math.pi * 2)
-        ctx.fillStyle = dial_grad
-        ctx.fill()
-        ctx.strokeStyle = "#2A3644"
-        ctx.lineWidth = 1.5
-        ctx.stroke()
+        pygraphics.circle(display, cx, cy, inner_r, _color("#0A0D11"), True)
+        for radius in range(inner_r, 5, -8):
+            shade = min(40, 10 + (inner_r - radius) // 3)
+            pygraphics.circle(display, cx - 2, cy - 2, radius, rgb_to_rgb565(shade, shade + 6, shade + 12))
+        pygraphics.circle(display, cx, cy, inner_r, _color("#2A3644"))
 
         # 4. Triadic Harmonic Color Nodes (Base, Base+120, Base+240)
         hues = [
@@ -167,26 +151,15 @@ class PaletteOrbHero:
             ny = cy + math.sin(rad) * ((ring_r_outer + ring_r_inner) / 2)
             node_pts.append((nx, ny))
 
-        ctx.beginPath()
-        ctx.moveTo(node_pts[0][0], node_pts[0][1])
-        ctx.lineTo(node_pts[1][0], node_pts[1][1])
-        ctx.lineTo(node_pts[2][0], node_pts[2][1])
-        ctx.closePath()
-        ctx.strokeStyle = "rgba(255, 255, 255, 0.3)"
-        ctx.lineWidth = 1
-        ctx.stroke()
+        for start, end in zip(node_pts, node_pts[1:] + node_pts[:1]):
+            pygraphics.line(display, int(start[0]), int(start[1]), int(end[0]), int(end[1]), _color("#59616B"))
 
         # Draw Node Handles
         for idx, (hue, node_r, label) in enumerate(hues):
             nx, ny = node_pts[idx]
             r, g, b = hsl_to_rgb(hue, 1.0, 0.55)
-            ctx.beginPath()
-            ctx.arc(nx, ny, node_r, 0, math.pi * 2)
-            ctx.fillStyle = f"rgb({r},{g},{b})"
-            ctx.fill()
-            ctx.strokeStyle = "#FFFFFF"
-            ctx.lineWidth = 2 if idx == 0 else 1
-            ctx.stroke()
+            pygraphics.circle(display, int(nx), int(ny), node_r, rgb_to_rgb565(r, g, b), True)
+            pygraphics.circle(display, int(nx), int(ny), node_r, _color("#FFFFFF"))
 
         # 5. Center Palette Swatches & RGB565 / Hex Telemetry
         r0, g0, b0 = hsl_to_rgb(self.base_hue, 1.0, 0.5)
@@ -195,28 +168,11 @@ class PaletteOrbHero:
 
         # Swatch Pill
         swatch_w, swatch_h = 70, 20
-        ctx.beginPath()
-        ctx.roundRect(cx - swatch_w // 2, cy - 32, swatch_w, swatch_h, 6)
-        ctx.fillStyle = hex_str
-        ctx.fill()
-        ctx.strokeStyle = "#FFFFFF"
-        ctx.lineWidth = 1
-        ctx.stroke()
-
-        ctx.textAlign = "center"
-        ctx.textBaseline = "middle"
-
-        ctx.fillStyle = "#F8FAFC"
-        ctx.font = "bold 12px system-ui, monospace"
-        ctx.fillText(hex_str, cx, cy + 2)
-
-        ctx.fillStyle = "#38BDF8"
-        ctx.font = "10px system-ui, monospace"
-        ctx.fillText(f"0x{rgb565:04X} (565)", cx, cy + 18)
-
-        ctx.fillStyle = "#94A3B8"
-        ctx.font = "9px system-ui, sans-serif"
-        ctx.fillText(f"HSL({int(self.base_hue)}°, 100%, 50%)", cx, cy + 32)
+        pygraphics.round_rect(display, cx - swatch_w // 2, cy - 32, swatch_w, swatch_h, 6, rgb565, True)
+        pygraphics.round_rect(display, cx - swatch_w // 2, cy - 32, swatch_w, swatch_h, 6, _color("#FFFFFF"))
+        _text(display, hex_str, cx, cy + 2, _color("#F8FAFC"))
+        _text(display, f"0x{rgb565:04X} (565)", cx, cy + 18, _color("#38BDF8"))
+        _text(display, f"HSL({int(self.base_hue)}, 100%, 50%)", cx, cy + 32, _color("#94A3B8"))
 
         if hasattr(self.drv, "show"):
             self.drv.show()

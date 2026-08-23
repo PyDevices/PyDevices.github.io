@@ -10,13 +10,25 @@ Interactive multi-interpreter execution matrix and benchmark meter:
 import math
 import sys
 import time
-import types
 from random import random
 
-document = window = None
-create_proxy = lambda fn: fn
+import appdev
+import events
+from displaydev.wasmdisplay import WasmDisplay
+import pygraphics
 
-from displaydev.auto import AutoDisplay
+
+def _color(value):
+    value = value.lstrip("#")
+    r, g, b = int(value[:2], 16), int(value[2:4], 16), int(value[4:], 16)
+    return (r & 0xF8) << 8 | (g & 0xFC) << 3 | b >> 3
+
+
+def _text(display, value, x, y, color, align="left"):
+    value = str(value)
+    if align == "right": x -= len(value) * 8
+    elif align == "center": x -= len(value) * 4
+    pygraphics.text8(display, value, int(x), int(y) - 8, _color(color))
 
 
 BENCH_MODES = ["BLIT 16-BIT", "DIRTY-RECT", "MATH / TRIG"]
@@ -37,10 +49,8 @@ class BenchmarkDeckHero:
         self.w = size
         self.h = size
 
-        bc = types.ModuleType("board_config")
-        bc.display_drv = AutoDisplay(width=size, height=size, canvas_id=canvas_id)
-        sys.modules["board_config"] = bc
-        self.drv = bc.display_drv
+        self.drv = WasmDisplay(width=size, height=size, canvas_id=canvas_id)
+        self.app = appdev.App(displays=(self.drv,), host_read=self.drv.get_events)
 
         self.mode_idx = 0
         self.frame_cnt = 0
@@ -49,27 +59,18 @@ class BenchmarkDeckHero:
         self.draw()
         self._bind_events()
 
-        self._tick_proxy = create_proxy(self._js_tick_cb) if window else None
-        self._tick_interval = window.setInterval(self._tick_proxy, 33) if window else None
+        self._tick_subscription = self.app.every(33, self._timer_tick)
 
-    def _js_tick_cb(self):
+    def _timer_tick(self, _timer):
         self.tick()
 
     def _bind_events(self):
-        if not document:
-            return
-        canvas = document.getElementById(self.canvas_id)
-        if not canvas:
-            return
-
-        def on_pointer_down(event):
-            event.preventDefault()
+        def on_pointer_down(_event):
             self.mode_idx = (self.mode_idx + 1) % len(BENCH_MODES)
             self.burst = 1.0
             self.draw()
 
-        self._p_down = create_proxy(on_pointer_down)
-        canvas.addEventListener("pointerdown", self._p_down)
+        self.app.on(events.MOUSEBUTTONDOWN, on_pointer_down)
 
     def tick(self):
         self.frame_cnt += 1
@@ -78,53 +79,24 @@ class BenchmarkDeckHero:
         self.draw()
 
     def draw(self):
-        if not hasattr(self.drv, "_buf_ctx") or not self.drv._buf_ctx:
-            return
-        ctx = self.drv._buf_ctx
+        display = self.drv
         w, h = self.w, self.h
 
         # 1. Dark Console Background
-        ctx.fillStyle = "#0A0E17"
-        ctx.fillRect(0, 0, w, h)
+        display.fill(_color("#0A0E17"))
 
         # 2. Header Bar
-        ctx.fillStyle = "rgba(15, 23, 42, 0.95)"
-        ctx.fillRect(0, 0, w, 28)
-        ctx.strokeStyle = "#1E293B"
-        ctx.lineWidth = 1
-        ctx.beginPath()
-        ctx.moveTo(0, 28)
-        ctx.lineTo(w, 28)
-        ctx.stroke()
-
-        ctx.fillStyle = "#F59E0B"
-        ctx.font = "bold 9px system-ui, monospace"
-        ctx.textAlign = "left"
-        ctx.fillText("⚡ MULTI-INTERPRETER", 10, 18)
-
-        ctx.fillStyle = "#10B981"
-        ctx.textAlign = "right"
-        ctx.fillText("5 RUNTIMES · 60FPS", w - 10, 18)
+        display.fill_rect(0, 0, w, 28, _color("#0F172A"))
+        pygraphics.hline(display, 0, 28, w, _color("#1E293B"))
+        _text(display, "MULTI-INTERPRETER", 10, 18, "#F59E0B")
+        _text(display, "5 RUNTIMES / 60FPS", w - 10, 18, "#10B981", "right")
 
         # 3. Mode Pill Selector (x: 12, y: 36, w: 216, h: 26)
         mx, my, mw, mh = 12, 36, 216, 26
-        ctx.fillStyle = "#0F172A"
-        ctx.beginPath()
-        ctx.roundRect(mx, my, mw, mh, 6)
-        ctx.fill()
-        ctx.strokeStyle = "#334155"
-        ctx.lineWidth = 1
-        ctx.stroke()
-
-        ctx.fillStyle = "#94A3B8"
-        ctx.font = "bold 8px system-ui, sans-serif"
-        ctx.textAlign = "left"
-        ctx.fillText("BENCHMARK:", mx + 8, my + 17)
-
-        ctx.fillStyle = "#38BDF8"
-        ctx.font = "bold 9px monospace"
-        ctx.textAlign = "right"
-        ctx.fillText(f"▶ {BENCH_MODES[self.mode_idx]}", mx + mw - 8, my + 17)
+        pygraphics.round_rect(display, mx, my, mw, mh, 6, _color("#0F172A"), True)
+        pygraphics.round_rect(display, mx, my, mw, mh, 6, _color("#334155"))
+        _text(display, "BENCHMARK:", mx + 8, my + 17, "#94A3B8")
+        _text(display, f"> {BENCH_MODES[self.mode_idx]}", mx + mw - 8, my + 17, "#38BDF8", "right")
 
         # 4. Multi-Target Performance Bars (x: 12, y: 70)
         t = time.time() * 2.0
@@ -136,17 +108,11 @@ class BenchmarkDeckHero:
             row_y = bar_y_start + i * (bar_h + gap)
 
             # Label Tag
-            ctx.fillStyle = "#E2E8F0"
-            ctx.font = "bold 9px monospace"
-            ctx.textAlign = "left"
-            ctx.fillText(f"{tag:<4}", 12, row_y + 12)
+            _text(display, f"{tag:<4}", 12, row_y + 12, "#E2E8F0")
 
             # Bar Track
             bx, bw = 52, w - 66
-            ctx.fillStyle = "#1E293B"
-            ctx.beginPath()
-            ctx.roundRect(bx, row_y, bw, bar_h, 4)
-            ctx.fill()
+            pygraphics.round_rect(display, bx, row_y, bw, bar_h, 4, _color("#1E293B"), True)
 
             # Dynamic Wave Load
             wave = math.sin(t + i * 1.2) * 0.08 + (random() * 0.04 - 0.02) + self.burst * 0.1
@@ -154,22 +120,13 @@ class BenchmarkDeckHero:
 
             # Active Bar Fill
             fill_w = int(bw * eff_val)
-            ctx.fillStyle = col_hex
-            ctx.beginPath()
-            ctx.roundRect(bx, row_y, fill_w, bar_h, 4)
-            ctx.fill()
+            pygraphics.round_rect(display, bx, row_y, fill_w, bar_h, 4, _color(col_hex), True)
 
             # Percentage text inside or beside bar
-            ctx.fillStyle = "#FFFFFF"
-            ctx.font = "bold 8px monospace"
-            ctx.textAlign = "right"
-            ctx.fillText(f"{int(eff_val * 100)}%", bx + fill_w - 4 if fill_w > 32 else bx + fill_w + 18, row_y + 12)
+            _text(display, f"{int(eff_val * 100)}%", bx + fill_w - 4 if fill_w > 32 else bx + fill_w + 18, row_y + 12, "#FFFFFF", "right")
 
         # 5. Bottom Tap Prompt
-        ctx.fillStyle = "#64748B"
-        ctx.font = "8px system-ui, sans-serif"
-        ctx.textAlign = "center"
-        ctx.fillText("TAP TO CYCLE BENCHMARK MODE", w // 2, 218)
+        _text(display, "TAP TO CYCLE BENCHMARK MODE", w // 2, 218, "#64748B", "center")
 
         if hasattr(self.drv, "show"):
             self.drv.show()

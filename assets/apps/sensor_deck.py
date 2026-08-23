@@ -11,13 +11,9 @@ Interactive instrument deck built with pdwidgets:
 import math
 import sys
 import time
-import types
-
-window = None
-create_proxy = lambda fn: fn
 
 import appdev
-from displaydev.auto import AutoDisplay
+from displaydev.wasmdisplay import WasmDisplay
 import pdwidgets as pd
 
 
@@ -26,9 +22,11 @@ class SensorDeckHero:
         self.canvas_id = canvas_id
         self.size = size
 
-        # 1. Initialize the automatic backend, App, and pdwidgets Display
-        self.display_drv = AutoDisplay(width=size, height=size, canvas_id=canvas_id)
-        self.app = appdev.App(self.display_drv)
+        # 1. Initialize PSDisplay, App, and pdwidgets Display
+        self.display_drv = WasmDisplay(width=size, height=size, canvas_id=canvas_id)
+        self.app = appdev.App(
+            displays=(self.display_drv,), host_read=self.display_drv.get_events
+        )
         self.display = pd.Display(self.display_drv, self.app)
 
         # 2. Dark Slate Blue Screen Background
@@ -146,11 +144,13 @@ class SensorDeckHero:
 
         self.slider.set_change_cb(on_slider_change)
 
-        # 8. Start Background Tick Animation
-        self._tick_proxy = create_proxy(self._js_tick) if window else None
-        self._tick_interval = window.setInterval(self._tick_proxy, 33) if window else None
+        # Paint the initial widget tree into the WasmDisplay framebuffer.
+        self.display.tick()
 
-    def _js_tick(self):
+        # 8. Start Background Tick Animation
+        self._tick_subscription = self.app.every(33, self._timer_tick)
+
+    def _timer_tick(self, _timer):
         t = time.time()
         # Modulate telemetry and gauge smoothly
         load = (math.sin(t * 1.8) * 0.25 + 0.65) * self.slider.value
@@ -160,6 +160,7 @@ class SensorDeckHero:
         khz = int(32 + math.sin(t * 3.0) * 16 * (1.0 if self.switch.value else 0.1))
         self.lbl_telemetry.value = f"BUS TELEMETRY: {khz} kHz"
         self.prog.value = max(0.0, min(1.0, khz / 64.0))
+        self.display.tick()
 
 
 _hero_app = None

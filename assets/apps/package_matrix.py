@@ -10,16 +10,28 @@ Interactive package index & dependency graph visualizer:
 import math
 import sys
 import time
-import types
 
-document = window = None
-create_proxy = lambda fn: fn
+import appdev
+import events
+from displaydev.wasmdisplay import WasmDisplay
+import pygraphics
 
-from displaydev.auto import AutoDisplay
+
+def _rgb565(red, green, blue):
+    return (int(red) & 0xF8) << 8 | (int(green) & 0xFC) << 3 | int(blue) >> 3
+
+
+def _color(value):
+    return _rgb565(value >> 16, value >> 8, value)
+
+
+def _text(display, value, x, y, color):
+    value = str(value)
+    pygraphics.text8(display, value, int(x) - len(value) * 4, int(y) - 8, color)
 
 
 PACKAGES = [
-    ("pydevices", 0x38BDF8, ["board_config", "displaydev"]),
+    ("pydevices", 0x38BDF8, ["appdev", "displaydev"]),
     ("pygraphics", 0x34D399, ["framebuf", "fonts"]),
     ("pdwidgets", 0xF59E0B, ["widgets", "theming"]),
     ("palettes", 0xEC4899, ["color_math", "swatches"]),
@@ -37,10 +49,8 @@ class PackageMatrixHero:
         self.cx = size // 2
         self.cy = size // 2
 
-        bc = types.ModuleType("board_config")
-        bc.display_drv = AutoDisplay(width=size, height=size, canvas_id=canvas_id)
-        sys.modules["board_config"] = bc
-        self.drv = bc.display_drv
+        self.drv = WasmDisplay(width=size, height=size, canvas_id=canvas_id)
+        self.app = appdev.App(displays=(self.drv,), host_read=self.drv.get_events)
 
         self.angle = 0.0
         self.selected_idx = 0
@@ -50,28 +60,19 @@ class PackageMatrixHero:
         self.draw()
         self._bind_events()
 
-        self._tick_proxy = create_proxy(self._js_tick_cb) if window else None
-        self._tick_interval = window.setInterval(self._tick_proxy, 33) if window else None
+        self._tick_subscription = self.app.every(33, self._timer_tick)
 
-    def _js_tick_cb(self):
+    def _timer_tick(self, _timer):
         self.tick()
 
     def _bind_events(self):
-        if not document:
-            return
-        canvas = document.getElementById(self.canvas_id)
-        if not canvas:
-            return
-
-        def on_pointer_down(event):
-            event.preventDefault()
+        def on_pointer_down(_event):
             self.selected_idx = (self.selected_idx + 1) % len(PACKAGES)
             self.install_pct = 0
             self.is_installing = True
             self.draw()
 
-        self._p_down = create_proxy(on_pointer_down)
-        canvas.addEventListener("pointerdown", self._p_down)
+        self.app.on(events.MOUSEBUTTONDOWN, on_pointer_down)
 
     def tick(self):
         self.angle = (self.angle + 0.02) % (math.pi * 2)
@@ -83,33 +84,19 @@ class PackageMatrixHero:
         self.draw()
 
     def draw(self):
-        if not hasattr(self.drv, "_buf_ctx") or not self.drv._buf_ctx:
-            return
-        ctx = self.drv._buf_ctx
+        display = self.drv
         w, h, cx, cy = self.w, self.h, self.cx, self.cy
 
         # 1. Dark Circular Housing
-        ctx.fillStyle = "#0A0E17"
-        ctx.fillRect(0, 0, w, h)
+        display.fill(_color(0x0A0E17))
 
         # 2. Outer Ring
-        ctx.beginPath()
-        ctx.arc(cx, cy, 106, 0, math.pi * 2)
-        ctx.fillStyle = "#111827"
-        ctx.fill()
-        ctx.strokeStyle = "#1F2937"
-        ctx.lineWidth = 2
-        ctx.stroke()
+        pygraphics.circle(display, cx, cy, 106, _color(0x111827), True)
+        pygraphics.circle(display, cx, cy, 106, _color(0x1F2937))
 
         # Orbital Path
         orbit_r = 74
-        ctx.beginPath()
-        ctx.arc(cx, cy, orbit_r, 0, math.pi * 2)
-        ctx.strokeStyle = "rgba(56, 189, 248, 0.2)"
-        ctx.lineWidth = 1
-        ctx.setLineDash([4, 4])
-        ctx.stroke()
-        ctx.setLineDash([])
+        pygraphics.circle(display, cx, cy, orbit_r, _color(0x164E63))
 
         # 3. Orbital Package Nodes
         num_pkgs = len(PACKAGES)
@@ -124,62 +111,33 @@ class PackageMatrixHero:
             b = col_int & 0xFF
 
             # Dependency Connector Line to Center Hub
-            ctx.beginPath()
-            ctx.moveTo(cx, cy)
-            ctx.lineTo(nx, ny)
-            ctx.strokeStyle = f"rgba({r}, {g}, {b}, 0.3)" if is_sel else "rgba(255, 255, 255, 0.08)"
-            ctx.lineWidth = 1.5 if is_sel else 1
-            ctx.stroke()
+            line_color = _rgb565(r // 3, g // 3, b // 3) if is_sel else _color(0x202733)
+            pygraphics.line(display, cx, cy, int(nx), int(ny), line_color)
 
             # Node Glow
             if is_sel:
-                ctx.beginPath()
-                ctx.arc(nx, ny, 16, 0, math.pi * 2)
-                ctx.fillStyle = f"rgba({r}, {g}, {b}, 0.35)"
-                ctx.fill()
+                pygraphics.circle(display, int(nx), int(ny), 16, _rgb565(r // 3, g // 3, b // 3), True)
 
             # Node Bead
-            ctx.beginPath()
-            ctx.arc(nx, ny, 8 if not is_sel else 10, 0, math.pi * 2)
-            ctx.fillStyle = f"rgb({r}, {g}, {b})"
-            ctx.fill()
-            ctx.strokeStyle = "#FFFFFF" if is_sel else "rgba(255, 255, 255, 0.5)"
-            ctx.lineWidth = 1.5
-            ctx.stroke()
+            radius = 10 if is_sel else 8
+            pygraphics.circle(display, int(nx), int(ny), radius, _rgb565(r, g, b), True)
+            pygraphics.circle(display, int(nx), int(ny), radius, _color(0xFFFFFF if is_sel else 0x7C8594))
 
         # 4. Center Package Info Hub
         hub_r = 46
-        ctx.beginPath()
-        ctx.arc(cx, cy, hub_r, 0, math.pi * 2)
-        ctx.fillStyle = "#0B1120"
-        ctx.fill()
-        ctx.strokeStyle = "#38BDF8"
-        ctx.lineWidth = 1.5
-        ctx.stroke()
+        pygraphics.circle(display, cx, cy, hub_r, _color(0x0B1120), True)
+        pygraphics.circle(display, cx, cy, hub_r, _color(0x38BDF8))
 
         cur_name, cur_col, cur_deps = PACKAGES[self.selected_idx]
-        ctx.fillStyle = "#38BDF8"
-        ctx.font = "bold 8px system-ui, sans-serif"
-        ctx.textAlign = "center"
-        ctx.fillText("MIP INDEX SOT", cx, cy - 20)
-
-        ctx.fillStyle = "#F8FAFC"
-        ctx.font = "bold 11px system-ui, monospace"
-        ctx.fillText(cur_name, cx, cy - 4)
+        _text(display, "MIP INDEX SOT", cx, cy - 20, _color(0x38BDF8))
+        _text(display, cur_name, cx, cy - 4, _color(0xF8FAFC))
 
         # Installation / Checksum Status
         if self.is_installing:
-            ctx.fillStyle = "#F59E0B"
-            ctx.font = "bold 8px monospace"
-            ctx.fillText(f"FETCH {self.install_pct}%", cx, cy + 12)
+            _text(display, f"FETCH {self.install_pct}%", cx, cy + 12, _color(0xF59E0B))
         else:
-            ctx.fillStyle = "#10B981"
-            ctx.font = "bold 8px monospace"
-            ctx.fillText(".mpy [VERIFIED]", cx, cy + 12)
-
-        ctx.fillStyle = "#94A3B8"
-        ctx.font = "7px system-ui, sans-serif"
-        ctx.fillText("TAP TO CYCLE", cx, cy + 24)
+            _text(display, ".mpy [VERIFIED]", cx, cy + 12, _color(0x10B981))
+        _text(display, "TAP TO CYCLE", cx, cy + 24, _color(0x94A3B8))
 
         if hasattr(self.drv, "show"):
             self.drv.show()

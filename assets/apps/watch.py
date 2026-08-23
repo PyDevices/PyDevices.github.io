@@ -10,25 +10,15 @@ Features:
 - High-precision dauphine analog hour & minute hands
 - Continuous sweeping brand amber/orange seconds hand (~30 FPS)
 - Central/lower digital time readout (HH:MM:SS) and date badge (Day, Mon DD)
-- Automatic display backend with display_driver integration
+- Explicit WasmDisplay + appdev runtime wiring with no board module dependency
 """
 
 import math
 import sys
 import time
-import types
 
-_JSDate = None
-
-from displaydev.auto import AutoDisplay
-
-# Provide synthetic board_config for display_driver in browser / standalone canvas
-bc = types.ModuleType("board_config")
-bc.display_drv = AutoDisplay(width=240, height=240, canvas_id="hero_canvas")
-bc.get_events = bc.display_drv.get_events
-sys.modules["board_config"] = bc
-
-import display_driver
+import appdev
+from displaydev.wasmdisplay import WasmDisplay
 import lvgl as lv
 
 
@@ -141,26 +131,13 @@ def _plain(obj):
 
 def _local_time():
     """Return (hour, minute, second, millis, day_name, month_name, day_num)."""
-    if _JSDate is not None:
-        now = _JSDate.new()
-        hour = int(now.getHours())
-        minute = int(now.getMinutes())
-        second = int(now.getSeconds())
-        millis = int(now.getMilliseconds())
-        days = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"]
-        months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"]
-        day_name = days[int(now.getDay())]
-        month_name = months[int(now.getMonth())]
-        day_num = int(now.getDate())
-        return hour, minute, second, millis, day_name, month_name, day_num
-    else:
-        t = time.localtime()
-        millis = int((time.time() % 1.0) * 1000)
-        days = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"]
-        months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"]
-        day_name = days[t[6]]
-        month_name = months[t[1] - 1]
-        return t[3], t[4], t[5], millis, day_name, month_name, t[2]
+    t = time.localtime()
+    millis = int((time.time() % 1.0) * 1000)
+    days = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"]
+    months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"]
+    day_name = days[t[6]]
+    month_name = months[t[1] - 1]
+    return t[3], t[4], t[5], millis, day_name, month_name, t[2]
 
 
 class PyDevicesWatch:
@@ -409,7 +386,9 @@ class PyDevicesWatch:
 
         # First update and timer (~30 FPS: 33ms)
         self.update_time()
-        self._timer = lv.timer_create(lambda _t: self.update_time(), 33, None)
+        self._tick_subscription = appdev.App.current().every(
+            33, lambda _timer: self.update_time()
+        )
 
     def update_time(self):
         hour, minute, second, millis, day_name, month_name, day_num = _local_time()
@@ -434,12 +413,20 @@ class PyDevicesWatch:
 
 
 _watch_app = None
+_display_drv = None
+_app = None
+_display_driver = None
 
 
 def main(canvas_id="hero_canvas"):
-    global _watch_app
+    global _watch_app, _display_drv, _app, _display_driver
     print(f"Initializing PyDevices LVGL Smartwatch on canvas '{canvas_id}'...")
 
+    _display_drv = WasmDisplay(width=240, height=240, canvas_id=canvas_id)
+    _app = appdev.App(displays=(_display_drv,), host_read=_display_drv.get_events)
+    import display_driver as _driver
+
+    _display_driver = _driver
     scr = lv.screen_active() if hasattr(lv, "screen_active") else lv.scr_act()
     _watch_app = PyDevicesWatch(scr, size=240)
     print("PyDevices LVGL Smartwatch running successfully!")
