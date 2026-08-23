@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f54e00">
+  <title>My PyDevices App</title>
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" href="./icon-192.png">
+  <link rel="apple-touch-icon" href="./icon-192.png">
+  <link rel="stylesheet" href="./style.css">
+  <link rel="stylesheet" href="./vendor/pyscript/core.css">
+  <script type="module" src="./vendor/pyscript/core.js"></script>
+  <script defer src="./pwa.js"></script>
+</head>
+<body>
+  <main>
+    <p class="eyebrow">PyDevices · PyScript</p>
+    <h1>My PyDevices App</h1>
+    <p>Edit <code>main.py</code> to make this application yours.</p>
+    <canvas id="display_canvas" width="320" height="480" tabindex="0"></canvas>
+    <output id="status">Loading Python…</output>
+    <button type="button" id="install" hidden>Install app</button>
+  </main>
+  <script type="py" src="./main.py" config="./pyscript.json"></script>
+</body>
+</html>
