@@ -1,8 +1,9 @@
 /**
  * simulator.js — Interactive PyDevices Python Simulator Engine
  *
- * Manages Monaco Editor, direct MicroPython runtime execution,
- * synthetic board_config binding, LZ-string sharing, and split layout.
+ * Manages the Monaco editor and its multi-file program buffers, the xterm
+ * REPL over the MicroPython WebAssembly runtime, locally saved programs,
+ * and the resizable split layout.
  */
 
 (function () {
@@ -22,7 +23,7 @@
   const elRunBtn = document.getElementById("run-btn");
   const elResetVmBtn = document.getElementById("reset-vm");
   const elStopBtn = document.getElementById("stop-btn");
-  const elSaveBtn = document.getElementById("save-btn");
+  const elProgramBtn = document.getElementById("program-btn");
   const elClearConsoleBtn = document.getElementById("clear-console-btn");
   const elDeviceBezel = document.getElementById("device-bezel");
   const elCanvas = document.getElementById("display_canvas");
@@ -121,10 +122,6 @@
   // first by loadFiles().
   const fileModels = new Map();
   let activeFile = ENTRY_FILE;
-
-  function fileNames() {
-    return [...fileModels.keys()];
-  }
 
   function fileSource(name) {
     const model = fileModels.get(name);
@@ -254,6 +251,39 @@
       localStorage.setItem(DRAFT_STORAGE_KEY,
         JSON.stringify({ files: allFiles(), active: activeFile }));
     } catch (e) {}
+    refreshProgramLabel();
+  }
+
+  // Key order would otherwise make a rename look like an edit.
+  function programSnapshot(files, width, height, shape) {
+    const sorted = {};
+    for (const name of Object.keys(files).sort()) sorted[name] = files[name];
+    return JSON.stringify({ files: sorted, width, height, shape });
+  }
+
+  // Compared against the stored project rather than tracked with a flag, so
+  // editing something back to its saved state clears the marker honestly.
+  function isProgramDirty() {
+    const name = currentProjectName();
+    if (!name) return true;
+    const project = readProjects()[name];
+    if (!project) return true;
+    const { width, height, shape } = currentResolution;
+    return programSnapshot(allFiles(), width, height, shape) !==
+      programSnapshot(project.files || {}, project.width, project.height, project.shape);
+  }
+
+  function refreshProgramLabel() {
+    const label = document.getElementById("program-name");
+    const dirty = document.getElementById("program-dirty");
+    const button = document.getElementById("program-btn");
+    if (!label || !dirty || !button) return;
+    const name = currentProjectName();
+    label.textContent = name || "Unsaved";
+    dirty.hidden = !isProgramDirty();
+    button.title = name
+      ? `${name} — save this program (Ctrl+S)`
+      : "Save this program (Ctrl+S)";
   }
 
   function readDraft() {
@@ -1113,6 +1143,7 @@ os.chdir("/")
       localStorage.setItem(LAST_PROJECT_KEY, trimmed);
     } catch (e) {}
     renderProjectList();
+    refreshProgramLabel();
     showToast(`✓ Saved “${trimmed}”`);
     return true;
   }
@@ -1128,6 +1159,7 @@ os.chdir("/")
     try {
       localStorage.setItem(LAST_PROJECT_KEY, name);
     } catch (e) {}
+    refreshProgramLabel();
     document.getElementById("save-dialog")?.close();
     showToast(`Loaded “${name}”`);
   }
@@ -1143,6 +1175,7 @@ os.chdir("/")
       } catch (e) {}
     }
     renderProjectList();
+    refreshProgramLabel();
   }
 
   // Downloads the file that is currently open, under its own name. One file at a
@@ -1363,7 +1396,7 @@ os.chdir("/")
       event.preventDefault();
       requestInterrupt();
     });
-    if (elSaveBtn) elSaveBtn.addEventListener("click", openSaveDialog);
+    if (elProgramBtn) elProgramBtn.addEventListener("click", openSaveDialog);
     initSaveDialog();
     initFileNameDialog();
     initMoreMenu();
