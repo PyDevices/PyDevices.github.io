@@ -29,21 +29,142 @@
         GitHub Repo
       </a>
       <a class="btn" style="border-color: var(--tier-1-amber); color: var(--tier-1-amber);" href="https://github.com/PyDevices/pydevices/blob/main/README.md">Getting Started</a>
-      <a class="btn" style="border-color: var(--tier-1-amber); color: var(--tier-1-amber);" href="https://pydevices.github.io/pydevices-examples/gallery/">WebAssembly Gallery</a>
+      <a class="btn" style="border-color: var(--tier-1-amber); color: var(--tier-1-amber);" href="https://pydevices.github.io/pydevices-examples/gallery/">Gallery</a>
       <a class="btn" style="border-color: var(--tier-1-amber); color: var(--tier-1-amber);" href="https://PyDevices.github.io/mip">MIP Index</a>
       </div>
     </div>
-    <div class="hero-canvas-wrap" data-hero-canvas="hero_canvas" data-hero-app="encoder" data-hero-deps="pydevices" data-hero-app-url="https://PyDevices.github.io/assets/apps/encoder.py">
+    <div class="hero-canvas-wrap" data-hero-canvas="hero_canvas" data-hero-app="signal_gen" data-hero-deps="pydevices,pydevices-lvgl" data-hero-app-url="https://PyDevices.github.io/assets/apps/signal_gen.py">
       <div class="hero-canvas-circle">
         <div class="hero-canvas-loader">
           <div class="hero-spinner"></div>
           <span class="hero-canvas-status">Live Pure-Python Device</span>
         </div>
-        <canvas id="hero_canvas" width="240" height="240" tabindex="0"></canvas>
+        <canvas id="hero_canvas" width="480" height="480" tabindex="0"></canvas>
       </div>
     </div>
   </section>
   <!-- PYDEVICES-ABOVE-THE-FOLD: END -->
+
+  <main class="wrap" style="padding-bottom: 60px;">
+    <!-- Installation & a Minimal App -->
+    <div class="section-head">
+      <h2>Installation &amp; a Minimal App</h2>
+      <span class="hint">One idiom across every supported interpreter.</span>
+    </div>
+
+    <div class="spec-block">
+      <pre><code># CPython desktop — the complete desktop stack in one command:
+pip install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ pydevices-desktop
+
+# A MicroPython board — install its board_config directly by path:
+import mip
+mip.install(
+    "github:PyDevices/pydevices/board_configs/fbdisplay/esp32-p4-wifi6-touch-lcd-4b",
+    index="https://PyDevices.github.io/mip",
+)
+
+# Then the same app code runs everywhere:
+import board_config
+from board_config import display_drv
+import appdev
+import events
+
+app = appdev.App(board_config)
+display_drv.fill(0xF54E00)
+
+def on_click(event):
+    print("Clicked at", event.pos)
+
+app.on(events.MOUSEBUTTONDOWN, on_click)
+app.run()</code></pre>
+    </div>
+
+    <!-- Anatomy of the Board Contract -->
+    <div class="section-head" style="margin-top: 36px;">
+      <h2>Anatomy of the Board Contract</h2>
+      <span class="hint">What <code>board_config</code> wires up — the Core Stack from the org homepage diagram.</span>
+    </div>
+
+    <div class="spec-block">
+      <div class="spec-grid">
+        <div class="spec-item tier-1">
+          <h4><code>display_drv</code> — Eager UI Hardware</h4>
+          <p>Display, touch, and primary input initialize immediately on import via a <code>displaydev</code> backend (<code>BusDisplay</code>, <code>SDLDisplay</code>, <code>PSDisplay</code>, and others).</p>
+        </div>
+
+        <div class="spec-item tier-1">
+          <h4><code>appdev.App</code> — Event &amp; Routing Layer</h4>
+          <p>The host loop and traffic controller. Board configs never import <code>appdev</code> or export <code>app</code> themselves — the application owns this coordinator explicitly.</p>
+        </div>
+
+        <div class="spec-item tier-1">
+          <h4><code>audiodev</code></h4>
+          <p>Tone and PCM audio playback, wired the same way across every interpreter and backend.</p>
+        </div>
+
+        <div class="spec-item tier-1">
+          <h4><code>multimer</code></h4>
+          <p>Async and sync timers shared by <code>appdev</code>'s event loop and application code alike.</p>
+        </div>
+
+        <div class="spec-item tier-1">
+          <h4><code>events</code> &amp; <code>keys</code></h4>
+          <p>Shared event types and keycode constants — the same names whether the source is a touchscreen, a keyboard, or a browser canvas.</p>
+        </div>
+
+        <div class="spec-item tier-1">
+          <h4><code>boarddev</code> — Lazy Extra Peripherals</h4>
+          <p>Sensors, external flash, and power monitoring declared in <code>board_peripherals.py</code> stay uninitialized until the application actually asks for them.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Board Config Families -->
+    <div class="section-head" style="margin-top: 36px;">
+      <h2>One Contract, Many Board Families</h2>
+      <span class="hint"><code>board_configs/</code> ships a backend for each of these — write against <code>display_drv</code> and swap boards freely.</span>
+    </div>
+
+    <div class="spec-block">
+      <div class="spec-grid">
+        <div class="spec-item tier-1">
+          <h4><code>busdisplay</code></h4>
+          <p>Real hardware panels over SPI, I2C, or parallel buses via <code>displayif</code> — the path to an actual microcontroller board.</p>
+        </div>
+
+        <div class="spec-item tier-1">
+          <h4><code>sdldisplay</code> / <code>pgdisplay</code> / <code>windisplay</code></h4>
+          <p>Desktop simulators (SDL2, pygame, native Win32) for developing and testing without hardware on hand.</p>
+        </div>
+
+        <div class="spec-item tier-1">
+          <h4><code>fbdisplay</code></h4>
+          <p>Direct Linux framebuffer and DVI output boards, from Pi Pico DVI sockets to M5Stack Tab5.</p>
+        </div>
+
+        <div class="spec-item tier-1">
+          <h4><code>pixeldisplay</code></h4>
+          <p>Addressable LED matrices — NeoPixel (WS2812B) and DotStar (APA102) arrays as a <code>display_drv</code>.</p>
+        </div>
+
+        <div class="spec-item tier-1">
+          <h4><code>psdisplay</code></h4>
+          <p>Browser deployment via PyScript / Pyodide — the CPython-in-the-browser path.</p>
+        </div>
+
+        <div class="spec-item tier-1">
+          <h4><code>jndisplay</code></h4>
+          <p>Inline rendering inside a Jupyter Notebook cell.</p>
+        </div>
+
+        <div class="spec-item tier-1">
+          <h4><code>board_configs/cp/</code></h4>
+          <p>The same board contract adapted for CircuitPython's native display and input modules.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
   <div id="pydevices-site-footer"></div>
   <script src="/assets/chrome/site-chrome.js"></script>
 </body>

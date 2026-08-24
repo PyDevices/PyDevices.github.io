@@ -46,10 +46,6 @@
     </div>
   </section>
   <!-- PYDEVICES-ABOVE-THE-FOLD: END -->
-  <div id="pydevices-site-header"></div>
-
-  <!-- Hero Banner -->
-  
 
   <main class="wrap" style="padding-bottom: 60px;">
     <!-- Architecture & Features -->
@@ -59,25 +55,24 @@
     </div>
 
     <div class="spec-block">
-      <h3>MicroPython USER_C_MODULES Compilation</h3>
-      <pre><code># Clone micropython and cmods workspace side-by-side:
-git clone https://github.com/micropython/micropython.git
+      <h3>MicroPython — Workspace Build (<code>build_mp.sh</code>)</h3>
+      <pre><code># Clone the cmods workspace, then add MicroPython and any usermods into it:
 git clone https://github.com/PyDevices/cmods.git
+cd cmods
+git clone https://github.com/micropython/micropython.git
+git clone https://github.com/PyDevices/displayif.git
+git clone https://github.com/PyDevices/lvgl-micropython.git
 
-# Compile ESP32-S3 firmware with displayif and lvgl usermods enabled:
-cd micropython/ports/esp32
-make USER_C_MODULES=../../../../cmods/micropython.cmake BOARD=ESP32_GENERIC_S3</code></pre>
+# Build ESP32-S3 firmware with displayif and LVGL usermods enabled:
+./build_mp.sh --port esp32 --board ESP32_GENERIC_S3</code></pre>
     </div>
 
     <div class="spec-block" style="margin-top: 24px;">
-      <h3>CircuitPython Out-Of-Tree Build Patching</h3>
-      <pre><code># Apply PyDevices usermod patch set to CircuitPython tree:
+      <h3>CircuitPython — Workspace Build (<code>build_cp.sh</code>)</h3>
+      <pre><code># build_cp.sh auto-discovers each usermod's own apply_cp_patches.sh
+# and rebuilds CircuitPython with all of them applied:
 cd cmods
-./apply_cp_patches.sh --cp-dir ../circuitpython
-
-# Compile CircuitPython unix desktop simulation or MCU board target:
-cd ../circuitpython/ports/unix
-make -j VARIANT=coverage</code></pre>
+./build_cp.sh --port unix --variant coverage</code></pre>
     </div>
   </main>
 

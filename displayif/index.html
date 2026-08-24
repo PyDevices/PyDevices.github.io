@@ -51,9 +51,6 @@
     </div>
   </section>
   <!-- PYDEVICES-ABOVE-THE-FOLD: END -->
-  <div id="pydevices-site-header"></div>
-
-  
 
   <main class="wrap" style="padding-bottom: 60px;">
     <!-- C Hardware Bus Specification Grid -->
@@ -98,7 +95,7 @@ git clone https://github.com/PyDevices/displayif.git
 
 # Compile MicroPython firmware with displayif enabled:
 cd micropython/ports/esp32
-make USER_C_MODULES=../../../../displayif/src/ports/esp32/micropython.cmake BOARD=ESP32_GENERIC_S3</code></pre>
+make BOARD=ESP32_GENERIC_S3 USER_C_MODULES=../../../displayif</code></pre>
     </div>
 
     <!-- Supported MCU Architecture Matrix -->

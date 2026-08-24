@@ -1164,12 +1164,19 @@ pre code {
   cursor: pointer;
   z-index: 2;
   transition: background 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+  animation: peeking-tab-glow 3.6s ease-in-out infinite;
+}
+
+@keyframes peeking-tab-glow {
+  0%, 100% { box-shadow: none; }
+  50% { box-shadow: 3px 0 16px rgba(245, 78, 0, 0.22); }
 }
 
 .pydevices-nav-peeking-tab:hover {
   background: var(--panel);
   border-color: var(--accent);
   box-shadow: 2px 0 14px rgba(245, 78, 0, 0.25);
+  animation: none;
 }
 
 .peeking-logo {
@@ -1501,14 +1508,6 @@ body.pydevices-drawer-open {
 }
 
 /* Interpreter Matrix Table */
-.matrix-wrap {
-  overflow-x: auto;
-  margin-top: 16px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--panel);
-}
-
 .matrix-table {
   width: 100%;
   border-collapse: collapse;
@@ -1737,5 +1736,12 @@ body.pydevices-drawer-open {
   .nav {
     gap: 14px;
     font-size: 0.88rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pydevices-nav-peeking-tab,
+  .peeking-chevron {
+    animation: none;
   }
 }

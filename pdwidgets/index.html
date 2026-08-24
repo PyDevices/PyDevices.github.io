@@ -51,9 +51,6 @@
     </div>
   </section>
   <!-- PYDEVICES-ABOVE-THE-FOLD: END -->
-  <div id="pydevices-site-header"></div>
-
-  
 
   <main class="wrap" style="padding-bottom: 60px;">
     <!-- UI Component Showcase Grid -->
@@ -97,11 +94,14 @@ mip.install("pdwidgets", index="https://PyDevices.github.io/mip")
 
 # Example Usage:
 import board_config
-from pdwidgets.widgets.button import Button
+import appdev
+import pdwidgets as pd
 
-screen = board_config.screen
-btn = Button(x=20, y=40, width=120, height=45, text="Click Me")
-screen.add(btn)</code></pre>
+app = appdev.App(board_config)
+display = pd.Display(board_config.display_drv, app)
+screen = pd.Screen(display)
+
+btn = pd.Button(screen, x=20, y=40, w=120, h=45, label="Click Me")</code></pre>
     </div>
   </main>
 

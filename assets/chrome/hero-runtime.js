@@ -2,6 +2,22 @@
 (function () {
   const state = { phase: "idle", heroes: [], errors: [] };
   window.__pydevicesHeroes = state;
+
+  // Browsers require a user gesture before unlocking Web Audio. Most heroes
+  // never touch audio and this is a no-op for them; the one that does (the
+  // pydevices signal generator) just needs this armed so its first click
+  // both unlocks audio and toggles the tone in the same gesture.
+  let audioGestureArmed = false;
+  function armAudioGesture() {
+    if (audioGestureArmed) return;
+    audioGestureArmed = true;
+    const tryEnable = () => {
+      globalThis.Module?.pydevicesBridge?.enableAudio(false)?.catch(() => {});
+    };
+    document.addEventListener("pointerdown", tryEnable, { once: true });
+    document.addEventListener("keydown", tryEnable, { once: true });
+  }
+  armAudioGesture();
   async function launch(container) {
     const canvasId = container.dataset.heroCanvas || "hero_canvas";
     const appName = container.dataset.heroApp || "watch";
@@ -30,6 +46,7 @@ from displaydev import env_set
 env_set("PYDEVICES_CANVAS_ID", ${JSON.stringify(canvasId)})
 env_set("PYDEVICES_WIDTH", ${JSON.stringify(String(canvasWidth))})
 env_set("PYDEVICES_HEIGHT", ${JSON.stringify(String(canvasHeight))})
+env_set("PYDEVICES_TZ_OFFSET_MIN", ${JSON.stringify(String(new Date().getTimezoneOffset()))})
 if "/" not in sys.path: sys.path.insert(0, "/")
 os.chdir("/")
 import mip

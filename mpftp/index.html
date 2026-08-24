@@ -51,9 +51,6 @@
     </div>
   </section>
   <!-- PYDEVICES-ABOVE-THE-FOLD: END -->
-  <div id="pydevices-site-header"></div>
-
-  
 
   <main class="wrap" style="padding-bottom: 60px;">
     <!-- IDE Workbench Layout Component -->
@@ -84,8 +81,8 @@ lib/pydevices/            /flash/lib/pydevices/
         <div class="workbench-pane">
           <h4>💬 Interactive REPL &amp; Flasher</h4>
           <pre><code>>>> import board_config
->>> display = board_config.display
->>> display.fill(0xF800)
+>>> display_drv = board_config.display_drv
+>>> display_drv.fill(0xF800)
 >>> print("PyDevices OK")
 PyDevices OK
 >>>

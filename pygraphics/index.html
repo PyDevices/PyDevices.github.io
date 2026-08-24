@@ -51,9 +51,6 @@
     </div>
   </section>
   <!-- PYDEVICES-ABOVE-THE-FOLD: END -->
-  <div id="pydevices-site-header"></div>
-
-  
 
   <main class="wrap" style="padding-bottom: 60px;">
     <!-- 2D Canvas Feature Matrix Component -->
@@ -114,7 +111,7 @@ fb = FrameBuffer(buf, 128, 128, RGB565)
 fb.fill(0)
 
 # Draw circle — returns modified dirty Area bounding box
-dirty_area = fb.circle(64, 64, 30, 0xF800, fill=True)
+dirty_area = fb.circle(64, 64, 30, 0xF800, f=True)
 print("Dirty Area:", dirty_area)  # Area(34, 34, 60, 60)</code></pre>
     </div>
   </main>

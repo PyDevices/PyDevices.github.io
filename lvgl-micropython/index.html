@@ -51,9 +51,6 @@
     </div>
   </section>
   <!-- PYDEVICES-ABOVE-THE-FOLD: END -->
-  <div id="pydevices-site-header"></div>
-
-  
 
   <main class="wrap" style="padding-bottom: 60px;">
     <div class="section-head">
@@ -67,7 +64,7 @@ git clone https://github.com/PyDevices/lvgl-micropython.git
 
 # Build MicroPython firmware with LVGL enabled:
 cd micropython/ports/esp32
-make USER_C_MODULES=../../../../lvgl-micropython/micropython.cmake BOARD=ESP32_GENERIC_S3</code></pre>
+make BOARD=ESP32_GENERIC_S3 USER_C_MODULES=../../../lvgl-micropython</code></pre>
     </div>
   </main>
 

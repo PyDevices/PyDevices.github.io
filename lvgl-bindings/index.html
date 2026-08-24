@@ -51,9 +51,6 @@
     </div>
   </section>
   <!-- PYDEVICES-ABOVE-THE-FOLD: END -->
-  <div id="pydevices-site-header"></div>
-
-  
 
   <main class="wrap" style="padding-bottom: 60px;">
     <!-- Generator Pipeline Flowchart Component -->
@@ -73,7 +70,7 @@
           <pre><code>LVGL C Headers (lvgl.h, lv_conf.h)
             │
             ▼
-[ gen_mpy.py C-Header Parser ]</code></pre>
+[ binding/gen_binding.py --target {mp,cp,cpython} ]</code></pre>
         </div>
 
         <div class="workbench-pane">
@@ -83,6 +80,7 @@
 └── generated/lvgl_python.c (CPython/Pyodide)</code></pre>
         </div>
       </div>
+      <p style="margin: 12px 16px 4px; font-size: 0.85rem; color: var(--ink-soft);">Named in the spirit of <code>gen_mpy.py</code> from LVGL's original <a href="https://github.com/lvgl/lv_binding_micropython" style="color: inherit;">lv_binding_micropython</a> generator — <code>gen_binding.py</code> is a ground-up, multi-target rewrite, not a fork, so it doesn't share that file's name.</p>
     </div>
 
     <!-- Target Repos Grid -->

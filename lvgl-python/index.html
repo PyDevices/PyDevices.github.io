@@ -36,7 +36,7 @@
         GitHub Repo
       </a>
       <a class="btn" style="border-color: var(--tier-3-blue); color: var(--tier-3-blue);" href="https://pypi.org/project/pydevices-lvgl/">PyPI Package</a>
-      <a class="btn" style="border-color: var(--tier-3-blue); color: var(--tier-3-blue);" href="https://pydevices.github.io/pydevices-examples/gallery/">WebAssembly Gallery</a>
+      <a class="btn" style="border-color: var(--tier-3-blue); color: var(--tier-3-blue);" href="https://pydevices.github.io/pydevices-examples/gallery/">Gallery</a>
       <a class="btn" style="border-color: var(--tier-3-blue); color: var(--tier-3-blue);" href="https://pydevices.github.io/pydevices/">pydevices Core</a>
       </div>
     </div>
@@ -51,9 +51,6 @@
     </div>
   </section>
   <!-- PYDEVICES-ABOVE-THE-FOLD: END -->
-  <div id="pydevices-site-header"></div>
-
-  
 
   <main class="wrap" style="padding-bottom: 60px;">
     <div class="section-head">
@@ -63,11 +60,15 @@
 
     <div class="spec-block">
       <pre><code># Install CPython extension on Desktop (Linux / Windows / macOS):
-pip install --extra-index-url https://test.pypi.org/simple/ pydevices-lvgl
+pip install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ pydevices-lvgl
 
-# Pyodide / PyScript Browser Integration:
-import pyodide
-await pyodide.loadPackage("https://pydevices.github.io/pydevices-examples/web/pyscript/wheels/lvgl-0.1.0-cp311-cp311-emscripten_3_1_46_wasm32.whl")</code></pre>
+# Pyodide / PyScript Browser Integration — micropip resolves the matching
+# Pyodide wasm32 wheel straight from TestPyPI, no manual wheel URL needed:
+import micropip
+await micropip.install(
+    "pydevices-lvgl",
+    index_urls=["https://test.pypi.org/simple/", "https://pypi.org/simple/"],
+)</code></pre>
     </div>
   </main>
 

@@ -6,7 +6,7 @@
   <script>try{if(localStorage.getItem('pydevices-theme')==='light'){document.documentElement.setAttribute('data-theme','light');}}catch(e){}</script>
   <!-- PYDEVICES-HEAD-TAGS: START -->
   <title>PyDevices - PyDevices.github.io</title>
-  <meta name="description" content="Cross-platform hardware driver engine, board contract specification, and display stack for MicroPython, CircuitPython, CPython, PyScript, and Android.">
+  <meta name="description" content="The same driver, event, and display code runs unmodified on bare-metal MicroPython and CircuitPython boards, as native CPython wheels on desktop and Android, and directly in a browser tab — no rewrites, no plugins.">
   <link rel="icon" type="image/svg+xml" href="/assets/img/logo.svg">
   <!-- PYDEVICES-HEAD-TAGS: END -->
   <meta property="og:title" content="PyDevices">
@@ -29,15 +29,15 @@
         <div class="logo-badge product-mark" style="background: linear-gradient(135deg, var(--tier-1-amber), #d97706); color: #fff;"><img src="/assets/img/logo.svg" alt="PyDevices" width="112" height="112"></div>
         <span class="eyebrow" style="color: var(--tier-1-amber);">PyDevices Portal</span>
       </div>
-      <h1>One display & hardware contract. 5 Python interpreters.</h1>
-      <p><code>PyDevices.github.io</code> Cross-platform hardware driver engine, board contract specification, and display stack for MicroPython, CircuitPython, CPython, PyScript, and Android.</p>
+      <h1>One display & hardware contract for MicroPython, CircuitPython, and CPython — from bare metal to the browser.</h1>
+      <p>The same driver, event, and display code runs unmodified on bare-metal MicroPython and CircuitPython boards, as native CPython wheels on desktop and Android, and directly in a browser tab — no rewrites, no plugins.</p>
       <div class="cta">
       <a class="btn primary" style="background: #24292e; color: #fff; border-color: #24292e;" href="https://github.com/PyDevices">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.9a3.4 3.4 0 0 0-1-2.6c3-.3 6-1.5 6-6.5a5 5 0 0 0-1.4-3.5 4.6 4.6 0 0 0-.1-3.5s-1.1-.3-3.5 1.3a12 12 0 0 0-6 0C6.6 1.7 5.5 2 5.5 2a4.6 4.6 0 0 0-.1 3.5A5 5 0 0 0 4 9c0 5 3 6.2 6 6.5a3.4 3.4 0 0 0-1 2.6V22"/></svg>
         GitHub Org
       </a>
       <a class="btn" style="border-color: var(--tier-1-amber); color: var(--tier-1-amber);" href="https://pydevices.github.io/pydevices/">Get Started</a>
-      <a class="btn" style="border-color: var(--tier-1-amber); color: var(--tier-1-amber);" href="https://pydevices.github.io/pydevices-examples/gallery/">WebAssembly Gallery</a>
+      <a class="btn" style="border-color: var(--tier-1-amber); color: var(--tier-1-amber);" href="https://pydevices.github.io/pydevices-examples/gallery/">Gallery</a>
       <a class="btn" style="border-color: var(--tier-1-amber); color: var(--tier-1-amber);" href="https://pydevices.github.io/mip/">MIP Index</a>
       </div>
     </div>
@@ -247,7 +247,7 @@
   <section class="wrap" style="margin: 60px auto 20px auto; max-width: 1200px; padding: 0 20px;">
     <div class="section-head" style="text-align: center; margin-bottom: 30px;">
       <h2>Architecture & Layers</h2>
-      <span class="hint">How PyDevices abstractions stack from the application down to the hardware.</span>
+      <span class="hint">How PyDevices abstractions stack from the application down to the hardware — the amber-outlined <strong>Core Stack</strong> below is the <code>pydevices</code> package itself, the product this org ships; everything above it is optional tooling and everything below it is platform glue.</span>
     </div>
     <div class="mermaid" style="text-align: center; background: var(--bg, #fff); padding: 30px; border-radius: 12px; border: 1px solid var(--border, #e2e8f0); box-shadow: 0 4px 6px rgba(0,0,0,0.05); overflow-x: auto;">
       graph TD
@@ -265,17 +265,20 @@
             PYG["pygraphics Core"]
         end
 
-        %% Routing / Event Layer
-        subgraph EventLayer ["Event & Routing Layer"]
-            APPDEV["appdev<br/>(Traffic Controller & Host Loop)"]
-        end
+        %% Core Stack — this boundary IS the pydevices package, the product PyDevices ships
+        subgraph CoreStack ["🐍 pydevices — the Core Stack"]
+            %% Routing / Event Layer
+            subgraph EventLayer ["Event & Routing Layer"]
+                APPDEV["appdev<br/>(Traffic Controller & Host Loop)"]
+            end
 
-        %% Device Abstraction Layer
-        subgraph DeviceLayer ["Core Device Contract"]
-            direction LR
-            DISP["displaydev<br/>(fbdisplay, psdisplay, wasmdisplay, etc.)"]
-            AUDIO["audiodev<br/>(Tone & PCM)"]
-            TIMER["multimer<br/>(Async & Sync Timers)"]
+            %% Device Abstraction Layer
+            subgraph DeviceLayer ["Core Device Contract"]
+                direction LR
+                DISP["displaydev<br/>(fbdisplay, psdisplay, wasmdisplay, etc.)"]
+                AUDIO["audiodev<br/>(Tone & PCM)"]
+                TIMER["multimer<br/>(Async & Sync Timers)"]
+            end
         end
 
         %% Hardware / Interpreter Layer
@@ -331,86 +334,13 @@
         class LVGL,PDW,PYG_APP,DIR,PYG layer;
         class MP,CP,UNIX,WIN,WASM,AND hardware;
         class DIF,DIO,SDL,W32,DOM binding;
+        style CoreStack fill:#fffbeb,stroke:#f59e0b,stroke-width:3px
     </div>
   </section>
   <script type="module">
     import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
     mermaid.initialize({ startOnLoad: true, theme: 'neutral' });
   </script>
-
-    <!-- Interpreter Compatibility Matrix -->
-    <section class="section" style="margin-top: 40px;">
-      <div class="section-head">
-        <h2>Cross-Interpreter Compatibility Matrix</h2>
-        <span class="hint">Unified contract coverage across target host environments.</span>
-      </div>
-
-      <div class="matrix-wrap">
-        <table class="matrix-table">
-          <thead>
-            <tr>
-              <th>Repository / Component</th>
-              <th>MicroPython</th>
-              <th>CircuitPython</th>
-              <th>CPython</th>
-              <th>PyScript / WASM</th>
-              <th>Android APK</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>pydevices (Core Engine)</strong></td>
-              <td><span class="check">✓</span> (MIP)</td>
-              <td><span class="check">✓</span> (pip/lib)</td>
-              <td><span class="check">✓</span> (PyPI)</td>
-              <td><span class="check">✓</span> (MicroPython / Pyodide)</td>
-              <td><span class="check">✓</span> (Buildozer)</td>
-            </tr>
-            <tr>
-              <td><strong>pygraphics (C / Python)</strong></td>
-              <td><span class="check">✓</span> (User Mod)</td>
-              <td><span class="check">✓</span> (Patch)</td>
-              <td><span class="check">✓</span> (Wheel)</td>
-              <td><span class="check">✓</span> (Wheel)</td>
-              <td><span class="check">✓</span> (Wheel)</td>
-            </tr>
-            <tr>
-              <td><strong>pdwidgets (UI Widgets)</strong></td>
-              <td><span class="check">✓</span></td>
-              <td><span class="check">✓</span></td>
-              <td><span class="check">✓</span></td>
-              <td><span class="check">✓</span></td>
-              <td><span class="check">✓</span></td>
-            </tr>
-            <tr>
-              <td><strong>palettes (Color Toolkit)</strong></td>
-              <td><span class="check">✓</span></td>
-              <td><span class="check">✓</span></td>
-              <td><span class="check">✓</span></td>
-              <td><span class="check">✓</span></td>
-              <td><span class="check">✓</span></td>
-            </tr>
-            <tr>
-              <td><strong>lvgl-bindings</strong></td>
-              <td><span class="check">✓</span> (User Mod)</td>
-              <td><span class="check">✓</span> (Patch)</td>
-              <td><span class="check">✓</span> (Wheel)</td>
-              <td><span class="check">✓</span> (Wheel)</td>
-              <td><span class="check">✓</span> (Wheel)</td>
-            </tr>
-            <tr>
-              <td><strong>displayif (Buses)</strong></td>
-              <td><span class="check">✓</span> (User Mod)</td>
-              <td><span class="check">✓</span>*</td>
-              <td><span class="dash">—</span></td>
-              <td><span class="dash">—</span></td>
-              <td><span class="dash">—</span></td>
-            </tr>
-          </tbody>
-        </table>
-        <p style="margin-top: 12px; font-size: 0.85rem; color: var(--ink-soft);"><code>*</code> Note: <code>displayif</code> for CircuitPython provides the <code>usdl2</code> desktop display engine via build patches; MCU targets use CircuitPython's built-in display modules.</p>
-      </div>
-    </section>
 
   </main>
 

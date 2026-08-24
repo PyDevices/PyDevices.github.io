@@ -19,6 +19,13 @@ import display_driver  # wires LVGL display/input into the app
 import lvgl as lv
 from board_config import display_drv
 from display_driver import app
+from displaydev import env_int
+
+# MicroPython's time.localtime() has no timezone support — it's always UTC.
+# hero-runtime.js sets this from the browser's Date.getTimezoneOffset() (same
+# sign convention: minutes local time is BEHIND UTC) so the watch face can
+# still show the viewer's actual local time.
+_TZ_OFFSET_SEC = env_int("PYDEVICES_TZ_OFFSET_MIN", 0) * 60
 
 
 def _color(rgb):
@@ -130,8 +137,9 @@ def _plain(obj):
 
 def _local_time():
     """Return (hour, minute, second, millis, day_name, month_name, day_num)."""
-    t = time.localtime()
-    millis = int((time.time() % 1.0) * 1000)
+    now = time.time()
+    t = time.localtime(now - _TZ_OFFSET_SEC)
+    millis = int((now % 1.0) * 1000)
     days = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"]
     months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"]
     day_name = days[t[6]]

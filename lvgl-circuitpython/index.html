@@ -51,9 +51,6 @@
     </div>
   </section>
   <!-- PYDEVICES-ABOVE-THE-FOLD: END -->
-  <div id="pydevices-site-header"></div>
-
-  
 
   <main class="wrap" style="padding-bottom: 60px;">
     <div class="section-head">
@@ -61,12 +58,13 @@
     </div>
 
     <div class="spec-block">
-      <pre><code># Apply LVGL patches to CircuitPython tree:
-cd circuitpython
-../lvgl-circuitpython/scripts/patch-circuitpython.sh
+      <pre><code># CircuitPython has no USER_C_MODULES — apply_cp_patches.sh patches the tree instead:
+cd lvgl-circuitpython
+./apply_cp_patches.sh --apply --port unix --variant coverage
 
-# Build CircuitPython with LVGL bindings:
-make BOARD=adafruit_feather_rp2040 USER_C_MODULES=../lvgl-circuitpython/circuitpython.mk</code></pre>
+# Then build with plain make:
+cd ../circuitpython/ports/unix
+make -j VARIANT=coverage</code></pre>
     </div>
   </main>
 
