@@ -13,11 +13,12 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap">
+    <link rel="stylesheet" href="/vendor/xterm/xterm.css">
     <link rel="stylesheet" href="simulator.css">
-    <!-- LZ-String for compressed URL hash sharing -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.5.0/lz-string.min.js"></script>
-    <!-- Monaco Editor AMD Loader -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.js"></script>
+    <!-- Monaco Editor AMD Loader, vendored so a cold offline install still has
+         an editor. Google Fonts above is now the only cross-origin load, and it
+         falls back to the local stacks when it fails. -->
+    <script src="/vendor/monaco/vs/loader.js"></script>
 </head>
 <body>
     <!-- Top Global App Bar -->
@@ -52,13 +53,15 @@
             <!-- Resolution & Shape Selector -->
             <div class="sim-select-wrap">
                 <select id="resolution-select" aria-label="Select Screen Resolution">
-                    <option value="320x240" selected>320 × 240 (QVGA Landscape)</option>
-                    <option value="240x320">240 × 320 (QVGA Portrait)</option>
-                    <option value="240x240-square">240 × 240 (Square Watch)</option>
-                    <option value="240x240-round">240 × 240 (Round Watch)</option>
-                    <option value="480x320">480 × 320 (HVGA Landscape)</option>
-                    <option value="320x480">320 × 480 (HVGA Portrait)</option>
-                    <option value="800x480">800 × 480 (WVGA Landscape)</option>
+                    <option value="320x240" selected>320 × 240</option>
+                    <option value="240x320">240 × 320</option>
+                    <!-- Both 240 × 240 entries would read identically without the
+                         one word that actually distinguishes them. -->
+                    <option value="240x240-square">240 × 240</option>
+                    <option value="240x240-round">240 × 240 round</option>
+                    <option value="480x320">480 × 320</option>
+                    <option value="320x480">320 × 480</option>
+                    <option value="800x480">800 × 480</option>
                     <option value="custom">Custom...</option>
                 </select>
             </div>
@@ -66,11 +69,6 @@
         </div>
 
         <div class="sim-header-right">
-            <button type="button" class="sim-btn" id="enable-audio">Enable Audio</button>
-            <button type="button" class="sim-btn" id="enable-microphone">Enable Microphone</button>
-            <button type="button" class="sim-btn" id="refresh-application" title="Clear the simulator cache and reload the latest version">
-                <span>Refresh app</span>
-            </button>
             <!-- Run Editor Button -->
             <button type="button" class="sim-btn sim-btn-primary" id="run-btn" title="Run editor in the REPL globals (Ctrl+Enter)">
                 <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m8 5 11 7-11 7z"/></svg>
@@ -78,21 +76,53 @@
                 <kbd>Ctrl+↵</kbd>
             </button>
 
+            <button type="button" class="sim-btn" id="stop-btn" title="Interrupt the running program (Ctrl+C)" disabled>
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
+                <span>Stop</span>
+                <kbd>Ctrl+C</kbd>
+            </button>
+
             <button type="button" class="sim-btn" id="reset-vm" title="Reset the MicroPython virtual machine">
                 <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
                 <span>Reset VM</span>
             </button>
 
-            <!-- Share URL Button -->
-            <button type="button" class="sim-btn" id="share-btn" title="Share Interactive Code Link">
-                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-                <span>Share</span>
+            <!-- Saved Programs -->
+            <button type="button" class="sim-btn" id="save-btn" title="Save this program in the browser or download it (Ctrl+S)">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                <span>Save</span>
+                <kbd>Ctrl+S</kbd>
             </button>
 
             <!-- Theme Toggle -->
             <button type="button" class="sim-btn sim-icon-btn" id="theme-toggle" aria-label="Toggle Color Theme" title="Toggle Light/Dark Theme">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
             </button>
+
+            <!-- Overflow menu: everything that is not part of the edit/run loop -->
+            <div class="sim-menu-wrap">
+                <button type="button" class="sim-btn sim-icon-btn" id="more-menu-btn"
+                        aria-label="More actions" title="More actions"
+                        aria-haspopup="menu" aria-expanded="false" aria-controls="more-menu">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg>
+                </button>
+                <div class="sim-menu" id="more-menu" role="menu" hidden>
+                    <button type="button" class="sim-menu-item" role="menuitem" id="enable-audio">
+                        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/></svg>
+                        <span>Enable Audio</span>
+                    </button>
+                    <button type="button" class="sim-menu-item" role="menuitem" id="enable-microphone">
+                        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="11" rx="3"/><path d="M5 10a7 7 0 0 0 14 0M12 17v5"/></svg>
+                        <span>Enable Microphone</span>
+                    </button>
+                    <hr class="sim-menu-sep">
+                    <button type="button" class="sim-menu-item" role="menuitem" id="refresh-application"
+                            title="Clear the simulator cache and reload the latest version">
+                        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>
+                        <span>Refresh app</span>
+                    </button>
+                </div>
+            </div>
         </div>
     </header>
 
@@ -107,10 +137,12 @@
         <!-- Left Pane: Monaco Code Editor -->
         <section class="sim-editor-pane" id="editor-pane" aria-label="Code Editor">
             <div class="sim-pane-header">
-                <div class="sim-tab">
-                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-                    <span>main.py</span>
-                </div>
+                <!-- simulator.js renders one tab per file; main.py is the entry
+                     point and cannot be renamed or removed. -->
+                <div class="sim-tabs" id="file-tabs" role="tablist" aria-label="Program files"></div>
+                <button type="button" class="sim-tab-add" id="add-file-btn" title="New file" aria-label="New file">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+                </button>
                 <div class="sim-status-indicator">
                     <span class="sim-status-dot is-ready" id="status-dot"></span>
                     <span id="status-text">Ready</span>
@@ -126,6 +158,13 @@
         <section class="sim-preview-pane" id="preview-pane" aria-label="Device Preview and Console">
             <!-- Top Sub-Pane: Hardware Canvas Bezel Stage -->
             <div class="sim-device-stage" id="device-stage">
+                <!-- Shown when the display size changes after a run: the panel the
+                     program already created keeps the size it booted with. -->
+                <div class="sim-stage-notice" id="stage-notice" role="status" hidden>
+                    <span>Display size changed — reset the VM to apply it.</span>
+                    <button type="button" class="sim-btn sim-btn-primary" id="stage-notice-reset">Reset VM</button>
+                    <button type="button" class="sim-stage-notice-dismiss" id="stage-notice-dismiss" aria-label="Dismiss">×</button>
+                </div>
                 <div class="sim-device-bezel" id="device-bezel">
                     <canvas id="display_canvas" width="320" height="240" tabindex="0"></canvas>
                     <canvas id="aux_canvas" width="1" height="1" tabindex="0"></canvas>
@@ -146,15 +185,79 @@
                         <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                     </button>
                 </div>
-                <div class="sim-console-body sim-terminal-body" id="console-log">
-                    <!-- simulator.js mounts the direct MicroPython REPL here. -->
+                <div class="sim-terminal-body" id="console-log">
+                    <!-- simulator.js mounts the xterm-backed MicroPython REPL here. -->
                 </div>
             </section>
         </section>
     </main>
 
+    <!-- Custom resolution entry. A <dialog> rather than prompt(), which is
+         blocked outright in some standalone-PWA contexts. -->
+    <dialog class="sim-dialog" id="custom-res-dialog" aria-label="Custom display size">
+        <form id="custom-res-form" method="dialog">
+            <h2 class="sim-dialog-title">Custom display size</h2>
+            <div class="sim-dialog-fields">
+                <label>Width
+                    <input type="number" id="custom-res-w" min="16" max="2048" step="1" required>
+                </label>
+                <label>Height
+                    <input type="number" id="custom-res-h" min="16" max="2048" step="1" required>
+                </label>
+            </div>
+            <p class="sim-dialog-hint">Reset the VM after applying so the running program picks up the new size.</p>
+            <div class="sim-dialog-actions">
+                <button type="button" class="sim-btn" id="custom-res-cancel">Cancel</button>
+                <button type="submit" class="sim-btn sim-btn-primary">Apply</button>
+            </div>
+        </form>
+    </dialog>
+
+    <!-- New file / rename. Flat .py names only, so `import helper` resolves
+         against the working directory the runtime already has on sys.path. -->
+    <dialog class="sim-dialog" id="file-name-dialog" aria-label="File name">
+        <form id="file-name-form" method="dialog">
+            <h2 class="sim-dialog-title" id="file-name-title">New file</h2>
+            <div class="sim-dialog-fields">
+                <label>File name
+                    <input type="text" id="file-name-input" required autocomplete="off"
+                           spellcheck="false" placeholder="helper.py">
+                </label>
+            </div>
+            <p class="sim-dialog-hint" id="file-name-error" hidden></p>
+            <div class="sim-dialog-actions">
+                <button type="button" class="sim-btn" id="file-name-cancel">Cancel</button>
+                <button type="submit" class="sim-btn sim-btn-primary" id="file-name-ok">Create</button>
+            </div>
+        </form>
+    </dialog>
+
+    <!-- Saved programs. Everything lives in this browser; the download link is
+         the way a program leaves it. There is no upload counterpart -- paste
+         code straight into the editor instead. -->
+    <dialog class="sim-dialog sim-dialog-wide" id="save-dialog" aria-label="Saved programs">
+        <h2 class="sim-dialog-title">Saved programs</h2>
+        <form id="save-form" method="dialog">
+            <div class="sim-save-row">
+                <label class="sim-save-name">Name
+                    <input type="text" id="save-name" maxlength="60" required
+                           autocomplete="off" spellcheck="false" placeholder="my-program">
+                </label>
+                <button type="submit" class="sim-btn sim-btn-primary">Save</button>
+            </div>
+        </form>
+
+        <ul class="sim-save-list" id="save-list"></ul>
+        <p class="sim-save-empty" id="save-empty">Nothing saved yet — saved programs are kept in this browser.</p>
+
+        <div class="sim-dialog-actions">
+            <a class="sim-btn" id="download-py" download="main.py" href="#">Download .py</a>
+            <button type="button" class="sim-btn" id="save-close">Close</button>
+        </div>
+    </dialog>
+
     <!-- Toast Notification -->
-    <div class="sim-toast" id="sim-toast">✓ Link copied to clipboard!</div>
+    <div class="sim-toast" id="sim-toast">✓ Saved</div>
 
     <!-- Simulator Application Scripts -->
     <script src="./templates.js"></script>

@@ -94,11 +94,11 @@ html, body {
   letter-spacing: -0.01em;
 }
 
-.sim-brand img {
-  display: block;
+.sim-brand-title {
+  white-space: nowrap;
 }
 
-.sim-badge {
+.sim-brand-badge {
   font-size: 0.72rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -108,6 +108,8 @@ html, body {
   padding: 2px 8px;
   border-radius: 999px;
   border: 1px solid var(--border-color);
+  white-space: nowrap;
+  flex: none;
 }
 
 .sim-header-center {
@@ -301,6 +303,99 @@ html, body {
   color: var(--text-main);
 }
 
+/* File tab strip above the editor */
+.sim-tabs {
+  display: flex;
+  align-items: stretch;
+  gap: 2px;
+  height: 100%;
+  min-width: 0;
+  flex: 0 1 auto;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.sim-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.sim-file-tab {
+  display: flex;
+  align-items: center;
+  flex: none;
+  border-bottom: 2px solid transparent;
+}
+
+.sim-file-tab.is-active {
+  border-bottom-color: var(--accent);
+}
+
+.sim-file-tab-name {
+  background: none;
+  border: none;
+  padding: 0 4px 0 8px;
+  color: var(--text-muted);
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.sim-file-tab.is-active .sim-file-tab-name,
+.sim-file-tab-name:hover {
+  color: var(--text-main);
+}
+
+.sim-file-tab-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  margin-right: 4px;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: 4px;
+  color: var(--text-subtle);
+  font-size: 0.95rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.sim-file-tab-close:hover {
+  background: var(--bg-control-hover);
+  color: var(--accent-red);
+}
+
+/* main.py is the entry point: it is always present, so it has no close button
+   and the tab keeps the same padding as the others. */
+.sim-file-tab.is-entry .sim-file-tab-name {
+  padding-right: 8px;
+}
+
+.sim-tab-add {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 22px;
+  height: 22px;
+  margin-right: auto;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: 5px;
+  color: var(--text-subtle);
+  cursor: pointer;
+}
+
+.sim-tab-add:hover {
+  background: var(--bg-control);
+  color: var(--text-main);
+}
+
 .sim-editor-container {
   flex: 1;
   width: 100%;
@@ -309,7 +404,7 @@ html, body {
 }
 
 /* Drag Splitter */
-.sim-splitter {
+.sim-splitter-v {
   width: 6px;
   background: var(--border-subtle);
   cursor: col-resize;
@@ -317,10 +412,21 @@ html, body {
   flex: none;
   transition: background 0.15s ease;
   z-index: 40;
+  /* Without this the browser claims the gesture for scrolling and the
+     pointermove stream stops after the first event on touch devices. */
+  touch-action: none;
 }
 
-.sim-splitter:hover, .sim-splitter.is-dragging {
+.sim-splitter-v:hover, .sim-splitter-v.is-dragging {
   background: var(--accent);
+}
+
+/* 6px is comfortable for a mouse but far too thin for a fingertip; widen the
+   hit target without moving the visible line. */
+.sim-splitter-v::before {
+  content: '';
+  position: absolute;
+  inset: 0 -7px;
 }
 
 /* Right Pane: Simulator & Console */
@@ -398,10 +504,17 @@ html, body {
   flex: none;
   transition: background 0.15s ease;
   z-index: 40;
+  touch-action: none;
 }
 
 .sim-splitter-h:hover, .sim-splitter-h.is-dragging {
   background: var(--accent);
+}
+
+.sim-splitter-h::before {
+  content: '';
+  position: absolute;
+  inset: -7px 0;
 }
 
 /* Console / Output Panel */
@@ -414,105 +527,36 @@ html, body {
   border-top: 1px solid var(--border-color);
 }
 
-.sim-console-body {
-  flex: 1;
-  padding: 12px 14px;
-  overflow-y: auto;
-  font-family: var(--font-mono);
-  font-size: 0.82rem;
-  line-height: 1.55;
-  background: #080c14;
-  color: #cbd5e1;
-  white-space: pre-wrap;
-  word-break: break-all;
-}
-
-.sim-console-body .log-info { color: #38bdf8; }
-.sim-console-body .log-success { color: #34d399; }
-.sim-console-body .log-warn { color: #fbbf24; }
-.sim-console-body .log-err { color: #f87171; }
-.sim-console-body .log-dim { color: #64748b; }
-.sim-console-body .log-prompt { color: var(--accent); font-weight: 600; }
-.sim-console-body .log-repl-out { color: #a5b4fc; }
-.sim-direct-output {
-  box-sizing: border-box;
-  width: 100%;
-  min-height: 0;
-  flex: 1;
-  margin: 0;
-  padding: 12px;
-  overflow: auto;
-  white-space: pre-wrap;
-  color: var(--text-primary);
-  font: 12px/1.5 "JetBrains Mono", monospace;
-}
-
-.sim-repl-shell {
-  display: flex;
-  flex-direction: column;
-  min-height: 100%;
-}
-
-.sim-repl-form {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  padding: 8px 10px;
-  border-top: 1px solid var(--border-color);
-  background: var(--bg-control);
-}
-
-.sim-repl-form label {
-  color: var(--accent);
-  font: 700 13px/1 var(--font-mono);
-}
-
-.sim-repl-input {
-  min-width: 0;
-  flex: 1;
-  border: 0;
-  outline: 0;
-  background: transparent;
-  color: var(--text-main);
-  font: 13px/1.4 var(--font-mono);
-}
-
-.sim-repl-input:disabled { opacity: 0.55; }
-
+/* xterm-backed REPL. The cursor and line editing belong to MicroPython itself,
+   so there is no separate input element to style. */
 .sim-terminal-body {
-  padding: 0;
+  flex: 1;
+  min-height: 0;
+  padding: 8px 4px 8px 12px;
   overflow: hidden;
   background: #080c14;
-  display: flex;
-  flex-direction: column;
-}
-
-.sim-terminal-body .py-terminal {
-  flex: 1;
-  height: 100% !important;
-  width: 100% !important;
-  display: block;
 }
 
 .sim-terminal-body .xterm {
-  height: 100% !important;
-  padding: 8px 12px;
-  background: #080c14 !important;
+  height: 100%;
 }
 
 .sim-terminal-body .xterm-viewport {
-  overflow-y: auto !important;
-  background: #080c14 !important;
+  overflow-y: auto;
+  background: transparent !important;
 }
 
-.sim-terminal-body .xterm-screen {
-  width: 100% !important;
+.sim-terminal-body .xterm-viewport::-webkit-scrollbar {
+  width: 10px;
 }
 
-[data-theme="light"] .sim-terminal-body,
-[data-theme="light"] .sim-terminal-body .xterm,
-[data-theme="light"] .sim-terminal-body .xterm-viewport {
-  background: #ffffff !important;
+.sim-terminal-body .xterm-viewport::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 5px;
+}
+
+[data-theme="light"] .sim-terminal-body {
+  background: #ffffff;
 }
 
 /* Status indicator pill in status bar */
@@ -538,6 +582,298 @@ html, body {
 @keyframes pulse {
   from { opacity: 0.4; }
   to { opacity: 1; }
+}
+
+/* Overflow ("more actions") menu */
+.sim-menu-wrap {
+  position: relative;
+  display: flex;
+}
+
+.sim-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 210px;
+  padding: 5px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.45);
+  z-index: 60;
+}
+
+.sim-menu[hidden] {
+  display: none;
+}
+
+.sim-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 7px 10px;
+  background: none;
+  border: none;
+  border-radius: 7px;
+  color: var(--text-main);
+  font-family: inherit;
+  font-size: 0.85rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.sim-menu-item:hover:not(:disabled),
+.sim-menu-item:focus-visible {
+  background: var(--bg-control);
+  outline: none;
+}
+
+.sim-menu-item:disabled {
+  color: var(--text-subtle);
+  cursor: default;
+}
+
+.sim-menu-item svg {
+  flex: none;
+}
+
+.sim-menu-sep {
+  border: none;
+  border-top: 1px solid var(--border-subtle);
+  margin: 5px 4px;
+}
+
+/* "Reset VM to apply" banner over the device stage */
+.sim-stage-notice {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: calc(100% - 24px);
+  padding: 7px 8px 7px 14px;
+  background: var(--bg-panel);
+  border: 1px solid var(--accent);
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+  font-size: 0.8rem;
+  color: var(--text-main);
+  z-index: 30;
+}
+
+.sim-stage-notice[hidden] {
+  display: none;
+}
+
+.sim-stage-notice-dismiss {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  line-height: 1;
+  padding: 2px 4px;
+  cursor: pointer;
+}
+
+.sim-stage-notice-dismiss:hover {
+  color: var(--text-main);
+}
+
+/* Modal dialogs. The `* { margin: 0 }` reset above would otherwise defeat the
+   `margin: auto` a modal <dialog> relies on to centre itself. */
+.sim-dialog {
+  margin: auto;
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  background: var(--bg-panel);
+  color: var(--text-main);
+  padding: 20px 22px;
+  min-width: 300px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+}
+
+.sim-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.55);
+}
+
+.sim-dialog-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 14px;
+}
+
+.sim-dialog-fields {
+  display: flex;
+  gap: 12px;
+}
+
+.sim-dialog-fields label {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.sim-dialog-fields input {
+  width: 110px;
+  background: var(--bg-control);
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 7px 10px;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  outline: none;
+}
+
+.sim-dialog-fields input:focus {
+  border-color: var(--accent);
+}
+
+.sim-dialog-hint {
+  margin-top: 12px;
+  font-size: 0.74rem;
+  color: var(--text-subtle);
+  max-width: 260px;
+}
+
+.sim-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+/* Saved programs dialog */
+.sim-dialog-wide {
+  width: min(440px, calc(100vw - 32px));
+}
+
+.sim-save-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.sim-save-name {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.sim-save-name input {
+  width: 100%;
+  background: var(--bg-control);
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 7px 10px;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  outline: none;
+}
+
+.sim-save-name input:focus {
+  border-color: var(--accent);
+}
+
+.sim-save-list {
+  list-style: none;
+  margin: 14px 0 0;
+  max-height: 240px;
+  overflow-y: auto;
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+}
+
+.sim-save-list:empty {
+  display: none;
+}
+
+.sim-save-list li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 8px 7px 12px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.sim-save-list li:last-child {
+  border-bottom: none;
+}
+
+.sim-save-list li.is-current {
+  background: var(--bg-panel-subtle);
+}
+
+.sim-save-entry {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: none;
+  border: none;
+  padding: 0;
+  text-align: left;
+  color: var(--text-main);
+  font-family: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.sim-save-entry:hover .sim-save-entry-name {
+  color: var(--accent);
+}
+
+.sim-save-entry-name {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sim-save-entry-meta {
+  font-size: 0.71rem;
+  color: var(--text-subtle);
+}
+
+.sim-save-delete {
+  flex: none;
+  background: none;
+  border: none;
+  color: var(--text-subtle);
+  font-size: 1.05rem;
+  line-height: 1;
+  padding: 3px 6px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.sim-save-delete:hover {
+  color: var(--accent-red);
+  background: var(--bg-control);
+}
+
+.sim-save-empty {
+  margin-top: 14px;
+  font-size: 0.78rem;
+  color: var(--text-subtle);
+}
+
+.sim-save-empty[hidden] {
+  display: none;
+}
+
+.sim-dialog-actions a.sim-btn {
+  text-decoration: none;
 }
 
 /* Toast Message */
@@ -579,7 +915,7 @@ html, body {
     height: calc(100% - 90px);
   }
 
-  .sim-splitter {
+  .sim-splitter-v {
     display: none;
   }
 

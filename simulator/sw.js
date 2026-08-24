@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // PyDevices Simulator PWA Service Worker with Cross-Origin Isolation (COI) support.
 
-const CACHE_NAME = "pydevices-simulator-v4";
+const CACHE_NAME = "pydevices-simulator-v7";
 
 const PRECACHE_ASSETS = [
   "./",
@@ -15,8 +15,18 @@ const PRECACHE_ASSETS = [
   "/assets/chrome/site.css",
   "/vendor/micropython/micropython.mjs",
   "/vendor/micropython/micropython.wasm",
-  "https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.5.0/lz-string.min.js",
-  "https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.js",
+  "/vendor/xterm/xterm.css",
+  "/vendor/xterm/xterm-DrSYbXEP.js",
+  "/vendor/xterm/xterm_addon-fit-DxKdSnof.js",
+  // Monaco is vendored so a cold offline install still gets an editor. The AMD
+  // loader fetches these lazily, which the cache-on-fetch handler below would
+  // only pick up after one online session.
+  "/vendor/monaco/vs/loader.js",
+  "/vendor/monaco/vs/editor/editor.main.js",
+  "/vendor/monaco/vs/editor/editor.main.css",
+  "/vendor/monaco/vs/basic-languages/python/python.js",
+  "/vendor/monaco/vs/base/worker/workerMain.js",
+  "/vendor/monaco/vs/base/browser/ui/codicons/codicon/codicon.ttf",
 ];
 
 self.addEventListener("install", (event) => {
