@@ -5,14 +5,16 @@ Digital logic analyzer visualizing high-speed SPI / 8080 / MIPI-DSI
 hardware bus signals, clock pulses, frame throughput, and TE sync.
 """
 
-import sys
 import time
 import math
 from random import random
 
+from board_config import display_drv
 import board_config
 import appdev
 import pygraphics
+
+app = appdev.App(board_config)
 
 
 def _color(value):
@@ -28,17 +30,12 @@ def _text(display, value, x, y, color, align="left"):
 
 
 class BusScopeHero:
-    def __init__(self, canvas_id="hero_canvas", size=240):
-        self.canvas_id = canvas_id
+    def __init__(self, size=240):
         self.size = size
         self.w = size
         self.h = size
 
-        import os
-        os.environ.setdefault('PYDEVICES_WIDTH', str(size))
-        os.environ.setdefault('PYDEVICES_HEIGHT', str(size))
-        self.drv = board_config.display_drv
-        self.app = appdev.App(board_config)
+        self.drv = display_drv
 
         self.offset = 0.0
         self.fps = 60.0
@@ -46,7 +43,7 @@ class BusScopeHero:
         self.frame_cnt = 0
 
         self.draw()
-        self._tick_subscription = self.app.every(30, self._timer_tick)
+        self._tick_subscription = app.every(30, self._timer_tick)
 
     def _timer_tick(self, _timer):
         self.tick()
@@ -126,11 +123,4 @@ class BusScopeHero:
             self.drv.show()
 
 
-_bus_scope_app = None
-
-
-def main(canvas_id="hero_canvas"):
-    global _bus_scope_app
-    print(f"Initializing PyDevices Bus Scope on canvas '{canvas_id}'...")
-    _bus_scope_app = BusScopeHero(canvas_id, size=240)
-    print("PyDevices Bus Scope running successfully!")
+_bus_scope_app = BusScopeHero(size=min(display_drv.width, display_drv.height))

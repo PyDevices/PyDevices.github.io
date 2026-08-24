@@ -5,15 +5,16 @@ Real-time chromatic color harmonizer with dynamic harmonic nodes,
 RGB565 / RGB888 precision math, and smooth gradient ramps.
 """
 
-import sys
 import time
 import math
 
+from board_config import display_drv
 import board_config
 import appdev
-import board_config
 import events
 import pygraphics
+
+app = appdev.App(board_config)
 
 
 def hsl_to_rgb(h, s, l):
@@ -51,19 +52,14 @@ def _text(display, value, x, y, color):
 
 
 class PaletteOrbHero:
-    def __init__(self, canvas_id="hero_canvas", size=240):
-        self.canvas_id = canvas_id
+    def __init__(self, size=240):
         self.size = size
         self.w = size
         self.h = size
         self.cx = size // 2
         self.cy = size // 2
 
-        import os
-        os.environ.setdefault('PYDEVICES_WIDTH', str(size))
-        os.environ.setdefault('PYDEVICES_HEIGHT', str(size))
-        self.drv = board_config.display_drv
-        self.app = appdev.App(board_config)
+        self.drv = display_drv
 
         self.base_hue = 25.0  # Warm amber start
         self.is_dragging = False
@@ -72,7 +68,7 @@ class PaletteOrbHero:
         self._bind_events()
         self.draw()
 
-        self._tick_subscription = self.app.every(30, self._timer_tick)
+        self._tick_subscription = app.every(30, self._timer_tick)
 
     def _timer_tick(self, _timer):
         self.tick()
@@ -98,9 +94,9 @@ class PaletteOrbHero:
         def on_pointer_up(event):
             self.is_dragging = False
 
-        self.app.on(events.MOUSEBUTTONDOWN, on_pointer_down)
-        self.app.on(events.MOUSEMOTION, on_pointer_move)
-        self.app.on(events.MOUSEBUTTONUP, on_pointer_up)
+        app.on(events.MOUSEBUTTONDOWN, on_pointer_down)
+        app.on(events.MOUSEMOTION, on_pointer_move)
+        app.on(events.MOUSEBUTTONUP, on_pointer_up)
 
     def tick(self):
         now = time.time()
@@ -182,11 +178,4 @@ class PaletteOrbHero:
             self.drv.show()
 
 
-_palette_app = None
-
-
-def main(canvas_id="hero_canvas"):
-    global _palette_app
-    print(f"Initializing PyDevices Palette Orb on canvas '{canvas_id}'...")
-    _palette_app = PaletteOrbHero(canvas_id, size=240)
-    print("PyDevices Palette Orb running successfully!")
+_palette_app = PaletteOrbHero(size=min(display_drv.width, display_drv.height))

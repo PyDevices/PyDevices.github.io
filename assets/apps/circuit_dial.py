@@ -8,14 +8,15 @@ Interactive NeoPixel-style RGB LED ring and capacitive touch dial:
 """
 
 import math
-import sys
 import time
 
+from board_config import display_drv
 import board_config
 import appdev
-import board_config
 import events
 import pygraphics
+
+app = appdev.App(board_config)
 
 
 def _rgb565(red, green, blue):
@@ -54,19 +55,14 @@ def hsl_to_rgb(h, s, l):
 
 
 class CircuitDialHero:
-    def __init__(self, canvas_id="hero_canvas", size=240):
-        self.canvas_id = canvas_id
+    def __init__(self, size=240):
         self.size = size
         self.w = size
         self.h = size
         self.cx = size // 2
         self.cy = size // 2
 
-        import os
-        os.environ.setdefault('PYDEVICES_WIDTH', str(size))
-        os.environ.setdefault('PYDEVICES_HEIGHT', str(size))
-        self.drv = board_config.display_drv
-        self.app = appdev.App(board_config)
+        self.drv = display_drv
 
         self.num_leds = 16
         self.base_hue = 0.0
@@ -78,7 +74,7 @@ class CircuitDialHero:
         self.draw()
         self._bind_events()
 
-        self._tick_subscription = self.app.every(33, self._timer_tick)
+        self._tick_subscription = app.every(33, self._timer_tick)
 
     def _timer_tick(self, _timer):
         self.tick()
@@ -107,9 +103,9 @@ class CircuitDialHero:
         def on_pointer_up(event):
             self.is_dragging = False
 
-        self.app.on(events.MOUSEBUTTONDOWN, on_pointer_down)
-        self.app.on(events.MOUSEMOTION, on_pointer_move)
-        self.app.on(events.MOUSEBUTTONUP, on_pointer_up)
+        app.on(events.MOUSEBUTTONDOWN, on_pointer_down)
+        app.on(events.MOUSEMOTION, on_pointer_move)
+        app.on(events.MOUSEBUTTONUP, on_pointer_up)
 
     def tick(self):
         now = time.time()
@@ -170,16 +166,4 @@ class CircuitDialHero:
             self.drv.show()
 
 
-_circuit_app = None
-
-
-def main(canvas_id="hero_canvas"):
-    global _circuit_app
-    print(f"Initializing PyDevices CircuitPython Dial on canvas '{canvas_id}'...")
-    _circuit_app = CircuitDialHero(canvas_id, size=240)
-    print("PyDevices CircuitPython Dial running successfully!")
-
-
-if __name__ == "__main__":
-    cid = sys.argv[1] if len(sys.argv) > 1 else "hero_canvas"
-    main(cid)
+_circuit_app = CircuitDialHero(size=min(display_drv.width, display_drv.height))

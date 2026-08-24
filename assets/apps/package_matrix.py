@@ -8,14 +8,15 @@ Interactive package index & dependency graph visualizer:
 """
 
 import math
-import sys
 import time
 
+from board_config import display_drv
 import board_config
 import appdev
-import board_config
 import events
 import pygraphics
+
+app = appdev.App(board_config)
 
 
 def _rgb565(red, green, blue):
@@ -42,19 +43,14 @@ PACKAGES = [
 
 
 class PackageMatrixHero:
-    def __init__(self, canvas_id="hero_canvas", size=240):
-        self.canvas_id = canvas_id
+    def __init__(self, size=240):
         self.size = size
         self.w = size
         self.h = size
         self.cx = size // 2
         self.cy = size // 2
 
-        import os
-        os.environ.setdefault('PYDEVICES_WIDTH', str(size))
-        os.environ.setdefault('PYDEVICES_HEIGHT', str(size))
-        self.drv = board_config.display_drv
-        self.app = appdev.App(board_config)
+        self.drv = display_drv
 
         self.angle = 0.0
         self.selected_idx = 0
@@ -64,7 +60,7 @@ class PackageMatrixHero:
         self.draw()
         self._bind_events()
 
-        self._tick_subscription = self.app.every(33, self._timer_tick)
+        self._tick_subscription = app.every(33, self._timer_tick)
 
     def _timer_tick(self, _timer):
         self.tick()
@@ -76,7 +72,7 @@ class PackageMatrixHero:
             self.is_installing = True
             self.draw()
 
-        self.app.on(events.MOUSEBUTTONDOWN, on_pointer_down)
+        app.on(events.MOUSEBUTTONDOWN, on_pointer_down)
 
     def tick(self):
         self.angle = (self.angle + 0.02) % (math.pi * 2)
@@ -147,16 +143,4 @@ class PackageMatrixHero:
             self.drv.show()
 
 
-_matrix_app = None
-
-
-def main(canvas_id="hero_canvas"):
-    global _matrix_app
-    print(f"Initializing PyDevices MIP Matrix on canvas '{canvas_id}'...")
-    _matrix_app = PackageMatrixHero(canvas_id, size=240)
-    print("PyDevices MIP Matrix running successfully!")
-
-
-if __name__ == "__main__":
-    cid = sys.argv[1] if len(sys.argv) > 1 else "hero_canvas"
-    main(cid)
+_matrix_app = PackageMatrixHero(size=min(display_drv.width, display_drv.height))

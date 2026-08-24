@@ -5,14 +5,16 @@ High-performance pure-Python 2D vector radar with 360-degree sweeping beam,
 decaying phosphor persistence, anti-aliased range rings, and moving target blips.
 """
 
-import sys
 import time
 import math
 from random import random
 
+from board_config import display_drv
 import board_config
 import appdev
 import pygraphics
+
+app = appdev.App(board_config)
 
 
 def _color(value):
@@ -28,19 +30,14 @@ def _text(display, value, x, y, color, align="left"):
 
 
 class RadarScopeHero:
-    def __init__(self, canvas_id="hero_canvas", size=240):
-        self.canvas_id = canvas_id
+    def __init__(self, size=240):
         self.size = size
         self.w = size
         self.h = size
         self.cx = size // 2
         self.cy = size // 2
 
-        import os
-        os.environ.setdefault('PYDEVICES_WIDTH', str(size))
-        os.environ.setdefault('PYDEVICES_HEIGHT', str(size))
-        self.drv = board_config.display_drv
-        self.app = appdev.App(board_config)
+        self.drv = display_drv
 
         self.sweep_ang = 0.0
         self.targets = [
@@ -50,7 +47,7 @@ class RadarScopeHero:
         ]
 
         self.draw()
-        self._tick_subscription = self.app.every(30, self._timer_tick)
+        self._tick_subscription = app.every(30, self._timer_tick)
 
     def _timer_tick(self, _timer):
         self.tick()
@@ -117,11 +114,4 @@ class RadarScopeHero:
             self.drv.show()
 
 
-_radar_app = None
-
-
-def main(canvas_id="hero_canvas"):
-    global _radar_app
-    print(f"Initializing PyDevices Vector Radar on canvas '{canvas_id}'...")
-    _radar_app = RadarScopeHero(canvas_id, size=240)
-    print("PyDevices Vector Radar running successfully!")
+_radar_app = RadarScopeHero(size=min(display_drv.width, display_drv.height))

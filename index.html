@@ -241,7 +241,9 @@
     </div>
   <!-- PYDEVICES-PORTAL-GRIDS: END -->
 
-  <!-- PYDEVICES-ARCHITECTURE: START -->
+  <!-- Hand-authored diagram: outside any generator marker pair on purpose,
+       so `generate_sites.py` (which only ever rewrites between START/END)
+       never clobbers it. -->
   <section class="wrap" style="margin: 60px auto 20px auto; max-width: 1200px; padding: 0 20px;">
     <div class="section-head" style="text-align: center; margin-bottom: 30px;">
       <h2>Architecture & Layers</h2>
@@ -302,17 +304,17 @@
         PDW --> PYG
         PYG_APP --> PYG
         PYG --> APPDEV
-        
+
         DIR -.-> APPDEV
         DIR --> DISP
-        
+
         APPDEV --> DISP
         APPDEV --> AUDIO
         APPDEV --> TIMER
 
         %% Connect Subgraphs cleanly to avoid spaghetti lines
         DeviceLayer --> HardwareLayer
-        
+
         %% Map Platforms down to Native Bindings
         MP --> DIF
         CP --> DIO
@@ -335,7 +337,6 @@
     import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
     mermaid.initialize({ startOnLoad: true, theme: 'neutral' });
   </script>
-  <!-- PYDEVICES-ARCHITECTURE: END -->
 
     <!-- Interpreter Compatibility Matrix -->
     <section class="section" style="margin-top: 40px;">

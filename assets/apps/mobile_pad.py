@@ -8,14 +8,15 @@ Interactive Android handheld touchscreen gamepad controller:
 """
 
 import math
-import sys
 import time
 
+from board_config import display_drv
 import board_config
 import appdev
-import board_config
 import events
 import pygraphics
+
+app = appdev.App(board_config)
 
 
 def _color(value):
@@ -32,17 +33,12 @@ def _text(display, value, x, y, color, align="left"):
 
 
 class MobilePadHero:
-    def __init__(self, canvas_id="hero_canvas", size=240):
-        self.canvas_id = canvas_id
+    def __init__(self, size=240):
         self.size = size
         self.w = size
         self.h = size
 
-        import os
-        os.environ.setdefault('PYDEVICES_WIDTH', str(size))
-        os.environ.setdefault('PYDEVICES_HEIGHT', str(size))
-        self.drv = board_config.display_drv
-        self.app = appdev.App(board_config)
+        self.drv = display_drv
 
         # Player avatar on virtual screen (x: 20..220, y: 32..112)
         self.avatar_x = 120.0
@@ -54,7 +50,7 @@ class MobilePadHero:
         self.draw()
         self._bind_events()
 
-        self._tick_subscription = self.app.every(33, self._timer_tick)
+        self._tick_subscription = app.every(33, self._timer_tick)
 
     def _timer_tick(self, _timer):
         self.tick()
@@ -110,8 +106,8 @@ class MobilePadHero:
             self.active_btn = None
             self.draw()
 
-        self.app.on(events.MOUSEBUTTONDOWN, on_pointer_down)
-        self.app.on(events.MOUSEBUTTONUP, on_pointer_up)
+        app.on(events.MOUSEBUTTONDOWN, on_pointer_down)
+        app.on(events.MOUSEBUTTONUP, on_pointer_up)
 
     def tick(self):
         # Subtle idle bob
@@ -174,16 +170,4 @@ class MobilePadHero:
             self.drv.show()
 
 
-_pad_app = None
-
-
-def main(canvas_id="hero_canvas"):
-    global _pad_app
-    print(f"Initializing PyDevices Mobile Pad on canvas '{canvas_id}'...")
-    _pad_app = MobilePadHero(canvas_id, size=240)
-    print("PyDevices Mobile Pad running successfully!")
-
-
-if __name__ == "__main__":
-    cid = sys.argv[1] if len(sys.argv) > 1 else "hero_canvas"
-    main(cid)
+_pad_app = MobilePadHero(size=min(display_drv.width, display_drv.height))

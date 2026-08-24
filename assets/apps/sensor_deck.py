@@ -9,26 +9,23 @@ Interactive instrument deck built with pdwidgets:
 """
 
 import math
-import sys
 import time
 
+from board_config import display_drv
 import board_config
 import appdev
 import pdwidgets as pd
 
+app = appdev.App(board_config)
+
 
 class SensorDeckHero:
-    def __init__(self, canvas_id="hero_canvas", size=240):
-        self.canvas_id = canvas_id
+    def __init__(self, size=240):
         self.size = size
 
-        # 1. Initialize PSDisplay, App, and pdwidgets Display
-        import os
-        os.environ.setdefault('PYDEVICES_WIDTH', str(size))
-        os.environ.setdefault('PYDEVICES_HEIGHT', str(size))
-        self.display_drv = board_config.display_drv
-        self.app = appdev.App(board_config)
-        self.display = pd.Display(self.display_drv, self.app)
+        # 1. Initialize the pdwidgets Display over the board's display driver.
+        self.display_drv = display_drv
+        self.display = pd.Display(self.display_drv, app)
 
         # 2. Dark Slate Blue Screen Background
         self.screen = pd.Screen(self.display, bg=0x0842)
@@ -149,7 +146,7 @@ class SensorDeckHero:
         self.display.tick()
 
         # 8. Start Background Tick Animation
-        self._tick_subscription = self.app.every(33, self._timer_tick)
+        self._tick_subscription = app.every(33, self._timer_tick)
 
     def _timer_tick(self, _timer):
         t = time.time()
@@ -164,16 +161,4 @@ class SensorDeckHero:
         self.display.tick()
 
 
-_hero_app = None
-
-
-def main(canvas_id="hero_canvas"):
-    global _hero_app
-    print(f"Initializing PyDevices Sensor Deck on canvas '{canvas_id}'...")
-    _hero_app = SensorDeckHero(canvas_id, size=240)
-    print("PyDevices Sensor Deck running successfully!")
-
-
-if __name__ == "__main__":
-    cid = sys.argv[1] if len(sys.argv) > 1 else "hero_canvas"
-    main(cid)
+_hero_app = SensorDeckHero(size=min(display_drv.width, display_drv.height))

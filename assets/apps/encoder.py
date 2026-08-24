@@ -5,15 +5,16 @@ Interactive 3D knurled aluminum rotary encoder with 24 physical detents,
 rotational drag physics, tactile momentary push-button switch, and live telemetry.
 """
 
-import sys
 import time
 import math
 
+from board_config import display_drv
 import board_config
 import appdev
-import board_config
 import events
 import pygraphics
+
+app = appdev.App(board_config)
 
 
 def _color(value):
@@ -28,8 +29,7 @@ def _text(display, value, x, y, color):
 
 
 class EncoderHero:
-    def __init__(self, canvas_id="hero_canvas", size=240):
-        self.canvas_id = canvas_id
+    def __init__(self, size=240):
         self.size = size
         self.w = size
         self.h = size
@@ -37,11 +37,7 @@ class EncoderHero:
         self.cy = size // 2
 
         # Initialize PSDisplay
-        import os
-        os.environ.setdefault('PYDEVICES_WIDTH', str(size))
-        os.environ.setdefault('PYDEVICES_HEIGHT', str(size))
-        self.drv = board_config.display_drv
-        self.app = appdev.App(board_config)
+        self.drv = display_drv
 
         # Encoder state
         self.angle_deg = 45.0
@@ -61,7 +57,7 @@ class EncoderHero:
         self._bind_events()
         self.draw()
 
-        self._tick_subscription = self.app.every(25, self._timer_tick)
+        self._tick_subscription = app.every(25, self._timer_tick)
 
     def _timer_tick(self, _timer):
         self.tick()
@@ -110,9 +106,9 @@ class EncoderHero:
             self.step_idx = int(nearest_detent) % self.detents
             self.draw()
 
-        self.app.on(events.MOUSEBUTTONDOWN, on_pointer_down)
-        self.app.on(events.MOUSEMOTION, on_pointer_move)
-        self.app.on(events.MOUSEBUTTONUP, on_pointer_up)
+        app.on(events.MOUSEBUTTONDOWN, on_pointer_down)
+        app.on(events.MOUSEMOTION, on_pointer_move)
+        app.on(events.MOUSEBUTTONUP, on_pointer_up)
 
     def tick(self):
         now = time.time()
@@ -214,11 +210,4 @@ class EncoderHero:
             self.drv.show()
 
 
-_encoder_app = None
-
-
-def main(canvas_id="hero_canvas"):
-    global _encoder_app
-    print(f"Initializing PyDevices 3D Rotary Encoder on canvas '{canvas_id}'...")
-    _encoder_app = EncoderHero(canvas_id, size=240)
-    print("PyDevices 3D Rotary Encoder running successfully!")
+_encoder_app = EncoderHero(size=min(display_drv.width, display_drv.height))

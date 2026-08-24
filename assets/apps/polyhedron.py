@@ -5,15 +5,16 @@ Real-time 3D projected faceted icosahedron with 3-axis matrix rotation,
 depth sorting, light-source vector dot-product shading, and interactive touch tumbling.
 """
 
-import sys
 import time
 import math
 
+from board_config import display_drv
 import board_config
 import appdev
-import board_config
 import events
 import pygraphics
+
+app = appdev.App(board_config)
 
 
 def _rgb565(red, green, blue):
@@ -32,8 +33,7 @@ def _text(display, value, x, y, color, align="left"):
 
 
 class PolyhedronHero:
-    def __init__(self, canvas_id="hero_canvas", size=240):
-        self.canvas_id = canvas_id
+    def __init__(self, size=240):
         self.size = size
         self.w = size
         self.h = size
@@ -41,11 +41,7 @@ class PolyhedronHero:
         self.cy = size // 2
 
         # Initialize PSDisplay
-        import os
-        os.environ.setdefault('PYDEVICES_WIDTH', str(size))
-        os.environ.setdefault('PYDEVICES_HEIGHT', str(size))
-        self.drv = board_config.display_drv
-        self.app = appdev.App(board_config)
+        self.drv = display_drv
 
         # 3D Model: Icosahedron (12 vertices, 20 triangular faces)
         phi = (1.0 + math.sqrt(5.0)) / 2.0  # Golden ratio 1.618
@@ -88,7 +84,7 @@ class PolyhedronHero:
         self._bind_events()
         self.draw()
 
-        self._tick_subscription = self.app.every(30, self._timer_tick)
+        self._tick_subscription = app.every(30, self._timer_tick)
 
     def _timer_tick(self, _timer):
         self.tick()
@@ -115,9 +111,9 @@ class PolyhedronHero:
         def on_pointer_up(event):
             self.is_dragging = False
 
-        self.app.on(events.MOUSEBUTTONDOWN, on_pointer_down)
-        self.app.on(events.MOUSEMOTION, on_pointer_move)
-        self.app.on(events.MOUSEBUTTONUP, on_pointer_up)
+        app.on(events.MOUSEBUTTONDOWN, on_pointer_down)
+        app.on(events.MOUSEMOTION, on_pointer_move)
+        app.on(events.MOUSEBUTTONUP, on_pointer_up)
 
     def tick(self):
         if not self.is_dragging:
@@ -251,11 +247,4 @@ class PolyhedronHero:
             self.drv.show()
 
 
-_polyhedron_app = None
-
-
-def main(canvas_id="hero_canvas"):
-    global _polyhedron_app
-    print(f"Initializing PyDevices 3D Polyhedron on canvas '{canvas_id}'...")
-    _polyhedron_app = PolyhedronHero(canvas_id, size=240)
-    print("PyDevices 3D Polyhedron running successfully!")
+_polyhedron_app = PolyhedronHero(size=min(display_drv.width, display_drv.height))

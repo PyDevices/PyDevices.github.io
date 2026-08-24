@@ -10,16 +10,15 @@ Features:
 - High-precision dauphine analog hour & minute hands
 - Continuous sweeping brand amber/orange seconds hand (~30 FPS)
 - Central/lower digital time readout (HH:MM:SS) and date badge (Day, Mon DD)
-- Explicit WasmDisplay + appdev runtime wiring with no board module dependency
 """
 
 import math
-import sys
 import time
 
-import board_config
-import appdev
+import display_driver  # wires LVGL display/input into the app
 import lvgl as lv
+from board_config import display_drv
+from display_driver import app
 
 
 def _color(rgb):
@@ -386,9 +385,7 @@ class PyDevicesWatch:
 
         # First update and timer (~30 FPS: 33ms)
         self.update_time()
-        self._tick_subscription = appdev.App.current().every(
-            33, lambda _timer: self.update_time()
-        )
+        self._tick_subscription = app.every(33, lambda _timer: self.update_time())
 
     def update_time(self):
         hour, minute, second, millis, day_name, month_name, day_num = _local_time()
@@ -412,29 +409,5 @@ class PyDevicesWatch:
         self.digital_date.set_text(date_str)
 
 
-_watch_app = None
-_display_drv = None
-_app = None
-_display_driver = None
-
-
-def main(canvas_id="hero_canvas"):
-    global _watch_app, _display_drv, _app, _display_driver
-    print(f"Initializing PyDevices LVGL Smartwatch on canvas '{canvas_id}'...")
-
-    import os
-    os.environ.setdefault('PYDEVICES_WIDTH', str(240))
-    os.environ.setdefault('PYDEVICES_HEIGHT', str(240))
-    _display_drv = board_config.display_drv
-    _app = appdev.App(board_config)
-    import display_driver as _driver
-
-    _display_driver = _driver
-    scr = lv.screen_active() if hasattr(lv, "screen_active") else lv.scr_act()
-    _watch_app = PyDevicesWatch(scr, size=240)
-    print("PyDevices LVGL Smartwatch running successfully!")
-
-
-if __name__ == "__main__":
-    cid = sys.argv[1] if len(sys.argv) > 1 else "hero_canvas"
-    main(cid)
+_scr = lv.screen_active() if hasattr(lv, "screen_active") else lv.scr_act()
+_watch_app = PyDevicesWatch(_scr, size=min(display_drv.width, display_drv.height))

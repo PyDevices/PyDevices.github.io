@@ -8,15 +8,15 @@ Interactive AST token parser stream and binding generator matrix.
 """
 
 import math
-import sys
-import time
 from random import random, choice
 
+from board_config import display_drv
 import board_config
 import appdev
-import board_config
 import events
 import pygraphics
+
+app = appdev.App(board_config)
 
 
 def _color(value):
@@ -51,17 +51,11 @@ C_TOKENS = [
 
 
 class AstParserHero:
-    def __init__(self, canvas_id="hero_canvas", size=240):
-        self.canvas_id = canvas_id
+    def __init__(self, size=240):
         self.size = size
         self.w = size
         self.h = size
-
-        import os
-        os.environ.setdefault('PYDEVICES_WIDTH', str(size))
-        os.environ.setdefault('PYDEVICES_HEIGHT', str(size))
-        self.drv = board_config.display_drv
-        self.app = appdev.App(board_config)
+        self.drv = display_drv
 
         self.tokens_parsed = 4820
         self.schemas_gen = 142
@@ -76,7 +70,7 @@ class AstParserHero:
         self.draw()
         self._bind_events()
 
-        self._tick_subscription = self.app.every(33, self._timer_tick)
+        self._tick_subscription = app.every(33, self._timer_tick)
 
     def _timer_tick(self, _timer):
         self.tick()
@@ -90,7 +84,7 @@ class AstParserHero:
             self.log_lines.append((f"EMIT {tok}", col))
             self.draw()
 
-        self.app.on(events.MOUSEBUTTONDOWN, on_pointer_down)
+        app.on(events.MOUSEBUTTONDOWN, on_pointer_down)
 
     def tick(self):
         self.scan_line_y += 1.8
@@ -157,16 +151,4 @@ class AstParserHero:
             self.drv.show()
 
 
-_ast_app = None
-
-
-def main(canvas_id="hero_canvas"):
-    global _ast_app
-    print(f"Initializing PyDevices AST Parser on canvas '{canvas_id}'...")
-    _ast_app = AstParserHero(canvas_id, size=240)
-    print("PyDevices AST Parser running successfully!")
-
-
-if __name__ == "__main__":
-    cid = sys.argv[1] if len(sys.argv) > 1 else "hero_canvas"
-    main(cid)
+_ast_app = AstParserHero(size=min(display_drv.width, display_drv.height))
