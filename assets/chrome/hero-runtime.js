@@ -17,7 +17,6 @@
         stderr: (line) => console.error(`[${appName}] ${line}`),
         heapsize: 16 * 1024 * 1024
       });
-      setStatus(`Loading ${appName}…`);
       const response = await fetch(`/assets/apps/${appName}.py`, { cache: "no-store" });
       if (!response.ok) throw new Error(`${response.status} fetching ${appName}.py`);
       mp.FS.writeFile(`/${appName}.py`, await response.text());
@@ -27,6 +26,8 @@ from displaydev import env_set
 env_set("PYDEVICES_CANVAS_ID", ${JSON.stringify(canvasId)})
 if "/" not in sys.path: sys.path.insert(0, "/")
 os.chdir("/")
+import mip
+mip.install("pydevices-desktop", index="https://PyDevices.github.io/mip", target="lib")
 _hero = __import__(${JSON.stringify(appName)})
 if hasattr(_hero, "main"): _hero.main(${JSON.stringify(canvasId)})
 `);
@@ -39,6 +40,7 @@ if hasattr(_hero, "main"): _hero.main(${JSON.stringify(canvasId)})
       record.phase = "failed"; record.error = String(error && (error.stack || error));
       state.errors.push(record.error); state.phase = "failed";
       setStatus("Live preview offline"); console.error("Direct hero failed:", error);
+      fetch("/__debug", { method: "POST", body: JSON.stringify({ level: "error", args: [record.error] }) });
       window.dispatchEvent(new CustomEvent("pydevices-heroes-failed", { detail: record }));
     }
   }

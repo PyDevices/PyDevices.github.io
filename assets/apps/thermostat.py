@@ -9,8 +9,8 @@ import math
 import sys
 import time
 
+import board_config
 import appdev
-from displaydev.wasmdisplay import WasmDisplay
 import lvgl as lv
 
 
@@ -219,8 +219,11 @@ def main(canvas_id="hero_canvas"):
     global _thermostat_app, _display_drv, _app, _display_driver
     print(f"Initializing PyDevices LVGL Thermostat on canvas '{canvas_id}'...")
 
-    _display_drv = WasmDisplay(width=240, height=240, canvas_id=canvas_id)
-    _app = appdev.App(displays=(_display_drv,), host_read=_display_drv.get_events)
+    import os
+    os.environ.setdefault('PYDEVICES_WIDTH', str(240))
+    os.environ.setdefault('PYDEVICES_HEIGHT', str(240))
+    _display_drv = board_config.display_drv
+    _app = appdev.App(board_config)
     import display_driver as _driver
 
     _display_driver = _driver

@@ -242,20 +242,99 @@
   <!-- PYDEVICES-PORTAL-GRIDS: END -->
 
   <!-- PYDEVICES-ARCHITECTURE: START -->
-  <section class="section architecture" aria-labelledby="architecture-title">
-    <div class="section-head"><h2 id="architecture-title">Browser architecture</h2><span class="hint">Direct MicroPython first, Pyodide retained</span></div>
-    <div class="architecture-paths">
-      <div class="architecture-stack"><h3>Direct MicroPython WebAssembly</h3>
-        <div class="architecture-layer"><strong>Application / framework</strong><span>LVGL · pdwidgets · pygraphics · application code</span></div>
-        <div class="architecture-layer"><strong>appdev</strong><span>Application lifecycle, event dispatch, and neutral coordination</span></div>
-        <div class="architecture-layer"><strong>Device contracts</strong><span>displaydev · audiodev · multimer</span></div>
-        <div class="architecture-layer"><strong>Direct WebAssembly backends</strong><span>WasmDisplay · WasmPCMInput/Output · wasm.Timer</span></div>
-        <div class="architecture-layer"><strong>_wasm_bridge</strong><span>Framebuffer, input, audio, timers, Fetch, and MIP</span></div>
-        <div class="architecture-layer"><strong>Browser APIs</strong><span>Canvas · Pointer/Gamepad · Web Audio · Timers · Fetch</span></div>
-      </div>
-      <div class="architecture-alt"><h3>Alternative: PyScript / Pyodide</h3><p>Applications use the same device contracts through <code>PSDisplay</code>. PyScript owns the Pyodide and DOM integration on this supported alternative path.</p></div>
+  <section class="wrap" style="margin: 60px auto 20px auto; max-width: 1200px; padding: 0 20px;">
+    <div class="section-head" style="text-align: center; margin-bottom: 30px;">
+      <h2>Architecture & Layers</h2>
+      <span class="hint">How PyDevices abstractions stack from the application down to the hardware.</span>
+    </div>
+    <div class="mermaid" style="text-align: center; background: var(--bg, #fff); padding: 30px; border-radius: 12px; border: 1px solid var(--border, #e2e8f0); box-shadow: 0 4px 6px rgba(0,0,0,0.05); overflow-x: auto;">
+      graph TD
+        %% App Layer
+        subgraph AppLayer ["Application Layer"]
+            direction LR
+            LVGL["LVGL App"]
+            PDW["pdwidgets App"]
+            PYG_APP["pygraphics App"]
+            DIR["Direct App"]
+        end
+
+        %% Frameworks Layer
+        subgraph Frameworks ["Graphics Frameworks"]
+            PYG["pygraphics Core"]
+        end
+
+        %% Routing / Event Layer
+        subgraph EventLayer ["Event & Routing Layer"]
+            APPDEV["appdev<br/>(Traffic Controller & Host Loop)"]
+        end
+
+        %% Device Abstraction Layer
+        subgraph DeviceLayer ["Core Device Contract"]
+            direction LR
+            DISP["displaydev<br/>(fbdisplay, psdisplay, wasmdisplay, etc.)"]
+            AUDIO["audiodev<br/>(Tone & PCM)"]
+            TIMER["multimer<br/>(Async & Sync Timers)"]
+        end
+
+        %% Hardware / Interpreter Layer
+        subgraph HardwareLayer ["Interpreters & Platforms"]
+            direction LR
+            MP["MicroPython (MCU)"]
+            CP["CircuitPython (MCU)"]
+            UNIX["Unix Desktop<br/>(CPython, MicroPython, CircuitPython)"]
+            WIN["Windows Desktop<br/>(CPython, MicroPython)"]
+            WASM["WebAssembly (Browser)"]
+            AND["Android"]
+        end
+
+        %% Lowest Level Bindings Layer
+        subgraph BindingsLayer ["Lowest Level (Native/OS Bindings)"]
+            direction LR
+            DIF["displayif<br/>(C-usermod Bus Engine)"]
+            DIO["displayio<br/>(CircuitPython Built-in)"]
+            SDL["sdl2<br/>(via usdl2.py or displayif/usdl2)"]
+            W32["win32<br/>(via uwin32.py)"]
+            DOM["DOM / HTML5 Canvas"]
+        end
+
+        %% Connections
+        LVGL --> APPDEV
+        PDW --> PYG
+        PYG_APP --> PYG
+        PYG --> APPDEV
+        
+        DIR -.-> APPDEV
+        DIR --> DISP
+        
+        APPDEV --> DISP
+        APPDEV --> AUDIO
+        APPDEV --> TIMER
+
+        %% Connect Subgraphs cleanly to avoid spaghetti lines
+        DeviceLayer --> HardwareLayer
+        
+        %% Map Platforms down to Native Bindings
+        MP --> DIF
+        CP --> DIO
+        UNIX --> SDL
+        WIN --> W32
+        WASM --> DOM
+        AND --> SDL
+
+        classDef core fill:#24292e,stroke:#d97706,stroke-width:2px,color:#fff;
+        classDef layer fill:#f8fafc,stroke:#cbd5e1,stroke-width:1px,color:#0f172a;
+        classDef hardware fill:#f1f5f9,stroke:#94a3b8,stroke-width:1px,color:#334155;
+        classDef binding fill:#e2e8f0,stroke:#64748b,stroke-width:1px,color:#1e293b,stroke-dasharray: 4 4;
+        class APPDEV,DISP,AUDIO,TIMER core;
+        class LVGL,PDW,PYG_APP,DIR,PYG layer;
+        class MP,CP,UNIX,WIN,WASM,AND hardware;
+        class DIF,DIO,SDL,W32,DOM binding;
     </div>
   </section>
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({ startOnLoad: true, theme: 'neutral' });
+  </script>
   <!-- PYDEVICES-ARCHITECTURE: END -->
 
     <!-- Interpreter Compatibility Matrix -->

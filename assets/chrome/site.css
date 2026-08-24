@@ -837,6 +837,18 @@ pre code {
   background: var(--panel-2);
 }
 
+.badge {
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  padding: 0.18em 0.55em;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  color: var(--ink-soft);
+  background: var(--panel-2);
+}
+
 .tag.async, .tag.featured {
   color: var(--indigo);
   border-color: rgba(139, 147, 255, 0.3);

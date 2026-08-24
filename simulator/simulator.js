@@ -242,7 +242,7 @@
       if (stream === "stderr") console.error(text);
     };
     try {
-      const mipIndex = new URL("/mip", window.location.origin).href.replace(/\/$/, "");
+      const mipIndex = "https://PyDevices.github.io/mip";
       const { loadMicroPython } = await import("/vendor/micropython/micropython.mjs");
       directMicroPython = await loadMicroPython({
         stdout: (line) => write(line, "stdout"),
@@ -255,10 +255,9 @@ import os, sys
 from displaydev import env_set
 env_set("PYDEVICES_WIDTH", ${Number(window.SIM_WIDTH)})
 env_set("PYDEVICES_HEIGHT", ${Number(window.SIM_HEIGHT)})
-if "/lib" not in sys.path:
-    sys.path.insert(0, "/lib")
+sys.path[:] = [".", ".frozen", "lib", "utils"]
 import mip
-mip.install("pydevices-desktop", index=${JSON.stringify(mipIndex)}, target="/lib")
+mip.install("pydevices-desktop", index=${JSON.stringify(mipIndex)}, target="lib")
 os.chdir("/")
 `);
       directMicroPython.replInit();

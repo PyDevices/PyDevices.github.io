@@ -9,9 +9,10 @@ import sys
 import time
 import math
 
+import board_config
 import appdev
+import board_config
 import events
-from displaydev.wasmdisplay import WasmDisplay
 import pygraphics
 
 
@@ -40,8 +41,11 @@ class PolyhedronHero:
         self.cy = size // 2
 
         # Initialize PSDisplay
-        self.drv = WasmDisplay(width=size, height=size, canvas_id=canvas_id)
-        self.app = appdev.App(displays=(self.drv,), host_read=self.drv.get_events)
+        import os
+        os.environ.setdefault('PYDEVICES_WIDTH', str(size))
+        os.environ.setdefault('PYDEVICES_HEIGHT', str(size))
+        self.drv = board_config.display_drv
+        self.app = appdev.App(board_config)
 
         # 3D Model: Icosahedron (12 vertices, 20 triangular faces)
         phi = (1.0 + math.sqrt(5.0)) / 2.0  # Golden ratio 1.618

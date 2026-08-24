@@ -10,8 +10,8 @@ import time
 import math
 from random import random
 
+import board_config
 import appdev
-from displaydev.wasmdisplay import WasmDisplay
 import pygraphics
 
 
@@ -36,8 +36,11 @@ class RadarScopeHero:
         self.cx = size // 2
         self.cy = size // 2
 
-        self.drv = WasmDisplay(width=size, height=size, canvas_id=canvas_id)
-        self.app = appdev.App(displays=(self.drv,), host_read=self.drv.get_events)
+        import os
+        os.environ.setdefault('PYDEVICES_WIDTH', str(size))
+        os.environ.setdefault('PYDEVICES_HEIGHT', str(size))
+        self.drv = board_config.display_drv
+        self.app = appdev.App(board_config)
 
         self.sweep_ang = 0.0
         self.targets = [

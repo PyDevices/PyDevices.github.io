@@ -12,9 +12,10 @@ import sys
 import time
 from random import randint, choice
 
+import board_config
 import appdev
+import board_config
 import events
-from displaydev.wasmdisplay import WasmDisplay
 import pygraphics
 
 
@@ -45,8 +46,11 @@ class FtpScopeHero:
         self.w = size
         self.h = size
 
-        self.drv = WasmDisplay(width=size, height=size, canvas_id=canvas_id)
-        self.app = appdev.App(displays=(self.drv,), host_read=self.drv.get_events)
+        import os
+        os.environ.setdefault('PYDEVICES_WIDTH', str(size))
+        os.environ.setdefault('PYDEVICES_HEIGHT', str(size))
+        self.drv = board_config.display_drv
+        self.app = appdev.App(board_config)
 
         self.file_idx = 0
         self.cur_file, self.cur_size = SAMPLE_FILES[self.file_idx]

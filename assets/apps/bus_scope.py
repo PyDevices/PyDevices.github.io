@@ -10,8 +10,8 @@ import time
 import math
 from random import random
 
+import board_config
 import appdev
-from displaydev.wasmdisplay import WasmDisplay
 import pygraphics
 
 
@@ -34,8 +34,11 @@ class BusScopeHero:
         self.w = size
         self.h = size
 
-        self.drv = WasmDisplay(width=size, height=size, canvas_id=canvas_id)
-        self.app = appdev.App(displays=(self.drv,), host_read=self.drv.get_events)
+        import os
+        os.environ.setdefault('PYDEVICES_WIDTH', str(size))
+        os.environ.setdefault('PYDEVICES_HEIGHT', str(size))
+        self.drv = board_config.display_drv
+        self.app = appdev.App(board_config)
 
         self.offset = 0.0
         self.fps = 60.0

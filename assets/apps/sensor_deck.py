@@ -12,8 +12,8 @@ import math
 import sys
 import time
 
+import board_config
 import appdev
-from displaydev.wasmdisplay import WasmDisplay
 import pdwidgets as pd
 
 
@@ -23,10 +23,11 @@ class SensorDeckHero:
         self.size = size
 
         # 1. Initialize PSDisplay, App, and pdwidgets Display
-        self.display_drv = WasmDisplay(width=size, height=size, canvas_id=canvas_id)
-        self.app = appdev.App(
-            displays=(self.display_drv,), host_read=self.display_drv.get_events
-        )
+        import os
+        os.environ.setdefault('PYDEVICES_WIDTH', str(size))
+        os.environ.setdefault('PYDEVICES_HEIGHT', str(size))
+        self.display_drv = board_config.display_drv
+        self.app = appdev.App(board_config)
         self.display = pd.Display(self.display_drv, self.app)
 
         # 2. Dark Slate Blue Screen Background
