@@ -20,6 +20,16 @@
       stderr: (line) => { if (state.activeOutput) state.activeOutput.textContent += `${line}\n`; },
       heapsize: 16 * 1024 * 1024
     });
+    // The wasm build freezes no pydevices libs (work in progress; frozen
+    // copies silently shadow staged/installed ones) -- stage the published
+    // package once here, before any demo's env_set/import can need it.
+    await state.mp.runPythonAsync(`
+import os, sys
+if "/" not in sys.path: sys.path.insert(0, "/")
+os.chdir("/")
+import mip
+mip.install("pydevices-desktop", index="https://PyDevices.github.io/mip", target="lib")
+`);
     state.phase = "ready"; setAll(demos, "Ready");
     window.dispatchEvent(new CustomEvent("pydevices-docs-ready"));
     return state.mp;

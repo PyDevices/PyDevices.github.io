@@ -42,15 +42,15 @@
       mp.FS.writeFile(`/${appName}.py`, await response.text());
       await mp.runPythonAsync(`
 import os, sys
+if "/" not in sys.path: sys.path.insert(0, "/")
+os.chdir("/")
+import mip
+mip.install("pydevices-desktop", index="https://PyDevices.github.io/mip", target="lib")
 from displaydev import env_set
 env_set("PYDEVICES_CANVAS_ID", ${JSON.stringify(canvasId)})
 env_set("PYDEVICES_WIDTH", ${JSON.stringify(String(canvasWidth))})
 env_set("PYDEVICES_HEIGHT", ${JSON.stringify(String(canvasHeight))})
 env_set("PYDEVICES_TZ_OFFSET_MIN", ${JSON.stringify(String(new Date().getTimezoneOffset()))})
-if "/" not in sys.path: sys.path.insert(0, "/")
-os.chdir("/")
-import mip
-mip.install("pydevices-desktop", index="https://PyDevices.github.io/mip", target="lib")
 __import__(${JSON.stringify(appName)})
 `);
       record.phase = "ready"; record.mp = mp;
