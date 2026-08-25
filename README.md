@@ -13,11 +13,10 @@ What follows is the mechanics.
 | Path | Role |
 |---|---|
 | `index.html` | The portal page. The regions between `<!-- PYDEVICES-…: START/END -->` markers are generated — edit the database, not the markup. |
-| `simulator/` | Interactive browser-based Python playground PWA with Monaco editor, canvas emulation, and offline caching. |
 | `assets/img/` | Brand marks, synced from `dotgithub/assets/img/`: `logo.svg`, `logo-512.png`, `logo-avatar.png`. |
 | `assets/chrome/` | Shared first-party chrome, synced from `dotgithub/assets/`: `site.css`, `site-chrome.js`, `theme-toggle.js`, `hero-runtime.js`. |
 | `assets/apps/` | Interactive pure-Python apps, synced from `dotgithub/assets/apps/`. |
-| `vendor/` | Centralized third-party runtimes and WebAssembly interpreters (`/vendor/micropython/`, `xterm`). |
+| `vendor/` | Centralized third-party runtimes and WebAssembly interpreters (`/vendor/micropython/`). |
 | `.nojekyll` | Bypasses Jekyll on GitHub Pages. |
 
 ## Regenerating

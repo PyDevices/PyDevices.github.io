@@ -38,6 +38,7 @@ PACKAGES = [
     ("pdwidgets", 0xF59E0B, ["widgets", "theming"]),
     ("palettes", 0xEC4899, ["color_math", "swatches"]),
     ("displayif", 0x8B5CF6, ["spi", "i2c", "parallel"]),
+    ("audioif", 0x22D3EE, ["synthio", "mixer", "mp3"]),
     ("lvgl", 0x10B981, ["bindings", "widgets"]),
 ]
 

@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- PYDEVICES-HEAD-TAGS: START -->
+  <title>PyDevices - audioif</title>
+  <meta name="description" content="Native MicroPython usermods that keep CircuitPython import names and play/stop/pause/resume semantics: audiocore, audiomixer, synthio (including MidiTrack), effects, and audiomp3.">
+  <link rel="icon" type="image/svg+xml" href="/assets/img/logo.svg">
+  <!-- PYDEVICES-HEAD-TAGS: END -->
+  <script>try{if(localStorage.getItem('pydevices-theme')==='light'){document.documentElement.setAttribute('data-theme','light');}}catch(e){}</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&display=swap">
+  <link rel="stylesheet" href="/assets/chrome/site.css">
+</head>
+<body>
+  <!-- PYDEVICES-ABOVE-THE-FOLD: START -->
+  <div id="pydevices-site-header"></div>
+
+  <!-- Hero Banner -->
+  <section class="hero wrap has-hero-canvas">
+    <div class="hero-main">
+      <div class="hero-lead">
+        <div class="logo-badge product-mark" style="background: linear-gradient(135deg, var(--tier-1-amber), #d97706); color: #fff;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10v4M8 7v10M12 4v16M16 7v10M20 10v4"/></svg></div>
+        <span class="eyebrow" style="color: var(--tier-1-amber);">audioif</span>
+      </div>
+      <h1>audioif — CircuitPython audio usermods for MicroPython.</h1>
+      <p><code>audioif</code> Native MicroPython usermods that keep CircuitPython import names and play/stop/pause/resume semantics: audiocore, audiomixer, synthio (including MidiTrack), effects, and audiomp3.</p>
+      <div class="cta">
+      <a class="btn primary" style="background: #24292e; color: #fff; border-color: #24292e;" href="https://github.com/PyDevices/audioif">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.9a3.4 3.4 0 0 0-1-2.6c3-.3 6-1.5 6-6.5a5 5 0 0 0-1.4-3.5 4.6 4.6 0 0 0-.1-3.5s-1.1-.3-3.5 1.3a12 12 0 0 0-6 0C6.6 1.7 5.5 2 5.5 2a4.6 4.6 0 0 0-.1 3.5A5 5 0 0 0 4 9c0 5 3 6.2 6 6.5a3.4 3.4 0 0 0-1 2.6V22"/></svg>
+        GitHub Repo
+      </a>
+      <a class="btn" style="border-color: var(--tier-1-amber); color: var(--tier-1-amber);" href="https://github.com/PyDevices/audioif/blob/main/docs/porting-plan.md">Architecture</a>
+      <a class="btn" style="border-color: var(--tier-1-amber); color: var(--tier-1-amber);" href="https://github.com/PyDevices/pydevices/blob/main/docs/audio.md">Audio contract</a>
+      <a class="btn" style="border-color: var(--tier-1-amber); color: var(--tier-1-amber);" href="https://pydevices.github.io/displayif/">displayif</a>
+      </div>
+    </div>
+    <div class="hero-canvas-wrap" data-hero-canvas="hero_canvas" data-hero-app="audio_scope" data-hero-deps="pydevices,pydevices-pygraphics,pydevices-palettes" data-hero-app-url="https://PyDevices.github.io/assets/apps/audio_scope.py">
+      <div class="hero-canvas-square">
+        <div class="hero-canvas-loader">
+          <div class="hero-spinner"></div>
+          <span class="hero-canvas-status">Live Pure-Python Device</span>
+        </div>
+        <canvas id="hero_canvas" width="240" height="240" tabindex="0"></canvas>
+      </div>
+    </div>
+  </section>
+  <!-- PYDEVICES-ABOVE-THE-FOLD: END -->
+
+  <main class="wrap" style="padding-bottom: 60px;">
+    <div class="section-head">
+      <h2>Audio usermod architecture</h2>
+      <span class="hint">CircuitPython import names, compiled as <code>USER_C_MODULES</code> for MicroPython.</span>
+    </div>
+
+    <div class="spec-block">
+      <div class="spec-grid">
+        <div class="spec-item tier-1">
+          <h4><code>audiocore</code></h4>
+          <p>Pull-protocol samples: <code>RawSample</code>, <code>WaveFile</code>, <code>get_buffer</code> / <code>reset_buffer</code>. Playback is <code>play()</code> / <code>stop()</code> / <code>pause()</code> / <code>resume()</code>.</p>
+        </div>
+        <div class="spec-item tier-1">
+          <h4><code>synthio</code></h4>
+          <p>Polyphonic synthesizer and <code>MidiTrack</code>. Same object graph CircuitPython tutorials already use.</p>
+        </div>
+        <div class="spec-item tier-1">
+          <h4><code>audiomixer</code></h4>
+          <p>Mix multiple audiosamples into one output stream with per-voice gain.</p>
+        </div>
+        <div class="spec-item tier-1">
+          <h4>Effects &amp; <code>audiomp3</code></h4>
+          <p><code>audiofilters</code>, <code>audiodelays</code>, <code>audiofreeverb</code>, <code>audiospeed</code>, plus Helix-backed <code>audiomp3</code>.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-head" style="margin-top: 36px;">
+      <h2>Playback on MicroPython</h2>
+      <span class="hint">usermods produce samples; <code>pydevices</code> <code>audiodev</code> pumps them into the board transport.</span>
+    </div>
+
+    <div class="spec-block">
+      <p style="margin: 0 0 12px;"><code>audioif</code> implements CircuitPython’s sample pull protocol. On MicroPython, <code>board_config.audio_out</code> returns <code>audiodev.sample_out.AudioOut</code>, which pulls PCM and writes it to I2S, SDL, WASAPI, or the wasm queue — the same transports already used for raw PCM.</p>
+      <pre><code>from board_config import audio_out
+import synthio
+
+synth = synthio.Synthesizer(sample_rate=22050)
+audio_out.play(synth)</code></pre>
+    </div>
+
+    <div class="section-head" style="margin-top: 36px;">
+      <h2>Port &amp; host support</h2>
+    </div>
+
+    <div class="spec-block" style="overflow-x: auto;">
+      <table class="matrix-table">
+        <thead>
+          <tr>
+            <th>Host</th>
+            <th>Build</th>
+            <th>DSP parity</th>
+            <th>Heard on hardware</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>unix</strong></td>
+            <td><span class="check">✓</span></td>
+            <td><span class="check">✓</span> vs CircuitPython oracle</td>
+            <td><span class="dash">—</span> (host audio)</td>
+          </tr>
+          <tr>
+            <td><strong>windows</strong></td>
+            <td><span class="check">✓</span></td>
+            <td><span class="check">✓</span></td>
+            <td><span class="dash">—</span> (host audio)</td>
+          </tr>
+          <tr>
+            <td><strong>wasm</strong></td>
+            <td><span class="check">✓</span></td>
+            <td><span class="check">✓</span></td>
+            <td><span class="dash">—</span> (browser queue)</td>
+          </tr>
+          <tr>
+            <td><strong>ESP32-P4</strong></td>
+            <td><span class="check">✓</span></td>
+            <td><span class="dash">—</span></td>
+            <td><span class="check">✓</span></td>
+          </tr>
+          <tr>
+            <td><strong>RP2040</strong></td>
+            <td><span class="check">✓</span></td>
+            <td><span class="dash">—</span></td>
+            <td><span class="dash">—</span> (build-only)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <div id="pydevices-site-footer"></div>
+  <script src="/assets/chrome/site-chrome.js"></script>
+</body>
+</html>

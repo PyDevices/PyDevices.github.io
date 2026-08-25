@@ -44,7 +44,7 @@
     '/displayif/">DisplayIF</a>' +
     '<a href="' +
     ROOT +
-    '/simulator/">Simulator</a>' +
+    '/workbench/">Workbench</a>' +
     '<a href="' +
     ROOT +
     '/pydevices-examples/gallery/" class="nav-gallery-link">Gallery</a>' +
@@ -103,6 +103,15 @@
           tag: "C Bus",
           desc: "Native C SPI, I2C, 8080 & RGB usermods",
           icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>'
+        },
+        {
+          id: "audioif",
+          name: "audioif",
+          path: "/audioif/",
+          url: ROOT + "/audioif/",
+          tag: "C Audio",
+          desc: "CircuitPython audio stack as MicroPython usermods",
+          icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 10v4M8 7v10M12 4v16M16 7v10M20 10v4"/></svg>'
         },
         {
           id: "pydevices-examples",
@@ -246,7 +255,7 @@
           path: "/mpftp/",
           url: ROOT + "/mpftp/",
           tag: "IDE Extension",
-          desc: "Serial FTP file manager & in-editor REPL for IDEs",
+          desc: "Editor, CLI, and agent tools for MCU boards",
           icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="3" width="12" height="18" rx="2"/><path d="M9 7h6M9 11h6M9 15h4"/><circle cx="15" cy="15" r="1"/><path d="M15 16v3M13 19h4"/></svg>'
         }
       ]
