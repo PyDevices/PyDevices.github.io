@@ -12,7 +12,6 @@ sound -- pydevices' own hero, showing off `board_config.audio_out`
 """
 
 import math
-import struct
 import time
 
 # hero-runtime.js already sets these to 480x480 in production; set them here
@@ -28,6 +27,8 @@ import lvgl as lv
 from board_config import display_drv
 from display_driver import app
 import board_config
+import synthio
+import ulab.numpy as np
 
 FREQ_MIN = 55.0  # A1 -- low end most laptop speakers can still reproduce
 FREQ_MAX = 7040.0  # A8 -- top of the comfortably audible band
@@ -47,118 +48,144 @@ def _note_name(freq):
 
 
 # ---------------------------------------------------------------------------
-# Signal synthesis -- one oscillator voice with a soft on/off ramp so
-# toggling never clicks or pops. See pydevices-examples' utils/audio.py for
-# the full polyphonic mixer this borrows its wave shapes from; this hero
-# only ever plays a single tone.
+# Signal synthesis -- a single live synthio.Note, played through the same
+# audiodev.sample_out.AudioOut contract as pydevices-examples' piano.py
+# (board_config.audio_out.play(synth) + attach(app)). Toggling the note
+# on/off goes through synthio's own envelope (short attack/release) rather
+# than a hand-rolled sample-ramp, so it stays click-free for free.
 # ---------------------------------------------------------------------------
 
 _TWO_PI = 2.0 * math.pi
+_WAVE_TABLE_SIZE = 256
+_WAVE_TABLE_AMPLITUDE = 28000  # headroom below int16 full scale
 
 
-def _wave_sine(phase):
-    return math.sin(_TWO_PI * phase)
+def _sine_table():
+    return [
+        int(_WAVE_TABLE_AMPLITUDE * math.sin(_TWO_PI * i / _WAVE_TABLE_SIZE))
+        for i in range(_WAVE_TABLE_SIZE)
+    ]
 
 
-def _wave_square(phase):
-    return 1.0 if phase < 0.5 else -1.0
+def _square_table():
+    half = _WAVE_TABLE_SIZE // 2
+    return [_WAVE_TABLE_AMPLITUDE] * half + [-_WAVE_TABLE_AMPLITUDE] * (_WAVE_TABLE_SIZE - half)
 
 
-def _wave_triangle(phase):
-    if phase < 0.25:
-        return phase * 4.0
-    if phase < 0.75:
-        return 2.0 - phase * 4.0
-    return phase * 4.0 - 4.0
+def _triangle_table():
+    out = []
+    for i in range(_WAVE_TABLE_SIZE):
+        phase = i / _WAVE_TABLE_SIZE
+        if phase < 0.25:
+            v = phase * 4.0
+        elif phase < 0.75:
+            v = 2.0 - phase * 4.0
+        else:
+            v = phase * 4.0 - 4.0
+        out.append(int(v * _WAVE_TABLE_AMPLITUDE))
+    return out
 
 
-def _wave_saw(phase):
-    return 2.0 * phase - 1.0
+def _saw_table():
+    return [
+        int((2.0 * i / _WAVE_TABLE_SIZE - 1.0) * _WAVE_TABLE_AMPLITUDE)
+        for i in range(_WAVE_TABLE_SIZE)
+    ]
 
 
 _WAVES = (
-    ("SIN", _wave_sine),
-    ("SQR", _wave_square),
-    ("TRI", _wave_triangle),
-    ("SAW", _wave_saw),
+    ("SIN", _sine_table),
+    ("SQR", _square_table),
+    ("TRI", _triangle_table),
+    ("SAW", _saw_table),
 )
+_wave_table_cache = {}
+
+
+def _wave_table(name):
+    table = _wave_table_cache.get(name)
+    if table is None:
+        for label, make in _WAVES:
+            if label == name:
+                table = np.array(make(), dtype=np.int16)
+                break
+        _wave_table_cache[name] = table
+    return table
 
 
 class Oscillator:
-    """One PCM voice. ``playing`` ramps toward 0/1 each chunk -- no clicks."""
+    """One live synthio.Note. Envelope attack/release makes on/off click-free."""
 
-    def __init__(self, out, chunk_ms=40, amp=0.35):
+    def __init__(self, out, amp=0.35):
         self.out = out
         self.amp = amp
-        self.freq = FREQ_DEFAULT
-        self.wave = _wave_sine
+        self._freq = FREQ_DEFAULT
+        self._wave_name = "SIN"
         self.playing = False
-        self._phase = 0.0
-        self._level = 0.0
-        self._chunk_ms = chunk_ms
-        self._frames = 0
-        self._inv_rate = 0.0
-        self._buf = None
+        self._synth = None
+        self._note = None
         self._ready = False
+
+    @property
+    def freq(self):
+        return self._freq
+
+    @freq.setter
+    def freq(self, value):
+        self._freq = value
+        if self._note is not None:
+            self._note.frequency = value
+
+    @property
+    def wave(self):
+        return self._wave_name
+
+    @wave.setter
+    def wave(self, name):
+        self._wave_name = name
+        if self._note is not None:
+            self._note.waveform = _wave_table(name)
 
     def _open(self):
         if self._ready:
             return True
         try:
-            self.out.open()
+            fmt = self.out.format
+            self._synth = synthio.Synthesizer(
+                sample_rate=fmt.rate,
+                channel_count=fmt.channels,
+                envelope=synthio.Envelope(
+                    attack_time=0.03, decay_time=0.0, release_time=0.03, sustain_level=1.0
+                ),
+            )
+            self.out.play(self._synth)
         except Exception:
             return False
-        fmt = self.out.format
-        self._frames = max(1, int(fmt.rate * self._chunk_ms / 1000))
-        self._buf = bytearray(self._frames * 2)
-        self._inv_rate = 1.0 / fmt.rate
         self._ready = True
         return True
 
     def start(self, app_):
-        app_.every(self._chunk_ms, self._tick)
+        self.out.attach(app_)
 
     def set_playing(self, value):
-        if value and not self._open():
-            return False
-        self.playing = bool(value)
+        value = bool(value)
+        if value == self.playing:
+            return True
+        if value:
+            if not self._open():
+                return False
+            note = synthio.Note(
+                frequency=self._freq,
+                waveform=_wave_table(self._wave_name),
+                amplitude=self.amp,
+            )
+            self._note = note
+            self._synth.press(note)
+        elif self._note is not None:
+            self._synth.release(self._note)
+            self._note = None
+        self.playing = value
         return True
-
-    def _tick(self, _timer=None):
-        if not self._ready:
-            return
-        frames = self._frames
-        buf = self._buf
-        wf = self.wave
-        freq = self.freq
-        inv_rate = self._inv_rate
-        phase = self._phase
-        level = self._level
-        target = 1.0 if self.playing else 0.0
-        step = (target - level) / frames if frames else 0.0
-        amp = self.amp
-        for i in range(frames):
-            level += step
-            if level < 0.0:
-                level = 0.0
-            elif level > 1.0:
-                level = 1.0
-            sample = wf(phase) * amp * level
-            v = int(sample * 32767.0)
-            if v > 32767:
-                v = 32767
-            elif v < -32768:
-                v = -32768
-            struct.pack_into("<h", buf, i * 2, v)
-            phase += freq * inv_rate
-            if phase >= 1.0:
-                phase -= math.floor(phase)
-        self._phase = phase
-        self._level = level
-        try:
-            self.out.write(buf)
-        except Exception:
-            pass
 
 
 # ---------------------------------------------------------------------------
@@ -424,8 +451,8 @@ class SignalGenHero:
 
     def _select_wave(self, idx, initial=False):
         self.wave_idx = idx
-        _name, fn = _WAVES[idx]
-        self.osc.wave = fn
+        name, _make = _WAVES[idx]
+        self.osc.wave = name
         for i, (btn, lbl) in enumerate(self.wave_btns):
             active = i == idx
             btn.set_style_bg_color(_color(0xF54E00 if active else 0x151A20), 0)
