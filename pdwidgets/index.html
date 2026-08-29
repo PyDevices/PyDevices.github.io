@@ -90,9 +90,13 @@
 
     <div class="spec-block">
       <pre><code>import mip
+# pdwidgets does not pull its dependencies on MIP -- install them too.
+mip.install("pydevices", index="https://PyDevices.github.io/mip")
+mip.install("pygraphics", index="https://PyDevices.github.io/mip")
+mip.install("palettes", index="https://PyDevices.github.io/mip")
 mip.install("pdwidgets", index="https://PyDevices.github.io/mip")
 
-# Example Usage:
+# Example Usage: requires board_config (see docs/index.md)
 import board_config
 import appdev
 import pdwidgets as pd
