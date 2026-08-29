@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Page moved — PyDevices</title>
+  <link rel="icon" type="image/svg+xml" href="/assets/img/logo.svg">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&display=swap">
+  <link rel="stylesheet" href="/assets/chrome/site.css">
+  <style>
+    .notfound { max-width: 46rem; margin: 8vh auto; padding: 0 1.25rem; }
+    .notfound h1 { font-family: "Space Grotesk", system-ui, sans-serif; }
+    .notfound ul { line-height: 2; }
+    .notfound code { opacity: .8; }
+  </style>
+</head>
+<body>
+  <main class="notfound">
+    <h1>That page has moved on</h1>
+    <p>PyDevices has been reorganized over time, and some older links and
+    search results point at retired locations. What you were looking for
+    almost certainly lives in one of these places now:</p>
+    <ul>
+      <li><a href="/">The PyDevices portal</a> — every project, by tier</li>
+      <li><a href="/pydevices/">pydevices</a> — the core driver packages
+          (<code>displaydev</code>, <code>events</code>, <code>keys</code>,
+          <code>multimer</code>, <code>audiodev</code> all live here now)</li>
+      <li><a href="/audioif/">audioif</a> — the audio stack (synthio,
+          instruments, effects)</li>
+      <li><a href="/workbench/">Workbench</a> — the browser IDE and
+          device simulator</li>
+      <li><a href="/mip/">The MIP package index</a> — installs for boards</li>
+      <li><a href="https://github.com/PyDevices">github.com/PyDevices</a> —
+          all repositories</li>
+    </ul>
+    <p id="hint" hidden>Looking for <code id="path"></code>?
+    Try the <a id="search" href="#">repository search for it</a>.</p>
+    <script>
+      var p = location.pathname.replace(/\/+$/, "");
+      if (p && p !== "/404.html") {
+        var seg = p.split("/").filter(Boolean)[0] || "";
+        document.getElementById("path").textContent = p;
+        document.getElementById("search").href =
+          "https://github.com/search?q=org%3APyDevices+" + encodeURIComponent(seg);
+        document.getElementById("hint").hidden = false;
+      }
+    </script>
+  </main>
+</body>
+</html>
