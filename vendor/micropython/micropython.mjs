@@ -783,15 +783,15 @@ async function createWasm() {
       assert(ptr, `null function pointer in dynCall`);
       assert(!promising, 'async dynCall is not supported in this mode')
       var rtn = dynCallLegacy(sig, ptr, args);
-
+  
       function convert(rtn) {
         return rtn;
       }
-
+  
       return convert(rtn);
     };
 
-
+  
     /**
    * @param {number} ptr
    * @param {string} type
@@ -820,7 +820,7 @@ async function createWasm() {
       return '0x' + ptr.toString(16).padStart(8, '0');
     }
 
-
+  
     /**
    * @param {number} ptr
    * @param {number} value
@@ -854,7 +854,7 @@ async function createWasm() {
       }
     };
 
-
+  
 
   var PATH = {
   isAbs:(path) => path.charAt(0) === '/',
@@ -1010,9 +1010,9 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
    * @return {string}
    */
   var UTF8ArrayToString = (heapOrArray, idx = 0, maxBytesToRead, ignoreNul) => {
-
+  
       var endPtr = findStringEnd(heapOrArray, idx, maxBytesToRead, ignoreNul);
-
+  
       // When using conditional TextDecoder, skip it for short strings as the overhead of the native call is not worth it.
       if (endPtr - idx > 16 && heapOrArray.buffer && UTF8Decoder) {
         return UTF8Decoder.decode(heapOrArray.subarray(idx, endPtr));
@@ -1034,7 +1034,7 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
           if ((u0 & 0xF8) != 0xF0) warnOnce(`Invalid UTF-8 leading byte ${ptrToString(u0)} encountered when deserializing a UTF-8 string in wasm memory to a JS string!`);
           u0 = ((u0 & 7) << 18) | (u1 << 12) | (u2 << 6) | (heapOrArray[idx++] & 63);
         }
-
+  
         if (u0 < 0x10000) {
           str += String.fromCharCode(u0);
         } else {
@@ -1044,9 +1044,9 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
       }
       return str;
     };
-
+  
   var FS_stdin_getChar_buffer = [];
-
+  
   var lengthBytesUTF8 = (str) => {
       var len = 0;
       for (var i = 0; i < str.length; ++i) {
@@ -1067,14 +1067,14 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
       }
       return len;
     };
-
+  
   var stringToUTF8Array = (str, heap, outIdx, maxBytesToWrite) => {
       assert(typeof str === 'string', `stringToUTF8Array expects a string (got ${typeof str})`);
       // Parameter maxBytesToWrite is not optional. Negative values, 0, null,
       // undefined and false each don't write out any bytes.
       if (!(maxBytesToWrite > 0))
         return 0;
-
+  
       var startIdx = outIdx;
       var endIdx = outIdx + maxBytesToWrite - 1; // -1 for string null terminator.
       for (var i = 0; i < str.length; ++i) {
@@ -1126,7 +1126,7 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
           var BUFSIZE = 256;
           var buf = Buffer.alloc(BUFSIZE);
           var bytesRead = 0;
-
+  
           // For some reason we must suppress a closure warning here, even though
           // fd definitely exists on process.stdin, and is even the proper way to
           // get the fd of stdin,
@@ -1135,7 +1135,7 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
           // so it is related to the surrounding code in some unclear manner.
           /** @suppress {missingProperties} */
           var fd = process.stdin.fd;
-
+  
           try {
             bytesRead = fs.readSync(fd, buf, 0, BUFSIZE);
           } catch(e) {
@@ -1145,7 +1145,7 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
             if (e.toString().includes('EOF')) bytesRead = 0;
             else throw e;
           }
-
+  
           if (bytesRead > 0) {
             result = buf.slice(0, bytesRead).toString('utf-8');
           }
@@ -1306,8 +1306,8 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
         },
   },
   };
-
-
+  
+  
   var mmapAlloc = (size) => {
       abort('internal error: mmapAlloc called but `emscripten_builtin_memalign` native symbol not exported');
     };
@@ -1534,11 +1534,11 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
           if (buffer.buffer === HEAP8.buffer) {
             canOwn = false;
           }
-
+  
           if (!length) return 0;
           var node = stream.node;
           node.mtime = node.ctime = Date.now();
-
+  
           if (canOwn) {
             assert(position === 0, 'canOwn must imply no weird position inside the file');
             node.contents = buffer.subarray(offset, offset + length);
@@ -1608,7 +1608,7 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
         },
   },
   };
-
+  
   var FS_modeStringToFlags = (str) => {
       if (typeof str != 'string') return str;
       var flagModes = {
@@ -1625,7 +1625,7 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
       }
       return flags;
     };
-
+  
   var FS_fileDataToTypedArray = (data) => {
       if (typeof data == 'string') {
         data = intArrayFromString(data, true);
@@ -1635,17 +1635,17 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
       }
       return data;
     };
-
+  
   var FS_getMode = (canRead, canWrite) => {
       var mode = 0;
       if (canRead) mode |= 292 | 73;
       if (canWrite) mode |= 146;
       return mode;
     };
-
-
-
-
+  
+  
+  
+  
     /**
    * Given a pointer 'ptr' to a null-terminated UTF8-encoded string in the
    * emscripten HEAP, returns a copy of that string as a Javascript String object.
@@ -1663,9 +1663,9 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
       assert(typeof ptr == 'number', `UTF8ToString expects a number (got ${typeof ptr})`);
       return ptr ? UTF8ArrayToString(HEAPU8, ptr, maxBytesToRead, ignoreNul) : '';
     };
-
+  
   var strError = (errno) => UTF8ToString(_strerror(errno));
-
+  
   var ERRNO_CODES = {
       'EPERM': 63,
       'ENOENT': 44,
@@ -1789,16 +1789,16 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
       'EOWNERDEAD': 62,
       'ESTRPIPE': 135,
     };
-
+  
   var asyncLoad = async (url) => {
       var arrayBuffer = await readAsync(url);
       assert(arrayBuffer, `Loading data file "${url}" failed (no arrayBuffer).`);
       return new Uint8Array(arrayBuffer);
     };
-
-
+  
+  
   var FS_createDataFile = (...args) => FS.createDataFile(...args);
-
+  
   var getUniqueRunDependency = (id) => {
       var orig = id;
       while (1) {
@@ -1806,21 +1806,21 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
         id = orig + Math.random();
       }
     };
-
+  
   var runDependencies = 0;
-
-
+  
+  
   var dependenciesFulfilled = null;
-
+  
   var runDependencyTracking = {
   };
-
+  
   var runDependencyWatcher = null;
   var removeRunDependency = (id) => {
       runDependencies--;
-
+  
       Module['monitorRunDependencies']?.(runDependencies);
-
+  
       assert(id, 'removeRunDependency requires an ID');
       assert(runDependencyTracking[id]);
       delete runDependencyTracking[id];
@@ -1836,13 +1836,13 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
         }
       }
     };
-
-
+  
+  
   var addRunDependency = (id) => {
       runDependencies++;
-
+  
       Module['monitorRunDependencies']?.(runDependencies);
-
+  
       assert(id, 'addRunDependency requires an ID')
       assert(!runDependencyTracking[id]);
       runDependencyTracking[id] = 1;
@@ -1871,13 +1871,13 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
         runDependencyWatcher.unref?.()
       }
     };
-
-
+  
+  
   var preloadPlugins = [];
   var FS_handledByPreloadPlugin = async (byteArray, fullname) => {
       // Ensure plugins are ready.
       if (typeof Browser != 'undefined') Browser.init();
-
+  
       for (var plugin of preloadPlugins) {
         if (plugin['canHandle'](fullname)) {
           assert(plugin['handle'].constructor.name === 'AsyncFunction', 'Filesystem plugin handlers must be async functions (See #24914)')
@@ -1894,13 +1894,13 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
       var fullname = name ? PATH_FS.resolve(PATH.join2(parent, name)) : parent;
       var dep = getUniqueRunDependency(`cp ${fullname}`); // might have several active requests for the same fullname
       addRunDependency(dep);
-
+  
       try {
         var byteArray = url;
         if (typeof url == 'string') {
           byteArray = await asyncLoad(url);
         }
-
+  
         byteArray = await FS_handledByPreloadPlugin(byteArray, fullname);
         preFinish?.();
         if (!dontCreateFile) {
@@ -2017,31 +2017,31 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
           throw new FS.ErrnoError(44);
         }
         opts.follow_mount ??= true
-
+  
         if (!PATH.isAbs(path)) {
           path = FS.cwd() + '/' + path;
         }
-
+  
         // limit max consecutive symlinks to SYMLOOP_MAX.
         linkloop: for (var nlinks = 0; nlinks < 40; nlinks++) {
           // split the absolute path
           var parts = path.split('/').filter((p) => !!p);
-
+  
           // start at the root
           var current = FS.root;
           var current_path = '/';
-
+  
           for (var i = 0; i < parts.length; i++) {
             var islast = (i === parts.length-1);
             if (islast && opts.parent) {
               // stop resolving
               break;
             }
-
+  
             if (parts[i] === '.') {
               continue;
             }
-
+  
             if (parts[i] === '..') {
               current_path = PATH.dirname(current_path);
               if (FS.isRoot(current)) {
@@ -2055,7 +2055,7 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
               }
               continue;
             }
-
+  
             current_path = PATH.join2(current_path, parts[i]);
             try {
               current = FS.lookupNode(current, parts[i]);
@@ -2068,12 +2068,12 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
               }
               throw e;
             }
-
+  
             // jump to the mount's root node if this is a mountpoint
             if (FS.isMountpoint(current) && (!islast || opts.follow_mount)) {
               current = current.mounted.root;
             }
-
+  
             // by default, lookupPath will not follow a symlink if it is the final path component.
             // setting opts.follow = true will override this behavior.
             if (FS.isLink(current.mode) && (!islast || opts.follow)) {
@@ -2106,7 +2106,7 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
       },
   hashName(parentid, name) {
         var hash = 0;
-
+  
         for (var i = 0; i < name.length; i++) {
           hash = ((hash << 5) - hash + name.charCodeAt(i)) | 0;
         }
@@ -2150,9 +2150,9 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
   createNode(parent, name, mode, rdev) {
         assert(typeof parent == 'object')
         var node = new FS.FSNode(parent, name, mode, rdev);
-
+  
         FS.hashAddNode(node);
-
+  
         return node;
       },
   destroyNode(node) {
@@ -2291,7 +2291,7 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
   getStream:(fd) => FS.streams[fd],
   createStream(stream, fd = -1) {
         assert(fd >= -1);
-
+  
         // clone it, so we can return an instance of FSStream
         stream = Object.assign(new FS.FSStream(), stream);
         if (fd == -1) {
@@ -2345,15 +2345,15 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
   getMounts(mount) {
         var mounts = [];
         var check = [mount];
-
+  
         while (check.length) {
           var m = check.pop();
-
+  
           mounts.push(m);
-
+  
           check.push(...m.mounts);
         }
-
+  
         return mounts;
       },
   syncfs(populate, callback) {
@@ -2361,22 +2361,22 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
           callback = populate;
           populate = false;
         }
-
+  
         FS.syncFSRequests++;
-
+  
         if (FS.syncFSRequests > 1) {
           err(`warning: ${FS.syncFSRequests} FS.syncfs operations in flight at once, probably just doing extra work`);
         }
-
+  
         var mounts = FS.getMounts(FS.root.mount);
         var completed = 0;
-
+  
         function doCallback(errCode) {
           assert(FS.syncFSRequests > 0);
           FS.syncFSRequests--;
           return callback(errCode);
         }
-
+  
         function done(errCode) {
           if (errCode) {
             if (!done.errored) {
@@ -2389,7 +2389,7 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
             doCallback(null);
           }
         };
-
+  
         // sync all mounts
         for (var mount of mounts) {
           if (mount.type.syncfs) {
@@ -2408,77 +2408,77 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
         var root = mountpoint === '/';
         var pseudo = !mountpoint;
         var node;
-
+  
         if (root && FS.root) {
           throw new FS.ErrnoError(10);
         } else if (!root && !pseudo) {
           var lookup = FS.lookupPath(mountpoint, { follow_mount: false });
-
+  
           mountpoint = lookup.path;  // use the absolute path
           node = lookup.node;
-
+  
           if (FS.isMountpoint(node)) {
             throw new FS.ErrnoError(10);
           }
-
+  
           if (!FS.isDir(node.mode)) {
             throw new FS.ErrnoError(54);
           }
         }
-
+  
         var mount = {
           type,
           opts,
           mountpoint,
           mounts: []
         };
-
+  
         // create a root node for the fs
         var mountRoot = type.mount(mount);
         mountRoot.mount = mount;
         mount.root = mountRoot;
-
+  
         if (root) {
           FS.root = mountRoot;
         } else if (node) {
           // set as a mountpoint
           node.mounted = mount;
-
+  
           // add the new mount to the current mount's children
           if (node.mount) {
             node.mount.mounts.push(mount);
           }
         }
-
+  
         return mountRoot;
       },
   unmount(mountpoint) {
         var lookup = FS.lookupPath(mountpoint, { follow_mount: false });
-
+  
         if (!FS.isMountpoint(lookup.node)) {
           throw new FS.ErrnoError(28);
         }
-
+  
         // destroy the nodes for this mount, and all its child mounts
         var node = lookup.node;
         var mount = node.mounted;
         var mounts = FS.getMounts(mount);
-
+  
         for (var [hash, current] of Object.entries(FS.nameTable)) {
           while (current) {
             var next = current.name_next;
-
+  
             if (mounts.includes(current.mount)) {
               FS.destroyNode(current);
             }
-
+  
             current = next;
           }
         }
-
+  
         // no longer a mountpoint
         node.mounted = null;
-
+  
         // remove this mount from the child mounts
         var idx = node.mount.mounts.indexOf(mount);
         assert(idx !== -1);
@@ -2531,7 +2531,7 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
           flags: 2,
           namelen: 255,
         };
-
+  
         if (node.node_ops.statfs) {
           Object.assign(rtn, node.node_ops.statfs(node.mount.opts.root));
         }
@@ -2595,13 +2595,13 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
         var new_name = PATH.basename(new_path);
         // parents must exist
         var lookup, old_dir, new_dir;
-
+  
         // let the errors from non existent directories percolate up
         lookup = FS.lookupPath(old_path, { parent: true });
         old_dir = lookup.node;
         lookup = FS.lookupPath(new_path, { parent: true });
         new_dir = lookup.node;
-
+  
         if (!old_dir || !new_dir) throw new FS.ErrnoError(44);
         // need to be part of the same mount
         if (old_dir.mount !== new_dir.mount) {
@@ -2914,7 +2914,7 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
         }
         // we've already handled these, don't pass down to the underlying vfs
         flags &= ~(128 | 512 | 131072);
-
+  
         // register the stream with the filesystem
         var stream = FS.createStream({
           node,
@@ -3181,7 +3181,7 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
         // TODO deprecate the old functionality of a single
         // input / output callback and that utilizes FS.createDevice
         // and instead require a unique set of stream ops
-
+  
         // by default, we symlink the standard streams to the
         // default tty devices. however, if the standard streams
         // have been overwritten we create a unique device for
@@ -3201,7 +3201,7 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
         } else {
           FS.symlink('/dev/tty1', '/dev/stderr');
         }
-
+  
         // open default streams for the stdin, stdout and stderr devices
         var stdin = FS.open('/dev/stdin', 0);
         var stdout = FS.open('/dev/stdout', 1);
@@ -3212,13 +3212,13 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
       },
   staticInit() {
         FS.nameTable = new Array(4096);
-
+  
         FS.mount(MEMFS, {}, '/');
-
+  
         FS.createDefaultDirectories();
         FS.createDefaultDevices();
         FS.createSpecialDirectories();
-
+  
         FS.filesystems = {
           'MEMFS': MEMFS,
         };
@@ -3226,12 +3226,12 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
   init(input, output, error) {
         assert(!FS.initialized, 'FS.init was previously called. If you want to initialize later with custom parameters, remove any earlier calls (note that one is automatically added to the generated code)');
         FS.initialized = true;
-
+  
         // Allow Module.stdin etc. to provide defaults, if none explicitly passed to us here
         input ??= Module['stdin'];
         output ??= Module['stdout'];
         error ??= Module['stderr'];
-
+  
         FS.createStandardStreams(input, output, error);
       },
   quit() {
@@ -3412,27 +3412,27 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
             var header;
             var hasByteServing = (header = xhr.getResponseHeader("Accept-Ranges")) && header === "bytes";
             var usesGzip = (header = xhr.getResponseHeader("Content-Encoding")) && header === "gzip";
-
+  
             var chunkSize = 1024*1024; // Chunk size in bytes
-
+  
             if (!hasByteServing) chunkSize = datalength;
-
+  
             // Function to get a range from the remote URL.
             var doXHR = (from, to) => {
               if (from > to) abort(`invalid range (${from}, ${to}) or no bytes requested!`);
               if (to > datalength-1) abort(`only ${datalength} bytes available! programmer error!`);
-
+  
               // TODO: Use mozResponseArrayBuffer, responseStream, etc. if available.
               var xhr = new XMLHttpRequest();
               xhr.open('GET', url, false);
               if (datalength !== chunkSize) xhr.setRequestHeader("Range", "bytes=" + from + "-" + to);
-
+  
               // Some hints to the browser that we want binary data.
               xhr.responseType = 'arraybuffer';
               if (xhr.overrideMimeType) {
                 xhr.overrideMimeType('text/plain; charset=x-user-defined');
               }
-
+  
               xhr.send(null);
               if (!(xhr.status >= 200 && xhr.status < 300 || xhr.status === 304)) abort("Couldn't load " + url + ". Status: " + xhr.status);
               if (xhr.response !== undefined) {
@@ -3451,7 +3451,7 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
               if (typeof lazyArray.chunks[chunkNum] == 'undefined') abort('doXHR failed!');
               return lazyArray.chunks[chunkNum];
             });
-
+  
             if (usesGzip || !datalength) {
               // if the server uses gzip or doesn't supply the length, we have to download the whole file to get the (uncompressed) length
               chunkSize = datalength = 1; // this will force getter(0)/doXHR do download the whole file
@@ -3459,7 +3459,7 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
               chunkSize = datalength;
               out("LazyFiles on gzip forces download of the whole file when length is accessed");
             }
-
+  
             this._length = datalength;
             this._chunkSize = chunkSize;
             this.lengthKnown = true;
@@ -3477,7 +3477,7 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
             return this._chunkSize;
           }
         }
-
+  
         if (globalThis.XMLHttpRequest) {
           if (!ENVIRONMENT_IS_WORKER) abort('Cannot do synchronous binary XHRs outside webworkers in modern browsers. Use --embed-file or --preload-file in emcc');
           var lazyArray = new LazyUint8Array();
@@ -3485,7 +3485,7 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
         } else {
           var properties = { isDevice: false, url: url };
         }
-
+  
         var node = FS.createFile(parent, name, properties, canRead, canWrite);
         // This is a total hack, but I want to get this lazy file code out of the
         // core of MEMFS. If we want to keep this lazy file concept I feel it should
@@ -3546,7 +3546,7 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
         return node;
       },
   };
-
+  
   var SYSCALLS = {
   currentUmask:18,
   calculateAt(dirfd, path, allowEmpty) {
@@ -3626,7 +3626,7 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
   };
   function ___syscall_chdir(path) {
   try {
-
+  
       path = SYSCALLS.getStr(path);
       FS.chdir(path);
       return 0;
@@ -3635,7 +3635,7 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
     return -e.errno;
   }
   }
-
+  
 
   var syscallGetVarargI = () => {
       assert(SYSCALLS.varargs != undefined);
@@ -3645,12 +3645,12 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
       return ret;
     };
   var syscallGetVarargP = syscallGetVarargI;
-
-
+  
+  
   function ___syscall_fcntl64(fd, cmd, varargs) {
   SYSCALLS.varargs = varargs;
   try {
-
+  
       var stream = SYSCALLS.getStreamFromFD(fd);
       switch (cmd) {
         case 0: {
@@ -3697,27 +3697,27 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
     return -e.errno;
   }
   }
-
+  
 
   function ___syscall_fstat64(fd, buf) {
   try {
-
+  
       return SYSCALLS.writeStat(buf, FS.fstat(fd));
     } catch (e) {
     if (typeof FS == 'undefined' || !(e.name === 'ErrnoError')) throw e;
     return -e.errno;
   }
   }
+  
 
-
-
+  
   var stringToUTF8 = (str, outPtr, maxBytesToWrite) => {
       assert(typeof maxBytesToWrite == 'number', 'stringToUTF8 requires a third parameter that specifies the length of the output buffer');
       return stringToUTF8Array(str, HEAPU8, outPtr, maxBytesToWrite);
     };
   function ___syscall_getcwd(buf, size) {
   try {
-
+  
       if (size === 0) return -28;
       var cwd = FS.cwd();
       var cwdLengthInBytes = lengthBytesUTF8(cwd) + 1;
@@ -3729,19 +3729,19 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
     return -e.errno;
   }
   }
+  
 
-
-
+  
   function ___syscall_getdents64(fd, dirp, count) {
   try {
-
+  
       var stream = SYSCALLS.getStreamFromFD(fd)
       stream.getdents ||= FS.readdir(stream.path);
-
+  
       var struct_size = 280;
       var pos = 0;
       var off = FS.llseek(stream, 0, 1);
-
+  
       var startIdx = Math.floor(off / struct_size);
       var endIdx = Math.min(stream.getdents.length, startIdx + Math.floor(count/struct_size))
       for (var idx = startIdx; idx < endIdx; idx++) {
@@ -3790,13 +3790,13 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
     return -e.errno;
   }
   }
+  
 
-
-
+  
   function ___syscall_ioctl(fd, op, varargs) {
   SYSCALLS.varargs = varargs;
   try {
-
+  
       var stream = SYSCALLS.getStreamFromFD(fd);
       switch (op) {
         case 21509: {
@@ -3888,11 +3888,11 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
     return -e.errno;
   }
   }
-
+  
 
   function ___syscall_lstat64(path, buf) {
   try {
-
+  
       path = SYSCALLS.getStr(path);
       return SYSCALLS.writeStat(buf, FS.lstat(path));
     } catch (e) {
@@ -3900,11 +3900,11 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
     return -e.errno;
   }
   }
-
+  
 
   function ___syscall_mkdirat(dirfd, path, mode) {
   try {
-
+  
       path = SYSCALLS.getStr(path);
       path = SYSCALLS.calculateAt(dirfd, path);
       mode &= ~SYSCALLS.currentUmask;
@@ -3915,11 +3915,11 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
     return -e.errno;
   }
   }
-
+  
 
   function ___syscall_newfstatat(dirfd, path, buf, flags) {
   try {
-
+  
       path = SYSCALLS.getStr(path);
       var nofollow = flags & 256;
       var allowEmpty = flags & 4096;
@@ -3932,13 +3932,13 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
     return -e.errno;
   }
   }
+  
 
-
-
+  
   function ___syscall_openat(dirfd, path, flags, varargs) {
   SYSCALLS.varargs = varargs;
   try {
-
+  
       path = SYSCALLS.getStr(path);
       path = SYSCALLS.calculateAt(dirfd, path);
       var mode = varargs ? syscallGetVarargI() : 0;
@@ -3951,7 +3951,7 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
     return -e.errno;
   }
   }
-
+  
 
   var doPoll = (fds, nfds, timeout, makeNotifyCallback) => {
       var count = 0;
@@ -3978,9 +3978,9 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
     };
   var ___syscall_poll = function(fds, nfds, timeout) {
     let innerFunc =  () => {
-
+  
   try {
-
+  
       const isAsyncContext = true;
       // Enable event handlers only when the poll call is proxied from a worker.
       // TODO: Could use `Promise.withResolvers` here if we know its available.
@@ -4012,7 +4012,7 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
         }
         return cb;
       }
-
+  
       if (isAsyncContext) {
         if (timeout > 0) {
           var t = setTimeout(() => {
@@ -4028,7 +4028,7 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
         }
         return promise;
       }
-
+  
       var count = doPoll(fds, nfds, 0, undefined);
       if (!count && timeout != 0) warnOnce('non-zero poll() timeout not supported: ' + timeout)
       return count;
@@ -4036,7 +4036,7 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
     if (typeof FS == 'undefined' || !(e.name === 'ErrnoError')) throw e;
     return -e.errno;
   }
-
+  
   };
     return Asyncify.handleAsync(innerFunc);
   }
@@ -4045,18 +4045,18 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
 
   function ___syscall_poll_nonblocking(fds, nfds) {
   try {
-
+  
       return doPoll(fds, nfds, 0, undefined);
     } catch (e) {
     if (typeof FS == 'undefined' || !(e.name === 'ErrnoError')) throw e;
     return -e.errno;
   }
   }
-
+  
 
   function ___syscall_renameat(olddirfd, oldpath, newdirfd, newpath) {
   try {
-
+  
       oldpath = SYSCALLS.getStr(oldpath);
       newpath = SYSCALLS.getStr(newpath);
       oldpath = SYSCALLS.calculateAt(olddirfd, oldpath);
@@ -4068,11 +4068,11 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
     return -e.errno;
   }
   }
-
+  
 
   function ___syscall_rmdir(path) {
   try {
-
+  
       path = SYSCALLS.getStr(path);
       FS.rmdir(path);
       return 0;
@@ -4081,11 +4081,11 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
     return -e.errno;
   }
   }
-
+  
 
   function ___syscall_stat64(path, buf) {
   try {
-
+  
       path = SYSCALLS.getStr(path);
       return SYSCALLS.writeStat(buf, FS.stat(path));
     } catch (e) {
@@ -4093,11 +4093,11 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
     return -e.errno;
   }
   }
-
+  
 
   function ___syscall_statfs64(path, size, buf) {
   try {
-
+  
       assert(size === 88);
       SYSCALLS.writeStatFs(buf, FS.statfs(SYSCALLS.getStr(path)));
       return 0;
@@ -4106,11 +4106,11 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
     return -e.errno;
   }
   }
-
+  
 
   function ___syscall_unlinkat(dirfd, path, flags) {
   try {
-
+  
       path = SYSCALLS.getStr(path);
       path = SYSCALLS.calculateAt(dirfd, path);
       if (!flags) {
@@ -4126,7 +4126,7 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
     return -e.errno;
   }
   }
-
+  
 
   var __abort_js = () =>
       abort('native code called abort()');
@@ -4141,12 +4141,12 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
       // for any code that deals with heap sizes, which would require special
       // casing all heap size related code to treat 0 specially.
       2147483648;
-
+  
   var alignMemory = (size, alignment) => {
       assert(alignment, 'alignment argument is required');
       return Math.ceil(size / alignment) * alignment;
     };
-
+  
   var growMemory = (size) => {
       var oldHeapSize = wasmMemory.buffer.byteLength;
       var pages = ((size - oldHeapSize + 65535) / 65536) | 0;
@@ -4168,7 +4168,7 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
       // With multithreaded builds, races can happen (another thread might increase the size
       // in between), so return a failure, and let the caller retry.
       assert(requestedSize > oldSize);
-
+  
       // Memory resize rules:
       // 1.  Always increase heap size to at least the requested size, rounded up
       //     to next page multiple.
@@ -4185,7 +4185,7 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
       //     over-eager decision to excessively reserve due to (3) above.
       //     Hence if an allocation fails, cut down on the amount of excess
       //     growth, in an attempt to succeed to perform a smaller allocation.
-
+  
       // A limit is set for how much we can grow. We should not exceed that
       // (the wasm binary specifies it, so if we tried, we'd fail anyhow).
       var maxHeapSize = getHeapMax();
@@ -4193,7 +4193,7 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
         err(`Cannot enlarge memory, requested ${requestedSize} bytes, but the limit is ${maxHeapSize} bytes!`);
         return false;
       }
-
+  
       // Loop through potential heap size increases. If we attempt a too eager
       // reservation that fails, cut down on the attempted size and reserve a
       // smaller bump instead. (max 3 times, chosen somewhat arbitrarily)
@@ -4201,12 +4201,12 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
         var overGrownHeapSize = oldSize * (1 + 0.2 / cutDown); // ensure geometric growth
         // but limit overreserving (default to capping at +96MB overgrowth at most)
         overGrownHeapSize = Math.min(overGrownHeapSize, requestedSize + 100663296 );
-
+  
         var newSize = Math.min(maxHeapSize, alignMemory(Math.max(requestedSize, overGrownHeapSize), 65536));
-
+  
         var replacement = growMemory(newSize);
         if (replacement) {
-
+  
           return true;
         }
       }
@@ -4216,7 +4216,7 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
 
   function _fd_close(fd) {
   try {
-
+  
       var stream = SYSCALLS.getStreamFromFD(fd);
       FS.close(stream);
       return 0;
@@ -4225,7 +4225,7 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
     return e.errno;
   }
   }
-
+  
 
   /** @param {number=} offset */
   var doReadv = (stream, iov, iovcnt, offset) => {
@@ -4244,10 +4244,10 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
       }
       return ret;
     };
-
+  
   function _fd_read(fd, iov, iovcnt, pnum) {
   try {
-
+  
       var stream = SYSCALLS.getStreamFromFD(fd);
       var num = doReadv(stream, iov, iovcnt);
       HEAPU32[((pnum)>>2)] = num;
@@ -4257,19 +4257,19 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
     return e.errno;
   }
   }
+  
 
-
-
+  
   var INT53_MAX = 9007199254740992;
-
+  
   var INT53_MIN = -9007199254740992;
   var bigintToI53Checked = (num) => (num < INT53_MIN || num > INT53_MAX) ? NaN : Number(num);
   function _fd_seek(fd, offset, whence, newOffset) {
     offset = bigintToI53Checked(offset);
-
-
+  
+  
   try {
-
+  
       if (isNaN(offset)) return 22;
       var stream = SYSCALLS.getStreamFromFD(fd);
       FS.llseek(stream, offset, whence);
@@ -4285,9 +4285,9 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
 
   var _fd_sync = function(fd) {
     let innerFunc =  () => {
-
+  
   try {
-
+  
       var stream = SYSCALLS.getStreamFromFD(fd);
       var rtn = stream.stream_ops?.fsync?.(stream);
       return new Promise((resolve) => {
@@ -4302,7 +4302,7 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
     if (typeof FS == 'undefined' || !(e.name === 'ErrnoError')) throw e;
     return e.errno;
   }
-
+  
   };
     return Asyncify.handleAsync(innerFunc);
   }
@@ -4329,10 +4329,10 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
       }
       return ret;
     };
-
+  
   function _fd_write(fd, iov, iovcnt, pnum) {
   try {
-
+  
       var stream = SYSCALLS.getStreamFromFD(fd);
       var num = doWritev(stream, iov, iovcnt);
       HEAPU32[((pnum)>>2)] = num;
@@ -4342,7 +4342,7 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
     return e.errno;
   }
   }
-
+  
 
   var _mp_js_hook = () => {
           if (ENVIRONMENT_IS_NODE) {
@@ -4353,7 +4353,7 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
                   [],
               );
               const fs = require("fs");
-
+  
               const buf = Buffer.alloc(1);
               try {
                   const n = fs.readSync(process.stdin.fd, buf, 0, 1);
@@ -4407,7 +4407,7 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
 
   var _pydevices_audio_queued = (input) => input ? pydevices_state.inputFrames.reduce((n,f)=>n+(f.channels[0].length-f.offset)*f.channels.length*4,0) : pydevices_state.audioQueuedBytes;
 
-
+  
   var pydevices_encode_sample = (view, p, value, bits, signed, bigEndian) => {
           const little=!bigEndian, clamped=Math.max(-1,Math.min(1,value));
           if(bits===8) signed?view.setInt8(p,Math.round(clamped*127)):view.setUint8(p,Math.round((clamped+1)*127.5));
@@ -4432,7 +4432,7 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
 
   var _pydevices_audio_state = (input) => input ? +pydevices_state.microphoneEnabled : +pydevices_state.audioEnabled;
 
-
+  
   var pydevices_decode_pcm = (bytes, frames, channels, bits, signed, bigEndian) => {
           const result = Array.from({length:channels}, () => new Float32Array(frames));
           const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
@@ -4473,9 +4473,9 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
           }
           return display;
       };
-
-
-
+  
+  
+  
   var pydevices_write_event = (ptr, event) => {
           const types={pointerdown:1,pointermove:2,pointerup:3,pointercancel:4,wheel:5,keydown:6,keyup:7,focus:8,blur:9};
           const pointerTypes={mouse:0,touch:1,pen:2};
@@ -4530,7 +4530,7 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
               queue.push(event);
           }
       };
-
+  
   var pydevices_relative_point = (canvas, event) => {
           const rect = canvas.getBoundingClientRect();
           return {
@@ -4581,8 +4581,8 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
           on('blur', () => pydevices_push_event(canvasId, {type:'blur'}));
           canvas.focus();
       };
-
-
+  
+  
   var pydevices_paint = () => {
           const state = pydevices_state;
           let active = false;
@@ -4613,8 +4613,8 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
           }
           state.animation = requestAnimationFrame(pydevices_paint);
       };
-
-
+  
+  
   var pydevices_release_canvas = (canvas) => {
           for (const [name, handler, opts] of canvas.__pydevicesListeners || []) {
               canvas.removeEventListener(name, handler, opts);
@@ -4716,7 +4716,7 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
               },
           };
       };
-
+  
   var _pydevices_display_register = (ptr, len, width, height, canvasPtr) => {
           if (typeof document === 'undefined') return 0;
           const canvasId = UTF8ToString(canvasPtr);
@@ -4736,12 +4736,12 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
           return 1;
       };
 
-
+  
   var _pydevices_display_unregister = (canvasPtr) => {
           pydevices_state.displays.delete(UTF8ToString(canvasPtr));
       };
 
-
+  
   var _pydevices_event_clear = (canvasPtr) => {
           const display = pydevices_get_display(UTF8ToString(canvasPtr));
           display.events.length = 0;
@@ -4749,7 +4749,7 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
           if(ring) { HEAPU32[ring.ptr>>2]=0; HEAPU32[(ring.ptr>>2)+1]=0; }
       };
 
-
+  
   var _pydevices_event_poll = (canvasPtr, lenPtr) => {
           const display = pydevices_get_display(UTF8ToString(canvasPtr));
           if (!display.events.length) return 0;
@@ -4761,12 +4761,12 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
           return ptr;
       };
 
-
+  
   var _pydevices_event_set_buffer = (canvasPtr, ptr, capacity, stride) => {
           pydevices_get_display(UTF8ToString(canvasPtr)).eventRing = ptr ? {ptr,capacity,stride} : null;
       };
 
-
+  
   var _pydevices_host_reset = () => {
           const state = pydevices_state;
           if (state.animation) {
@@ -4796,7 +4796,7 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
         abort(e);
       }
     };
-
+  
   var handleException = (e) => {
       // Certain exception types we do not treat as errors since they are used for
       // internal control flow.
@@ -4814,8 +4814,8 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
       }
       quit_(1, e);
     };
-
-
+  
+  
   var runtimeKeepaliveCounter = 0;
   var keepRuntimeAlive = () => noExitRuntime || runtimeKeepaliveCounter > 0;
   var _proc_exit = (code) => {
@@ -4826,25 +4826,25 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
       }
       quit_(code, new ExitStatus(code));
     };
-
-
+  
+  
   /** @param {boolean|number=} implicit */
   var exitJS = (status, implicit) => {
       EXITSTATUS = status;
-
+  
       checkUnflushedContent();
-
+  
       // if exit() was called explicitly, warn the user if the runtime isn't actually being shut down
       if (keepRuntimeAlive() && !implicit) {
         var msg = `program exited (with status: ${status}), but keepRuntimeAlive() is set (counter=${runtimeKeepaliveCounter}) due to an async operation, so halting execution but not exiting the runtime or preventing further async execution (you can use emscripten_force_exit, if you want to force a true shutdown)`;
         err(msg);
       }
-
+  
       _proc_exit(status);
     };
   var _exit = exitJS;
-
-
+  
+  
   var maybeExit = () => {
       if (!keepRuntimeAlive()) {
         try {
@@ -4867,23 +4867,23 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
         maybeExit();
       }
     };
-
+  
   var createNamedFunction = (name, func) => Object.defineProperty(func, 'name', { value: name });
-
+  
   var runtimeKeepalivePush = () => {
       runtimeKeepaliveCounter += 1;
     };
-
+  
   var runtimeKeepalivePop = () => {
       assert(runtimeKeepaliveCounter > 0);
       runtimeKeepaliveCounter -= 1;
     };
-
-
+  
+  
   var Asyncify = {
   instrumentWasmImports(imports) {
         var importPattern = /^(pydevices_http_get|pydevices_sleep_ms|invoke_.*|__asyncjs__.*)$/;
-
+  
         for (let [x, original] of Object.entries(imports)) {
           if (typeof original == 'function') {
             let isAsyncifyImport = original.isAsync || importPattern.test(x);
@@ -4980,7 +4980,7 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
           // the dbg() function itself can call back into WebAssembly to get the
           // current pthread_self() pointer).
           Asyncify.state = Asyncify.State.Normal;
-
+          
           // Keep the runtime alive so that a re-wind can be done later.
           runAndAbortIfError(_asyncify_stop_unwind);
           if (typeof Fibers != 'undefined') {
@@ -5032,7 +5032,7 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
         assert(func);
         // Once we have rewound and the stack we no longer need to artificially
         // keep the runtime alive.
-
+        
         return callUserCallback(func);
       },
   handleSleep(startAsync) {
@@ -5131,7 +5131,7 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
         wakeUp(await startAsync());
       }),
   };
-
+  
   var _pydevices_http_get = (urlPtr, statusPtr, lenPtr, finalUrlPtr) => Asyncify.handleSleep(async (wakeUp) => {
           try {
               const response=await fetch(UTF8ToString(urlPtr)); const bytes=new Uint8Array(await response.arrayBuffer());
@@ -5169,8 +5169,8 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
       };
 
   var wasmTableMirror = [];
-
-
+  
+  
   var getWasmTableEntry = (funcPtr) => {
       var func = wasmTableMirror[funcPtr];
       if (!func) {
@@ -5188,14 +5188,14 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
       assert(func, `Cannot call unknown function ${ident}, make sure it is exported`);
       return func;
     };
-
+  
   var writeArrayToMemory = (array, buffer) => {
       assert(array.length >= 0, 'writeArrayToMemory array must have a length (should be an array or typed array)')
       HEAP8.set(array, buffer);
     };
-
-
-
+  
+  
+  
   var stackAlloc = (sz) => __emscripten_stack_alloc(sz);
   var stringToUTF8OnStack = (str) => {
       var size = lengthBytesUTF8(str) + 1;
@@ -5203,13 +5203,13 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
       stringToUTF8(str, ret, size);
       return ret;
     };
-
-
-
-
-
-
-
+  
+  
+  
+  
+  
+  
+  
     /**
    * @param {string|null=} returnType
    * @param {Array=} argTypes
@@ -5232,7 +5232,7 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
           return ret;
         }
       };
-
+  
       function convertReturnValue(ret) {
         if (returnType === 'string') {
           return UTF8ToString(ret);
@@ -5240,7 +5240,7 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
         if (returnType === 'boolean') return Boolean(ret);
         return ret;
       }
-
+  
       var func = getCFunc(ident);
       var cArgs = [];
       var stack = 0;
@@ -5265,7 +5265,7 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
         return convertReturnValue(ret);
       }
     var asyncMode = opts?.async;
-
+  
       // Keep the runtime alive through all calls. Note that this call might not be
       // async, but for simplicity we push and pop in all calls.
       runtimeKeepalivePush();
@@ -5284,14 +5284,14 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
         assert(asyncMode, `The call to ${ident} is running asynchronously. If this was intended, add the async option to the ccall/cwrap call.`);
         return Asyncify.whenDone().then(onDone);
       }
-
+  
       ret = onDone(ret);
       // If this is an async ccall, ensure we return a promise
       if (asyncMode) return Promise.resolve(ret);
       return ret;
     };
 
-
+  
     /**
    * @param {string=} returnType
    * @param {Array=} argTypes
@@ -5860,18 +5860,19 @@ var _emscripten_stack_get_free = makeInvalidEarlyAccess('_emscripten_stack_get_f
 var __emscripten_stack_restore = makeInvalidEarlyAccess('__emscripten_stack_restore');
 var __emscripten_stack_alloc = makeInvalidEarlyAccess('__emscripten_stack_alloc');
 var _emscripten_stack_get_current = makeInvalidEarlyAccess('_emscripten_stack_get_current');
-var dynCall_iiii = makeInvalidEarlyAccess('dynCall_iiii');
-var dynCall_vi = makeInvalidEarlyAccess('dynCall_vi');
-var dynCall_iiiii = makeInvalidEarlyAccess('dynCall_iiiii');
 var dynCall_iii = makeInvalidEarlyAccess('dynCall_iii');
-var dynCall_vii = makeInvalidEarlyAccess('dynCall_vii');
-var dynCall_iiiiii = makeInvalidEarlyAccess('dynCall_iiiiii');
-var dynCall_viiii = makeInvalidEarlyAccess('dynCall_viiii');
-var dynCall_ii = makeInvalidEarlyAccess('dynCall_ii');
-var dynCall_viii = makeInvalidEarlyAccess('dynCall_viii');
-var dynCall_i = makeInvalidEarlyAccess('dynCall_i');
+var dynCall_iiii = makeInvalidEarlyAccess('dynCall_iiii');
 var dynCall_iiiiiii = makeInvalidEarlyAccess('dynCall_iiiiiii');
+var dynCall_ii = makeInvalidEarlyAccess('dynCall_ii');
+var dynCall_iiiii = makeInvalidEarlyAccess('dynCall_iiiii');
+var dynCall_viii = makeInvalidEarlyAccess('dynCall_viii');
+var dynCall_iiiiii = makeInvalidEarlyAccess('dynCall_iiiiii');
+var dynCall_di = makeInvalidEarlyAccess('dynCall_di');
+var dynCall_vi = makeInvalidEarlyAccess('dynCall_vi');
 var dynCall_v = makeInvalidEarlyAccess('dynCall_v');
+var dynCall_vii = makeInvalidEarlyAccess('dynCall_vii');
+var dynCall_viiii = makeInvalidEarlyAccess('dynCall_viiii');
+var dynCall_i = makeInvalidEarlyAccess('dynCall_i');
 var dynCall_jji = makeInvalidEarlyAccess('dynCall_jji');
 var dynCall_viiiii = makeInvalidEarlyAccess('dynCall_viiiii');
 var dynCall_viiiiiii = makeInvalidEarlyAccess('dynCall_viiiiiii');
@@ -5884,6 +5885,7 @@ var dynCall_vif = makeInvalidEarlyAccess('dynCall_vif');
 var dynCall_viff = makeInvalidEarlyAccess('dynCall_viff');
 var dynCall_fi = makeInvalidEarlyAccess('dynCall_fi');
 var dynCall_iiiiiiii = makeInvalidEarlyAccess('dynCall_iiiiiiii');
+var dynCall_vid = makeInvalidEarlyAccess('dynCall_vid');
 var dynCall_dd = makeInvalidEarlyAccess('dynCall_dd');
 var dynCall_ddd = makeInvalidEarlyAccess('dynCall_ddd');
 var dynCall_jiji = makeInvalidEarlyAccess('dynCall_jiji');
@@ -5936,18 +5938,19 @@ function assignWasmExports(wasmExports) {
   assert(typeof wasmExports['_emscripten_stack_restore'] != 'undefined', 'missing Wasm export: _emscripten_stack_restore');
   assert(typeof wasmExports['_emscripten_stack_alloc'] != 'undefined', 'missing Wasm export: _emscripten_stack_alloc');
   assert(typeof wasmExports['emscripten_stack_get_current'] != 'undefined', 'missing Wasm export: emscripten_stack_get_current');
-  assert(typeof wasmExports['dynCall_iiii'] != 'undefined', 'missing Wasm export: dynCall_iiii');
-  assert(typeof wasmExports['dynCall_vi'] != 'undefined', 'missing Wasm export: dynCall_vi');
-  assert(typeof wasmExports['dynCall_iiiii'] != 'undefined', 'missing Wasm export: dynCall_iiiii');
   assert(typeof wasmExports['dynCall_iii'] != 'undefined', 'missing Wasm export: dynCall_iii');
-  assert(typeof wasmExports['dynCall_vii'] != 'undefined', 'missing Wasm export: dynCall_vii');
-  assert(typeof wasmExports['dynCall_iiiiii'] != 'undefined', 'missing Wasm export: dynCall_iiiiii');
-  assert(typeof wasmExports['dynCall_viiii'] != 'undefined', 'missing Wasm export: dynCall_viiii');
-  assert(typeof wasmExports['dynCall_ii'] != 'undefined', 'missing Wasm export: dynCall_ii');
-  assert(typeof wasmExports['dynCall_viii'] != 'undefined', 'missing Wasm export: dynCall_viii');
-  assert(typeof wasmExports['dynCall_i'] != 'undefined', 'missing Wasm export: dynCall_i');
+  assert(typeof wasmExports['dynCall_iiii'] != 'undefined', 'missing Wasm export: dynCall_iiii');
   assert(typeof wasmExports['dynCall_iiiiiii'] != 'undefined', 'missing Wasm export: dynCall_iiiiiii');
+  assert(typeof wasmExports['dynCall_ii'] != 'undefined', 'missing Wasm export: dynCall_ii');
+  assert(typeof wasmExports['dynCall_iiiii'] != 'undefined', 'missing Wasm export: dynCall_iiiii');
+  assert(typeof wasmExports['dynCall_viii'] != 'undefined', 'missing Wasm export: dynCall_viii');
+  assert(typeof wasmExports['dynCall_iiiiii'] != 'undefined', 'missing Wasm export: dynCall_iiiiii');
+  assert(typeof wasmExports['dynCall_di'] != 'undefined', 'missing Wasm export: dynCall_di');
+  assert(typeof wasmExports['dynCall_vi'] != 'undefined', 'missing Wasm export: dynCall_vi');
   assert(typeof wasmExports['dynCall_v'] != 'undefined', 'missing Wasm export: dynCall_v');
+  assert(typeof wasmExports['dynCall_vii'] != 'undefined', 'missing Wasm export: dynCall_vii');
+  assert(typeof wasmExports['dynCall_viiii'] != 'undefined', 'missing Wasm export: dynCall_viiii');
+  assert(typeof wasmExports['dynCall_i'] != 'undefined', 'missing Wasm export: dynCall_i');
   assert(typeof wasmExports['dynCall_jji'] != 'undefined', 'missing Wasm export: dynCall_jji');
   assert(typeof wasmExports['dynCall_viiiii'] != 'undefined', 'missing Wasm export: dynCall_viiiii');
   assert(typeof wasmExports['dynCall_viiiiiii'] != 'undefined', 'missing Wasm export: dynCall_viiiiiii');
@@ -5960,6 +5963,7 @@ function assignWasmExports(wasmExports) {
   assert(typeof wasmExports['dynCall_viff'] != 'undefined', 'missing Wasm export: dynCall_viff');
   assert(typeof wasmExports['dynCall_fi'] != 'undefined', 'missing Wasm export: dynCall_fi');
   assert(typeof wasmExports['dynCall_iiiiiiii'] != 'undefined', 'missing Wasm export: dynCall_iiiiiiii');
+  assert(typeof wasmExports['dynCall_vid'] != 'undefined', 'missing Wasm export: dynCall_vid');
   assert(typeof wasmExports['dynCall_dd'] != 'undefined', 'missing Wasm export: dynCall_dd');
   assert(typeof wasmExports['dynCall_ddd'] != 'undefined', 'missing Wasm export: dynCall_ddd');
   assert(typeof wasmExports['dynCall_jiji'] != 'undefined', 'missing Wasm export: dynCall_jiji');
@@ -6008,18 +6012,19 @@ function assignWasmExports(wasmExports) {
   __emscripten_stack_restore = wasmExports['_emscripten_stack_restore'];
   __emscripten_stack_alloc = wasmExports['_emscripten_stack_alloc'];
   _emscripten_stack_get_current = wasmExports['emscripten_stack_get_current'];
-  dynCall_iiii = dynCalls['iiii'] = createExportWrapper('dynCall_iiii', 4);
-  dynCall_vi = dynCalls['vi'] = createExportWrapper('dynCall_vi', 2);
-  dynCall_iiiii = dynCalls['iiiii'] = createExportWrapper('dynCall_iiiii', 5);
   dynCall_iii = dynCalls['iii'] = createExportWrapper('dynCall_iii', 3);
-  dynCall_vii = dynCalls['vii'] = createExportWrapper('dynCall_vii', 3);
-  dynCall_iiiiii = dynCalls['iiiiii'] = createExportWrapper('dynCall_iiiiii', 6);
-  dynCall_viiii = dynCalls['viiii'] = createExportWrapper('dynCall_viiii', 5);
-  dynCall_ii = dynCalls['ii'] = createExportWrapper('dynCall_ii', 2);
-  dynCall_viii = dynCalls['viii'] = createExportWrapper('dynCall_viii', 4);
-  dynCall_i = dynCalls['i'] = createExportWrapper('dynCall_i', 1);
+  dynCall_iiii = dynCalls['iiii'] = createExportWrapper('dynCall_iiii', 4);
   dynCall_iiiiiii = dynCalls['iiiiiii'] = createExportWrapper('dynCall_iiiiiii', 7);
+  dynCall_ii = dynCalls['ii'] = createExportWrapper('dynCall_ii', 2);
+  dynCall_iiiii = dynCalls['iiiii'] = createExportWrapper('dynCall_iiiii', 5);
+  dynCall_viii = dynCalls['viii'] = createExportWrapper('dynCall_viii', 4);
+  dynCall_iiiiii = dynCalls['iiiiii'] = createExportWrapper('dynCall_iiiiii', 6);
+  dynCall_di = dynCalls['di'] = createExportWrapper('dynCall_di', 2);
+  dynCall_vi = dynCalls['vi'] = createExportWrapper('dynCall_vi', 2);
   dynCall_v = dynCalls['v'] = createExportWrapper('dynCall_v', 1);
+  dynCall_vii = dynCalls['vii'] = createExportWrapper('dynCall_vii', 3);
+  dynCall_viiii = dynCalls['viiii'] = createExportWrapper('dynCall_viiii', 5);
+  dynCall_i = dynCalls['i'] = createExportWrapper('dynCall_i', 1);
   dynCall_jji = dynCalls['jji'] = createExportWrapper('dynCall_jji', 3);
   dynCall_viiiii = dynCalls['viiiii'] = createExportWrapper('dynCall_viiiii', 6);
   dynCall_viiiiiii = dynCalls['viiiiiii'] = createExportWrapper('dynCall_viiiiiii', 8);
@@ -6032,6 +6037,7 @@ function assignWasmExports(wasmExports) {
   dynCall_viff = dynCalls['viff'] = createExportWrapper('dynCall_viff', 4);
   dynCall_fi = dynCalls['fi'] = createExportWrapper('dynCall_fi', 2);
   dynCall_iiiiiiii = dynCalls['iiiiiiii'] = createExportWrapper('dynCall_iiiiiiii', 8);
+  dynCall_vid = dynCalls['vid'] = createExportWrapper('dynCall_vid', 3);
   dynCall_dd = dynCalls['dd'] = createExportWrapper('dynCall_dd', 2);
   dynCall_ddd = dynCalls['ddd'] = createExportWrapper('dynCall_ddd', 3);
   dynCall_jiji = dynCalls['jiji'] = createExportWrapper('dynCall_jiji', 4);
@@ -6207,10 +6213,10 @@ var wasmImports = {
   store_attr
 };
 
-function invoke_v(index) {
+function invoke_ii(index,a1) {
   var sp = stackSave();
   try {
-    dynCall_v(index);
+    return dynCall_ii(index,a1);
   } catch(e) {
     stackRestore(sp);
     if (!(e instanceof EmscriptenEH)) throw e;
@@ -6218,10 +6224,21 @@ function invoke_v(index) {
   }
 }
 
-function invoke_ii(index,a1) {
+function invoke_iiiii(index,a1,a2,a3,a4) {
   var sp = stackSave();
   try {
-    return dynCall_ii(index,a1);
+    return dynCall_iiiii(index,a1,a2,a3,a4);
+  } catch(e) {
+    stackRestore(sp);
+    if (!(e instanceof EmscriptenEH)) throw e;
+    _setThrew(1, 0);
+  }
+}
+
+function invoke_v(index) {
+  var sp = stackSave();
+  try {
+    dynCall_v(index);
   } catch(e) {
     stackRestore(sp);
     if (!(e instanceof EmscriptenEH)) throw e;
@@ -6255,17 +6272,6 @@ function invoke_viii(index,a1,a2,a3) {
   var sp = stackSave();
   try {
     dynCall_viii(index,a1,a2,a3);
-  } catch(e) {
-    stackRestore(sp);
-    if (!(e instanceof EmscriptenEH)) throw e;
-    _setThrew(1, 0);
-  }
-}
-
-function invoke_iiiii(index,a1,a2,a3,a4) {
-  var sp = stackSave();
-  try {
-    return dynCall_iiiii(index,a1,a2,a3,a4);
   } catch(e) {
     stackRestore(sp);
     if (!(e instanceof EmscriptenEH)) throw e;
