@@ -337,7 +337,7 @@ class SignalGenHero:
         self.pointer = _clean_obj(self.knob)
         self.pointer.set_size(pw, ph)
         self.pointer.set_style_radius(pw // 2, 0)
-        self.pointer.set_style_bg_color(_color(0xF54E00), 0)
+        self.pointer.set_style_bg_color(_color(0x22C7E2), 0)
         self.pointer.set_style_bg_opa(lv.OPA.COVER, 0)
         self.pointer.align(lv.ALIGN.TOP_MID, 0, int(knob_r * 0.14))
 
@@ -442,8 +442,8 @@ class SignalGenHero:
     def _refresh_hub(self):
         if self.playing:
             self.hub_icon.set_text(lv.SYMBOL.VOLUME_MAX)
-            self.hub_icon.set_style_text_color(_color(0xF54E00), 0)
-            self.hub.set_style_border_color(_color(0xF54E00), 0)
+            self.hub_icon.set_style_text_color(_color(0x22C7E2), 0)
+            self.hub.set_style_border_color(_color(0x22C7E2), 0)
         else:
             self.hub_icon.set_text(lv.SYMBOL.MUTE)
             self.hub_icon.set_style_text_color(_color(0x64748B), 0)
@@ -455,9 +455,9 @@ class SignalGenHero:
         self.osc.wave = name
         for i, (btn, lbl) in enumerate(self.wave_btns):
             active = i == idx
-            btn.set_style_bg_color(_color(0xF54E00 if active else 0x151A20), 0)
+            btn.set_style_bg_color(_color(0x22C7E2 if active else 0x151A20), 0)
             btn.set_style_bg_opa(lv.OPA.COVER, 0)
-            btn.set_style_border_color(_color(0xF54E00 if active else 0x2A3441), 0)
+            btn.set_style_border_color(_color(0x22C7E2 if active else 0x2A3441), 0)
             lbl.set_style_text_color(_color(0x0A0D10 if active else 0x94A3B8), 0)
         if not initial:
             self.last_interaction = time.time()

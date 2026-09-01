@@ -1,16 +1,37 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="PyDevices logo">
-  <defs>
-    <linearGradient id="pd-bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#ff8a3d"/>
-      <stop offset="1" stop-color="#f54e00"/>
-    </linearGradient>
-  </defs>
-  <rect x="1" y="1" width="62" height="62" rx="16" fill="url(#pd-bg)"/>
-  <g fill="none" stroke="#fff9f4" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round">
-    <rect x="14" y="16" width="36" height="24" rx="3.5"/>
-    <path d="M24 48h16M32 40v8"/>
+  <!--
+    The bus mark: one trunk, three taps, terminating in pads. A single
+    contract reaching many endpoints — what PyDevices ships, rather than
+    any one of the devices it drives.
+
+    Drawn free-standing on transparent ground so it can sit on the page
+    itself. The base colour works on either ground; the media queries
+    sharpen it when the viewer's OS theme is known. Platform icons that
+    need an opaque tile (GitHub avatar, social cards) are the PNGs beside
+    this file, not this one.
+  -->
+  <style>
+    .pd-stroke { stroke: #12a5c2; }
+    .pd-fill { fill: #12a5c2; }
+    @media (prefers-color-scheme: dark) {
+      .pd-stroke { stroke: #22c7e2; }
+      .pd-fill { fill: #22c7e2; }
+    }
+    @media (prefers-color-scheme: light) {
+      .pd-stroke { stroke: #0b7f96; }
+      .pd-fill { fill: #0b7f96; }
+    }
+  </style>
+  <g class="pd-stroke" fill="none" stroke="#12a5c2" stroke-width="4" stroke-linecap="round">
+    <path d="M19 20V49"/>
+    <path d="M19 25h20"/>
+    <path d="M19 37h20"/>
+    <path d="M19 49h20"/>
   </g>
-  <circle cx="23.5" cy="28" r="2.4" fill="#fff9f4"/>
-  <circle cx="32" cy="28" r="2.4" fill="#fff9f4"/>
-  <circle cx="40.5" cy="28" r="2.4" fill="#fff9f4"/>
+  <g class="pd-fill" fill="#12a5c2">
+    <rect x="14" y="9" width="10" height="10" rx="3"/>
+    <rect x="39" y="20.5" width="9" height="9" rx="2.5"/>
+    <rect x="39" y="32.5" width="9" height="9" rx="2.5"/>
+    <rect x="39" y="44.5" width="9" height="9" rx="2.5"/>
+  </g>
 </svg>
