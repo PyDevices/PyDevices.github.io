@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>pydevices.com</title>
+  <meta name="description" content="PyDevices makes open-source software for hardware. It lives at pydevices.org.">
+  <meta name="theme-color" content="#22c7e2">
+  <link rel="icon" type="image/svg+xml" href="/assets/img/logo.svg">
+  <link rel="canonical" href="https://pydevices.org/">
+  <!--
+    The landing page for pydevices.com.
+
+    Hand-authored: scripts/generate_sites.py builds pages from
+    data/repos_db.json, and /com/ is not a repo, so nothing generates or
+    overwrites this. It links the shared chrome stylesheet purely for its
+    token block, so a palette change reaches it like everywhere else --
+    it deliberately does not mount the site header or footer.
+
+    It promises nothing on purpose. If a commercial side of PyDevices ever
+    exists, this is where it would go; until then the honest thing is to
+    say so plainly. See docs/hardware-products.md in the workspace anchor.
+  -->
+  <link rel="stylesheet" href="https://pydevices.github.io/assets/chrome/site.css">
+  <style>
+    /* Everything is scoped under .pd-com. The shared stylesheet is linked for
+       its token block only, and it carries its own .card and link rules that
+       would otherwise reach in here and win. */
+    body {
+      min-height: 100vh;
+      margin: 0;
+      display: grid;
+      place-items: center;
+      padding: 32px;
+      background:
+        radial-gradient(900px 460px at 50% -10%, rgb(var(--accent-rgb) / 0.12), transparent 62%),
+        var(--bg);
+      background-attachment: fixed;
+    }
+    .pd-com {
+      max-width: 34rem;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 22px;
+      padding: 44px 38px 38px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    .pd-com .mark { width: 68px; height: 68px; color: var(--accent); }
+    .pd-com .mark svg { width: 100%; height: 100%; display: block; }
+    .pd-com h1 {
+      font: 700 clamp(30px, 7vw, 46px)/1.08 var(--font-display);
+      letter-spacing: -0.03em;
+      margin: 0;
+      color: var(--ink);
+      text-wrap: balance;
+    }
+    .pd-com p {
+      margin: 0;
+      color: var(--ink-soft);
+      font-size: 1.05rem;
+      line-height: 1.6;
+      max-width: 30rem;
+    }
+    .pd-com a.cta {
+      font: 600 1rem/1 var(--font-display);
+      color: var(--accent-ink);
+      background: var(--accent);
+      padding: 14px 22px;
+      border-radius: var(--radius-sm);
+      text-decoration: none;
+      border: 1px solid var(--accent);
+    }
+    .pd-com a.cta:hover {
+      color: var(--accent-ink);
+      background: var(--accent-soft);
+      border-color: var(--accent-soft);
+    }
+    .pd-com a.cta:focus-visible { outline: 2px solid var(--accent-strong); outline-offset: 3px; }
+    .pd-com .fine { font-size: 0.86rem; color: var(--muted); }
+  </style>
+</head>
+<body>
+  <main class="pd-com">
+    <div class="mark" aria-hidden="true">
+      <svg viewBox="0 0 64 64" fill="none">
+        <g stroke="currentColor" stroke-width="4" stroke-linecap="round">
+          <path d="M19 20V49"/><path d="M19 25h20"/><path d="M19 37h20"/><path d="M19 49h20"/>
+        </g>
+        <g fill="currentColor">
+          <rect x="14" y="9" width="10" height="10" rx="3"/>
+          <rect x="39" y="20.5" width="9" height="9" rx="2.5"/>
+          <rect x="39" y="32.5" width="9" height="9" rx="2.5"/>
+          <rect x="39" y="44.5" width="9" height="9" rx="2.5"/>
+        </g>
+      </svg>
+    </div>
+
+    <h1>Nothing to sell you.</h1>
+
+    <p>PyDevices makes open-source software that lets Python talk to hardware —
+      displays, audio, USB, and radios — on MicroPython, CircuitPython and
+      CPython alike. All of it is free, and none of it is here.</p>
+
+    <a class="cta" href="https://pydevices.org/">Go to pydevices.org</a>
+
+    <p class="fine">We hold this address so nobody else does.</p>
+  </main>
+</body>
+</html>
