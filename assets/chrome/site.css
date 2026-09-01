@@ -224,8 +224,11 @@ pre {
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   /* Code blocks stay on the dark palette in both themes -- see the --dark-*
-   * anchors in the token block. */
+   * anchors in the token block. The colour belongs on `pre` itself, not only
+   * on `pre code`: a block with no nested <code> would otherwise inherit
+   * --ink, which in the light theme is near-black on this dark ground. */
   background: var(--dark-panel);
+  color: var(--dark-ink);
   padding: 14px 16px;
 }
 

@@ -289,7 +289,7 @@
       <h2>Architecture & Layers</h2>
       <span class="hint">How PyDevices abstractions stack from the application down to the hardware — the amber-outlined <strong>Core Stack</strong> below is the <code>pydevices</code> package itself, the product this org ships; everything above it is optional tooling and everything below it is platform glue.</span>
     </div>
-    <div class="mermaid" style="text-align: center; background: var(--bg, #fff); padding: 30px; border-radius: 12px; border: 1px solid var(--border, #e2e8f0); box-shadow: 0 4px 6px rgba(0,0,0,0.05); overflow-x: auto;">
+    <div class="mermaid" style="text-align: center; background: var(--bg-soft); padding: 30px; border-radius: 12px; border: 1px solid var(--border); box-shadow: var(--shadow-soft); overflow-x: auto;">
       graph TD
         %% App Layer
         subgraph AppLayer ["Application Layer"]
@@ -366,20 +366,86 @@
         WASM --> DOM
         AND --> SDL
 
-        classDef core fill:#24292e,stroke:#22c7e2,stroke-width:2px,color:#fff;
-        classDef layer fill:#f8fafc,stroke:#cbd5e1,stroke-width:1px,color:#0f172a;
-        classDef hardware fill:#f1f5f9,stroke:#94a3b8,stroke-width:1px,color:#334155;
-        classDef binding fill:#e2e8f0,stroke:#64748b,stroke-width:1px,color:#1e293b,stroke-dasharray: 4 4;
         class APPDEV,DISP,AUDIO,TIMER core;
         class LVGL,PDW,PYG_APP,DIR,PYG layer;
         class MP,CP,UNIX,WIN,WASM,AND hardware;
         class DIF,DIO,SDL,W32,DOM binding;
-        style CoreStack fill:#fffbeb,stroke:#f59e0b,stroke-width:3px
     </div>
   </section>
   <script type="module">
+    /*
+     * The architecture diagram is hand-authored here, outside the generator's
+     * <!-- PYDEVICES-*: START/END --> markers, which is why regenerating the
+     * page leaves it alone. Its colours are not hand-picked: they are read
+     * from the same site.css tokens everything else uses, so a palette change
+     * reaches the diagram too, and it is re-rendered when the theme toggles.
+     * The Core Stack keeps the tier-1 outline on purpose -- pydevices is a
+     * tier-1 repo, and that is the colour the tier system gives it.
+     */
     import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
-    mermaid.initialize({ startOnLoad: true, theme: 'neutral' });
+
+    const host = document.querySelector('.mermaid');
+    /* innerHTML, not textContent: node labels carry <br/>, which the HTML
+     * parser has already turned into elements -- reading as text would drop
+     * every line break in the diagram. */
+    const source = host ? host.innerHTML : '';
+
+    const raw = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+
+    /* Mermaid's classDef parser takes plain colour literals, not CSS colour
+     * functions -- and tokens built with rgb(var(--x)) resolve to
+     * "rgb(34 199 226)". Normalise everything to hex before it goes near the
+     * graph source. */
+    const tok = (name) => {
+      const v = raw(name);
+      const m = v.match(/^rgba?\(([^)]+)\)$/);
+      if (!m) return v;
+      const parts = m[1].split(/[\s,\/]+/).filter(Boolean).slice(0, 3).map(Number);
+      if (parts.length !== 3 || parts.some(Number.isNaN)) return v;
+      return '#' + parts.map((c) => Math.round(c).toString(16).padStart(2, '0')).join('');
+    };
+
+    function paletteDefs() {
+      const panel = tok('--panel'), panel2 = tok('--panel-2'), bgSoft = tok('--bg-soft');
+      const ink = tok('--ink'), inkSoft = tok('--ink-soft'), muted = tok('--muted');
+      const border = tok('--border'), accent = tok('--accent'), tier1 = tok('--tier-1-amber');
+      return [
+        `classDef core fill:${panel2},stroke:${accent},stroke-width:2px,color:${ink};`,
+        `classDef layer fill:${panel},stroke:${border},stroke-width:1px,color:${inkSoft};`,
+        `classDef hardware fill:${bgSoft},stroke:${border},stroke-width:1px,color:${inkSoft};`,
+        `classDef binding fill:${bgSoft},stroke:${muted},stroke-width:1px,color:${inkSoft},stroke-dasharray: 4 4;`,
+        `style CoreStack fill:${panel},stroke:${tier1},stroke-width:3px`,
+      ].join('\n        ');
+    }
+
+    async function draw() {
+      if (!host) return;
+      mermaid.initialize({
+        startOnLoad: false,
+        theme: 'base',
+        themeVariables: {
+          background: tok('--bg-soft'),
+          mainBkg: tok('--panel'),
+          nodeBorder: tok('--border'),
+          textColor: tok('--ink-soft'),
+          lineColor: tok('--muted'),
+          titleColor: tok('--ink'),
+          clusterBkg: tok('--bg-soft'),
+          clusterBorder: tok('--border-soft'),
+          edgeLabelBackground: tok('--panel'),
+          fontFamily: raw('--font') || 'system-ui, sans-serif',
+        },
+      });
+      host.removeAttribute('data-processed');
+      host.innerHTML = source + '\n        ' + paletteDefs() + '\n';
+      await mermaid.run({ nodes: [host] });
+    }
+
+    draw();
+    // The toggle flips data-theme on <html>; redraw so the diagram follows.
+    new MutationObserver(draw).observe(document.documentElement, {
+      attributes: true, attributeFilter: ['data-theme'],
+    });
   </script>
 
   </main>
