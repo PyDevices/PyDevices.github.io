@@ -64,11 +64,16 @@
     "</div>" +
     "</footer>";
 
+  /* Tier colours live in assets/css/site.css. The hexes below are only the
+   * var() fallbacks for a page that failed to load the shared stylesheet, so
+   * they must stay equal to that file's --tier-N-* values -- never a second,
+   * different palette. A palette change is a site.css token-block edit plus a
+   * mechanical refresh of these five fallbacks. */
   var ECOSYSTEM_DATA = [
     {
       tier: 0,
       name: "Organization Portal",
-      color: "var(--tier-1-amber, #d97706)",
+      color: "var(--tier-1-amber, #f59e0b)",
       repos: [
         {
           id: "root",
@@ -84,7 +89,7 @@
     {
       tier: 1,
       name: "Core Platform & HAL",
-      color: "var(--tier-1-amber, #d97706)",
+      color: "var(--tier-1-amber, #f59e0b)",
       repos: [
         {
           id: "pydevices",
@@ -127,7 +132,7 @@
     {
       tier: 2,
       name: "Framebuffers & UI Toolkits",
-      color: "var(--tier-2-emerald, #059669)",
+      color: "var(--tier-2-emerald, #10b981)",
       repos: [
         {
           id: "pygraphics",
@@ -161,7 +166,7 @@
     {
       tier: 3,
       name: "LVGL Native Extensions",
-      color: "var(--tier-3-blue, #2563eb)",
+      color: "var(--tier-3-blue, #3b82f6)",
       repos: [
         {
           id: "lvgl-bindings",
@@ -204,7 +209,7 @@
     {
       tier: 4,
       name: "App Hosts & Mobile",
-      color: "var(--tier-4-purple, #7c3aed)",
+      color: "var(--tier-4-purple, #8b5cf6)",
       repos: [
         {
           id: "pyscript-template",
@@ -229,7 +234,7 @@
     {
       tier: 5,
       name: "Developer Tools & Infrastructure",
-      color: "var(--tier-5-steel, #0284c7)",
+      color: "var(--tier-5-steel, #06b6d4)",
       repos: [
         {
           id: "mip",
