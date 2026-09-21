@@ -91,6 +91,16 @@
         <span class="go">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
 
+      <a class="card card-tier-1" href="/audioif/">
+        <div class="card-top">
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10v4M8 7v10M12 4v16M16 7v10M20 10v4"/></svg></span>
+          <span class="tag tag-tier-1">audioif</span>
+        </div>
+        <h3>audioif</h3>
+        <p>The part of the audio stack that knows what a thread is, where the clock comes from and where the sound goes: a pinned task and the I2S peripheral on ESP32, a native thread on unix and Windows, and a CircuitPython-shaped audiobusio.I2SOut over all of it. With it in a firmware, a graph keeps an exact clock while a screen redraws and a USB stack runs, and audiodev plays through it without being asked. The portable half of the pump, and every DSP node, is audiodsp.</p>
+        <span class="go">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      </a>
+
       <a class="card card-tier-1" href="/audiocomponents/">
         <div class="card-top">
           <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/></svg></span>
@@ -107,7 +117,7 @@
           <span class="tag tag-tier-1">usbif</span>
         </div>
         <h3>usbif</h3>
-        <p>A board a computer sees as a sound card, a MIDI instrument, a keyboard, a drive or a webcam — and, on the same board, a USB host that a keyboard, thumb drive, MIDI controller or camera plugs into. The third PyDevices *if module after displayif and audiodsp: a native C module with a thin, stable Python surface that runs unchanged on a workstation.</p>
+        <p>A board a computer sees as a sound card, a MIDI instrument, a keyboard, a drive or a webcam — and, on the same board, a USB host that a keyboard, thumb drive, MIDI controller or camera plugs into. One of the PyDevices *if modules, with displayif, audioif and cameraif: a native C module with a thin, stable Python surface that runs unchanged on a workstation.</p>
         <span class="go">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
 
