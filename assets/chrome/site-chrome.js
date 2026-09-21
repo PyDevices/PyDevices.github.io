@@ -110,10 +110,10 @@
           icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>'
         },
         {
-          id: "audioif",
-          name: "audioif",
-          path: "/audioif/",
-          url: ROOT + "/audioif/",
+          id: "audiodsp",
+          name: "audiodsp",
+          path: "/audiodsp/",
+          url: ROOT + "/audiodsp/",
           tag: "C Audio",
           desc: "CircuitPython audio stack as MicroPython usermods",
           icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 10v4M8 7v10M12 4v16M16 7v10M20 10v4"/></svg>'

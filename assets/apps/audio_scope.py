@@ -1,9 +1,9 @@
 """
-PyDevices Audio Rack (Hero Canvas App for audioif)
+PyDevices Audio Rack (Hero Canvas App for audiodsp)
 ==================================================
 Studio mixer + oscilloscope: four CircuitPython-compatible module strips
 (synthio, mixer, effects, mp3) feeding a stereo PCM trace. Visual-only —
-the wasm hero host does not load native audioif usermods.
+the wasm hero host does not load native audiodsp usermods.
 """
 
 import math
