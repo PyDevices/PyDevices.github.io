@@ -96,7 +96,7 @@
     <!-- Installation & Usage -->
     <div class="section-head" style="margin-top: 36px;">
       <h2>Installation</h2>
-      <span class="hint">Native wheels from TestPyPI; the pure-Python package from the PyDevices MIP index.</span>
+      <span class="hint">The two install lines from the README: the native wheel, and the pure-Python package.</span>
     </div>
     <div class="spec-block">
       <pre><code># Native C extension (CPython desktop, Android, Pyodide)
@@ -116,10 +116,10 @@ mip.install("pygraphics", index="https://PyDevices.github.io/mip")</code></pre>
     </div>
 
     <div class="spec-block">
-      <pre><code>from pygraphics import Area, FrameBuffer, RGB565, framebuf_backend
+      <pre><code>from pygraphics import Area, FrameBuffer, RGB565, implementation
 
-# Verify active backend (native C usermod or pure-Python fallback)
-print("Active backend:", framebuf_backend())
+# Verify active backend: 'native_cmod' or 'pygraphics_python'
+print("Active backend:", implementation())
 
 # Allocate 16-bit RGB565 buffer
 buf = bytearray(128 * 128 * 2)
