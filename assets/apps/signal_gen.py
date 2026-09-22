@@ -50,7 +50,8 @@ def _note_name(freq):
 # ---------------------------------------------------------------------------
 # Signal synthesis -- a single live synthio.Note, played through the same
 # audiodev.sample_out.AudioOut contract as pydevices-examples' piano.py
-# (board_config.audio_out.play(synth) + attach(app)). Toggling the note
+# (out = board_config.audio_out(); out.play(synth); out.attach(app) -- the
+# role is a factory, and calling it is what opens the device). Toggling the note
 # on/off goes through synthio's own envelope (short attack/release) rather
 # than a hand-rolled sample-ramp, so it stays click-free for free.
 # ---------------------------------------------------------------------------
@@ -116,9 +117,16 @@ def _wave_table(name):
 class Oscillator:
     """One live synthio.Note. Envelope attack/release makes on/off click-free."""
 
-    def __init__(self, out, amp=0.35):
-        self.out = out
+    def __init__(self, factory, amp=0.35):
+        # `board_config.audio_out` is an audiodev.AudioFactory, not an AudioOut:
+        # a board's audio role must be *called* to open the device, so that the
+        # caller can ask for a format (audiodev.AudioFactory, docs/audio.md).
+        # Keep the factory and open on the first tone -- which in a browser is
+        # the first user gesture, which is what unlocks Web Audio at all.
+        self._factory = factory
+        self.out = None
         self.amp = amp
+        self._app = None
         self._freq = FREQ_DEFAULT
         self._wave_name = "SIN"
         self.playing = False
@@ -150,7 +158,8 @@ class Oscillator:
         if self._ready:
             return True
         try:
-            fmt = self.out.format
+            out = self._factory()
+            fmt = out.format
             self._synth = synthio.Synthesizer(
                 sample_rate=fmt.rate,
                 channel_count=fmt.channels,
@@ -158,14 +167,23 @@ class Oscillator:
                     attack_time=0.03, decay_time=0.0, release_time=0.03, sustain_level=1.0
                 ),
             )
-            self.out.play(self._synth)
+            out.play(self._synth)
+            if self._app is not None:
+                # service() has to be on the app's timer before the first note,
+                # or the device is fed nothing and the tone never arrives.
+                out.attach(self._app)
         except Exception:
+            self.out = None
+            self._synth = None
             return False
+        self.out = out
         self._ready = True
         return True
 
     def start(self, app_):
-        self.out.attach(app_)
+        # Only remembers the app: there is no device to attach to the tick
+        # until the first tone opens one.
+        self._app = app_
 
     def set_playing(self, value):
         value = bool(value)
