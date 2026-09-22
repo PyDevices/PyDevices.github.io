@@ -192,7 +192,7 @@
           path: "/lvgl-python/",
           url: ROOT + "/lvgl-python/",
           tag: "CPython / WASM",
-          desc: "LVGL Python wheels for Linux, macOS & WebAssembly",
+          desc: "LVGL Python wheels for Linux, Windows & WebAssembly",
           icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a4 4 0 0 1 4 4v1h1a3 3 0 0 1 3 3v1a4 4 0 0 1-4 4h-1v1a4 4 0 0 1-4 4 4 4 0 0 1-4-4v-1H6a4 4 0 0 1-4-4v-1a3 3 0 0 1 3-3h1V6a4 4 0 0 1 4-4z"/></svg>'
         },
         {
