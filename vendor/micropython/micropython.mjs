@@ -5822,9 +5822,9 @@ function js_then_continue(jsref,py_resume,resolve,reject,out) { const py_resume_
 function create_promise(out_set,out_promise) { const out_set_js = proxy_convert_mp_to_js_obj_jsside(out_set); const promise = new Promise(out_set_js); proxy_convert_js_to_mp_obj_jsside(promise, out_promise); }
 
 // Imports from the Wasm binary.
+var _pydevices_timer_dispatch = Module['_pydevices_timer_dispatch'] = makeInvalidEarlyAccess('_pydevices_timer_dispatch');
 var _free = Module['_free'] = makeInvalidEarlyAccess('_free');
 var _malloc = Module['_malloc'] = makeInvalidEarlyAccess('_malloc');
-var _pydevices_timer_dispatch = Module['_pydevices_timer_dispatch'] = makeInvalidEarlyAccess('_pydevices_timer_dispatch');
 var _mp_sched_keyboard_interrupt = Module['_mp_sched_keyboard_interrupt'] = makeInvalidEarlyAccess('_mp_sched_keyboard_interrupt');
 var _mp_js_init = Module['_mp_js_init'] = makeInvalidEarlyAccess('_mp_js_init');
 var _mp_js_deinit = Module['_mp_js_deinit'] = makeInvalidEarlyAccess('_mp_js_deinit');
@@ -5869,8 +5869,8 @@ var dynCall_viii = makeInvalidEarlyAccess('dynCall_viii');
 var dynCall_iiiiii = makeInvalidEarlyAccess('dynCall_iiiiii');
 var dynCall_di = makeInvalidEarlyAccess('dynCall_di');
 var dynCall_v = makeInvalidEarlyAccess('dynCall_v');
-var dynCall_viiiiii = makeInvalidEarlyAccess('dynCall_viiiiii');
 var dynCall_vii = makeInvalidEarlyAccess('dynCall_vii');
+var dynCall_viiiiii = makeInvalidEarlyAccess('dynCall_viiiiii');
 var dynCall_viiii = makeInvalidEarlyAccess('dynCall_viiii');
 var dynCall_jji = makeInvalidEarlyAccess('dynCall_jji');
 var dynCall_viiiii = makeInvalidEarlyAccess('dynCall_viiiii');
@@ -5898,9 +5898,9 @@ var wasmMemory = makeInvalidEarlyAccess('wasmMemory');
 var wasmTable = makeInvalidEarlyAccess('wasmTable');
 
 function assignWasmExports(wasmExports) {
+  assert(typeof wasmExports['pydevices_timer_dispatch'] != 'undefined', 'missing Wasm export: pydevices_timer_dispatch');
   assert(typeof wasmExports['free'] != 'undefined', 'missing Wasm export: free');
   assert(typeof wasmExports['malloc'] != 'undefined', 'missing Wasm export: malloc');
-  assert(typeof wasmExports['pydevices_timer_dispatch'] != 'undefined', 'missing Wasm export: pydevices_timer_dispatch');
   assert(typeof wasmExports['mp_sched_keyboard_interrupt'] != 'undefined', 'missing Wasm export: mp_sched_keyboard_interrupt');
   assert(typeof wasmExports['mp_js_init'] != 'undefined', 'missing Wasm export: mp_js_init');
   assert(typeof wasmExports['mp_js_deinit'] != 'undefined', 'missing Wasm export: mp_js_deinit');
@@ -5945,8 +5945,8 @@ function assignWasmExports(wasmExports) {
   assert(typeof wasmExports['dynCall_iiiiii'] != 'undefined', 'missing Wasm export: dynCall_iiiiii');
   assert(typeof wasmExports['dynCall_di'] != 'undefined', 'missing Wasm export: dynCall_di');
   assert(typeof wasmExports['dynCall_v'] != 'undefined', 'missing Wasm export: dynCall_v');
-  assert(typeof wasmExports['dynCall_viiiiii'] != 'undefined', 'missing Wasm export: dynCall_viiiiii');
   assert(typeof wasmExports['dynCall_vii'] != 'undefined', 'missing Wasm export: dynCall_vii');
+  assert(typeof wasmExports['dynCall_viiiiii'] != 'undefined', 'missing Wasm export: dynCall_viiiiii');
   assert(typeof wasmExports['dynCall_viiii'] != 'undefined', 'missing Wasm export: dynCall_viiii');
   assert(typeof wasmExports['dynCall_jji'] != 'undefined', 'missing Wasm export: dynCall_jji');
   assert(typeof wasmExports['dynCall_viiiii'] != 'undefined', 'missing Wasm export: dynCall_viiiii');
@@ -5970,9 +5970,9 @@ function assignWasmExports(wasmExports) {
   assert(typeof wasmExports['asyncify_stop_rewind'] != 'undefined', 'missing Wasm export: asyncify_stop_rewind');
   assert(typeof wasmExports['memory'] != 'undefined', 'missing Wasm export: memory');
   assert(typeof wasmExports['__indirect_function_table'] != 'undefined', 'missing Wasm export: __indirect_function_table');
+  _pydevices_timer_dispatch = Module['_pydevices_timer_dispatch'] = createExportWrapper('pydevices_timer_dispatch', 1);
   _free = Module['_free'] = createExportWrapper('free', 1);
   _malloc = Module['_malloc'] = createExportWrapper('malloc', 1);
-  _pydevices_timer_dispatch = Module['_pydevices_timer_dispatch'] = createExportWrapper('pydevices_timer_dispatch', 1);
   _mp_sched_keyboard_interrupt = Module['_mp_sched_keyboard_interrupt'] = createExportWrapper('mp_sched_keyboard_interrupt', 0);
   _mp_js_init = Module['_mp_js_init'] = createExportWrapper('mp_js_init', 2);
   _mp_js_deinit = Module['_mp_js_deinit'] = createExportWrapper('mp_js_deinit', 0);
@@ -6017,8 +6017,8 @@ function assignWasmExports(wasmExports) {
   dynCall_iiiiii = dynCalls['iiiiii'] = createExportWrapper('dynCall_iiiiii', 6);
   dynCall_di = dynCalls['di'] = createExportWrapper('dynCall_di', 2);
   dynCall_v = dynCalls['v'] = createExportWrapper('dynCall_v', 1);
-  dynCall_viiiiii = dynCalls['viiiiii'] = createExportWrapper('dynCall_viiiiii', 7);
   dynCall_vii = dynCalls['vii'] = createExportWrapper('dynCall_vii', 3);
+  dynCall_viiiiii = dynCalls['viiiiii'] = createExportWrapper('dynCall_viiiiii', 7);
   dynCall_viiii = dynCalls['viiii'] = createExportWrapper('dynCall_viiii', 5);
   dynCall_jji = dynCalls['jji'] = createExportWrapper('dynCall_jji', 3);
   dynCall_viiiii = dynCalls['viiiii'] = createExportWrapper('dynCall_viiiii', 6);
@@ -6209,10 +6209,32 @@ var wasmImports = {
   store_attr
 };
 
+function invoke_v(index) {
+  var sp = stackSave();
+  try {
+    dynCall_v(index);
+  } catch(e) {
+    stackRestore(sp);
+    if (!(e instanceof EmscriptenEH)) throw e;
+    _setThrew(1, 0);
+  }
+}
+
 function invoke_ii(index,a1) {
   var sp = stackSave();
   try {
     return dynCall_ii(index,a1);
+  } catch(e) {
+    stackRestore(sp);
+    if (!(e instanceof EmscriptenEH)) throw e;
+    _setThrew(1, 0);
+  }
+}
+
+function invoke_vii(index,a1,a2) {
+  var sp = stackSave();
+  try {
+    dynCall_vii(index,a1,a2);
   } catch(e) {
     stackRestore(sp);
     if (!(e instanceof EmscriptenEH)) throw e;
@@ -6246,17 +6268,6 @@ function invoke_iiiiii(index,a1,a2,a3,a4,a5) {
   var sp = stackSave();
   try {
     return dynCall_iiiiii(index,a1,a2,a3,a4,a5);
-  } catch(e) {
-    stackRestore(sp);
-    if (!(e instanceof EmscriptenEH)) throw e;
-    _setThrew(1, 0);
-  }
-}
-
-function invoke_v(index) {
-  var sp = stackSave();
-  try {
-    dynCall_v(index);
   } catch(e) {
     stackRestore(sp);
     if (!(e instanceof EmscriptenEH)) throw e;
@@ -6301,17 +6312,6 @@ function invoke_iiiii(index,a1,a2,a3,a4) {
   var sp = stackSave();
   try {
     return dynCall_iiiii(index,a1,a2,a3,a4);
-  } catch(e) {
-    stackRestore(sp);
-    if (!(e instanceof EmscriptenEH)) throw e;
-    _setThrew(1, 0);
-  }
-}
-
-function invoke_vii(index,a1,a2) {
-  var sp = stackSave();
-  try {
-    dynCall_vii(index,a1,a2);
   } catch(e) {
     stackRestore(sp);
     if (!(e instanceof EmscriptenEH)) throw e;
