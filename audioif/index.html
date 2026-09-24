@@ -44,6 +44,59 @@
     </div>
   </section>
   <!-- PYDEVICES-ABOVE-THE-FOLD: END -->
+  <main class="wrap" style="padding-bottom: 60px;">
+    <div class="section-head">
+      <h2>Install</h2>
+      <span class="hint">Built into firmware beside audiodsp</span>
+    </div>
+    <p class="prose" style="margin-top: 14px;">There is nothing to pip install. audioif is a C module you build into MicroPython 1.29 with audiodsp beside it: clone the two side by side and include both manifests in the manifest your build already uses.</p>
+    <div class="spec-block">
+      <pre><code>include("/path/to/audiodsp/manifest.py")
+include("/path/to/audioif/manifest.py")</code></pre>
+    </div>
+    <p class="prose" style="margin-top: 14px;">The drivers cover ESP32, unix and Windows; other ports skip the module, and the engine runs on one thread with no hardware. <a href="/micropython-pydevices/">micropython-pydevices</a> keeps this pair as its <code>audio.py</code> preset, with boards to build it for. <a href="https://github.com/PyDevices/audioif#building-it-into-a-firmware">Building it into a firmware</a> has the rest.</p>
+    <div class="section-head" style="margin-top: 36px;">
+      <h2>Try this first</h2>
+      <span class="hint">Ask the firmware, then play through it</span>
+    </div>
+    <div class="spec-block">
+      <pre><code>&gt;&gt;&gt; import audiopump
+&gt;&gt;&gt; audiopump.driver()
+'esp32'          # or 'pthread', 'win32', 'none'</code></pre>
+    </div>
+    <div class="spec-block">
+      <pre><code>import audiobusio, audiocore, board
+
+out = audiobusio.I2SOut(board.GPIO12, board.GPIO13, board.GPIO14)
+out.play(sample, loop=True)      # any audiocore sample</code></pre>
+    </div>
+    <p class="prose" style="margin-top: 14px;"><code>'none'</code> means the driver did not link into your build. Once it answers, <code>audiobusio.I2SOut</code> behaves like CircuitPython's: CircuitPython 10.3.0's own I2SOut example runs apart from the three pin names.</p>
+    <div class="section-head" style="margin-top: 36px;">
+      <h2>Read more</h2>
+      <span class="hint">Depth lives in the repository</span>
+    </div>
+    <div class="spec-block">
+      <div class="spec-grid">
+        <div class="spec-item tier-1">
+          <h4><a href="https://github.com/PyDevices/audioif/blob/main/docs/newcomers.md">Newcomer's guide</a></h4>
+          <p>Where the portable pump ends and the platform driver begins.</p>
+        </div>
+        <div class="spec-item tier-1">
+          <h4><a href="https://github.com/PyDevices/audioif#what-each-port-implements">What each port implements</a></h4>
+          <p>The ESP32 task and I2S peripheral, the unix and Windows threads, and what WebAssembly does instead.</p>
+        </div>
+        <div class="spec-item tier-1">
+          <h4><a href="/audiodsp/">audiodsp</a></h4>
+          <p>The engine this drives: every DSP node and the portable half of the pump.</p>
+        </div>
+        <div class="spec-item tier-1">
+          <h4><a href="https://github.com/PyDevices/audioif/releases/tag/v0.1.0">Release v0.1.0</a></h4>
+          <p>The first public release, proved on an ESP32-P4 and an ESP32-S3.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
   <div id="pydevices-site-footer"></div>
   <script src="/assets/chrome/site-chrome.js"></script>
 </body>

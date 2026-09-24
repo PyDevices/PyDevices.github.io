@@ -44,6 +44,60 @@
     </div>
   </section>
   <!-- PYDEVICES-ABOVE-THE-FOLD: END -->
+  <main class="wrap" style="padding-bottom: 60px;">
+    <div class="section-head">
+      <h2>Install</h2>
+      <span class="hint">A user C module for the ESP32-P4</span>
+    </div>
+    <p class="prose" style="margin-top: 14px;">Nothing is released yet; you build it into MicroPython 1.29. The esp32 port needs two small patches first, then one line in the manifest your P4 build already uses.</p>
+    <div class="spec-block">
+      <pre><code>/path/to/cameraif/apply_patches.sh --apply /path/to/micropython
+
+# in the manifest your P4 build already uses
+include("/path/to/cameraif/manifest.py")</code></pre>
+    </div>
+    <p class="prose" style="margin-top: 14px;">The <a href="https://github.com/PyDevices/cameraif#install">README</a> covers your own <code>FROZEN_MANIFEST</code> and other ports, where the module builds with its bodies stubbed.</p>
+    <div class="section-head" style="margin-top: 36px;">
+      <h2>Try this first</h2>
+      <span class="hint">Take a still</span>
+    </div>
+    <div class="spec-block">
+      <pre><code>import cameraif
+
+cam = cameraif.Camera(sda=7, scl=8, reset=21)
+print(cam.sensor())                 # ('OV5647', 22087)
+print(cam.size())                   # (800, 800, 1280000)
+
+open("still.jpg", "wb").write(cam.capture_jpeg(85))
+cam.deinit()</code></pre>
+    </div>
+    <p class="prose" style="margin-top: 14px;">The pins are the ones on the board cameraif was proved on; use your board's. The sensor is found by probing, so you never name it in code.</p>
+    <div class="section-head" style="margin-top: 36px;">
+      <h2>Read more</h2>
+      <span class="hint">Depth lives in the repository</span>
+    </div>
+    <div class="spec-block">
+      <div class="spec-grid">
+        <div class="spec-item tier-1">
+          <h4><a href="https://github.com/PyDevices/cameraif/blob/main/docs/newcomers.md">Newcomer's guide</a></h4>
+          <p>The sensor-to-framebuffer path, the firmware boundary, and who owns a capture.</p>
+        </div>
+        <div class="spec-item tier-1">
+          <h4><a href="https://github.com/PyDevices/cameraif#why-a-c-module">Why a C module</a></h4>
+          <p>The three things in the path Python cannot reach, and what each looks like when it goes wrong.</p>
+        </div>
+        <div class="spec-item tier-1">
+          <h4><a href="https://github.com/PyDevices/cameraif/tree/main/examples">Examples</a></h4>
+          <p>Stills and snapshots, MJPEG, a live preview on a display, pixel formats and sensor controls.</p>
+        </div>
+        <div class="spec-item tier-1">
+          <h4><a href="/displayif/">displayif</a></h4>
+          <p>The display side that a frame is scaled into.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
   <div id="pydevices-site-footer"></div>
   <script src="/assets/chrome/site-chrome.js"></script>
 </body>

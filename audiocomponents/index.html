@@ -44,6 +44,69 @@
     </div>
   </section>
   <!-- PYDEVICES-ABOVE-THE-FOLD: END -->
+  <main class="wrap" style="padding-bottom: 60px;">
+    <div class="section-head">
+      <h2>Install</h2>
+      <span class="hint">TestPyPI for CPython, the MIP index for boards</span>
+    </div>
+    <div class="spec-block">
+      <pre><code># CPython: both packages from TestPyPI; audiodsp comes along from PyPI
+pip install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ \
+  pydevices-audioinstruments pydevices-audioeffects</code></pre>
+    </div>
+    <div class="spec-block">
+      <pre><code># MicroPython, on a firmware that has audiodsp in it
+import mip
+mip.install("audioinstruments", index="https://PyDevices.github.io/mip")
+mip.install("audioeffects", index="https://PyDevices.github.io/mip")</code></pre>
+    </div>
+    <p class="prose" style="margin-top: 14px;">Both are pure Python. On a board they need a firmware built with <a href="/audiodsp/">audiodsp</a>, whose nodes they are made of.</p>
+    <div class="section-head" style="margin-top: 36px;">
+      <h2>Try this first</h2>
+      <span class="hint">A Minimoog through a tape delay</span>
+    </div>
+    <div class="spec-block">
+      <pre><code>import audioinstruments, audioeffects
+
+audioeffects.configure(48000)
+minimoog = audioinstruments.create("minimoog", sample_rate=48000)
+chain = audioeffects.create("TapeDelay", minimoog.output, sample_rate=48000)
+
+minimoog.note_on(60)
+# chain.output goes to a mixer voice, audiodev, or the next effect</code></pre>
+    </div>
+    <p class="prose" style="margin-top: 14px;"><code>audioinstruments.ALL</code> and <code>audioeffects.ALL</code> list every name <code>create()</code> takes. An effect's <code>output</code> is the same object for the life of the effect, so you can wire it once and every later knob move is heard. To play the same library in a DAW, install <a href="/mpvst/">MPVST</a>.</p>
+    <div class="section-head" style="margin-top: 36px;">
+      <h2>New in 0.3</h2>
+      <span class="hint">2026-09-23 and 24</span>
+    </div>
+    <p class="prose" style="margin-top: 14px;">0.3.0 made every effect's <code>output</code> stable, so a Mix macro turned up from zero is finally heard. 0.3.1 fixed the effects wheel, which had left out a subpackage and failed on import. The details are in the <a href="https://github.com/PyDevices/audiocomponents/blob/main/CHANGELOG.md">changelog</a>.</p>
+    <div class="section-head" style="margin-top: 36px;">
+      <h2>Read more</h2>
+      <span class="hint">Depth lives in the repository</span>
+    </div>
+    <div class="spec-block">
+      <div class="spec-grid">
+        <div class="spec-item tier-1">
+          <h4><a href="https://github.com/PyDevices/audiocomponents/blob/main/docs/newcomers.md">Newcomer's guide</a></h4>
+          <p>The repository map and how a component's audio flows from <code>create()</code> to your output.</p>
+        </div>
+        <div class="spec-item tier-1">
+          <h4><a href="https://github.com/PyDevices/audiocomponents/blob/main/docs/audio-component-api.md">Component API</a></h4>
+          <p>The runtime contract every instrument and effect satisfies.</p>
+        </div>
+        <div class="spec-item tier-1">
+          <h4><a href="https://github.com/PyDevices/audiocomponents/blob/main/docs/sequencing.md">Sequencing</a></h4>
+          <p>Playing a part on the audio clock, so a garbage collection never lands as a late note.</p>
+        </div>
+        <div class="spec-item tier-1">
+          <h4><a href="/audiodsp/">audiodsp</a></h4>
+          <p>The CircuitPython-compatible audio nodes underneath.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
   <div id="pydevices-site-footer"></div>
   <script src="/assets/chrome/site-chrome.js"></script>
 </body>

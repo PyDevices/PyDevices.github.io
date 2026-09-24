@@ -44,6 +44,68 @@
     </div>
   </section>
   <!-- PYDEVICES-ABOVE-THE-FOLD: END -->
+  <main class="wrap" style="padding-bottom: 60px;">
+    <div class="section-head">
+      <h2>Install</h2>
+      <span class="hint">PyPI for CPython, one manifest line for firmware</span>
+    </div>
+    <div class="spec-block">
+      <pre><code># CPython 3.11+ on Linux, Windows, macOS (Apple silicon) and Android
+pip install pydevices-audiodsp</code></pre>
+    </div>
+    <div class="spec-block">
+      <pre><code># MicroPython 1.29 firmware: clone it, fetch its two pinned dependencies...
+git clone https://github.com/PyDevices/audiodsp
+audiodsp/scripts/fetch_deps.sh
+
+# ...then add one line to the manifest your build already uses
+include("/path/to/audiodsp/manifest.py")</code></pre>
+    </div>
+    <p class="prose" style="margin-top: 14px;">The include brings in the C modules and <code>ulab</code>, so a firmware with audiodsp has <code>ulab.numpy</code> too. <code>audiomp3</code> is firmware-only. Your own <code>FROZEN_MANIFEST</code> and builds older than 1.29 are covered in the <a href="https://github.com/PyDevices/audiodsp#installation">README</a>.</p>
+    <div class="section-head" style="margin-top: 36px;">
+      <h2>Try this first</h2>
+      <span class="hint">One block from a CircuitPython synthesizer, in plain CPython</span>
+    </div>
+    <div class="spec-block">
+      <pre><code>import audiocore
+import synthio
+
+synth = synthio.Synthesizer(sample_rate=8_000)
+synth.press(69)                     # A above middle C
+status, block = audiocore.get_buffer(synth)</code></pre>
+    </div>
+    <p class="prose" style="margin-top: 14px;">The module names are CircuitPython's, so CircuitPython audio code imports unchanged. <code>block</code> is one rendered buffer; on a board, a mixer, the audio pump or <code>audiodev</code> pulls the same graph continuously. For instruments you can play, add <a href="/audiocomponents/">audiocomponents</a> on top.</p>
+    <div class="section-head" style="margin-top: 36px;">
+      <h2>New in 0.6.0</h2>
+      <span class="hint">2026-09-23</span>
+    </div>
+    <p class="prose" style="margin-top: 14px;">audiodsp is on production PyPI now, so <code>pip install</code> needs no index flags. A firmware build names <code>ulab</code> through audiodsp's own manifest, so one include line brings both. Everything else is in the <a href="https://github.com/PyDevices/audiodsp/blob/main/CHANGELOG.md">changelog</a>.</p>
+    <div class="section-head" style="margin-top: 36px;">
+      <h2>Read more</h2>
+      <span class="hint">Depth lives in the repository</span>
+    </div>
+    <div class="spec-block">
+      <div class="spec-grid">
+        <div class="spec-item tier-1">
+          <h4><a href="https://github.com/PyDevices/audiodsp/blob/main/docs/newcomers.md">Newcomer's guide</a></h4>
+          <p>The runtime map: which module lives where, and what runs on a board versus a desktop.</p>
+        </div>
+        <div class="spec-item tier-1">
+          <h4><a href="https://github.com/PyDevices/audiodsp/blob/main/docs/porting-plan.md">Architecture</a></h4>
+          <p>Module tiers, the shared C core, and how it is tested against CircuitPython.</p>
+        </div>
+        <div class="spec-item tier-1">
+          <h4><a href="https://github.com/PyDevices/audiodsp/blob/main/docs/correctness-standard.md">Correctness standard</a></h4>
+          <p>Why a setting written in Python goes through <code>float32</code>, and what the gates measure.</p>
+        </div>
+        <div class="spec-item tier-1">
+          <h4><a href="https://github.com/PyDevices/pydevices/blob/main/docs/audio.md">Audio in pydevices</a></h4>
+          <p>How <code>audiodev</code> plays an audiodsp graph on a board.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
   <div id="pydevices-site-footer"></div>
   <script src="/assets/chrome/site-chrome.js"></script>
 </body>

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- PYDEVICES-HEAD-TAGS: START -->
   <title>PyDevices - micropython-pydevices</title>
-  <meta name="description" content="The PyDevices patch queue for MicroPython, kept like a distribution keeps one: an ordered, provenance-tracked patch series over a pinned upstream release, with profiles for Windows networking/FFI, desktop, and WebAssembly, plus the wasm bridge usermod and variant.">
+  <meta name="description" content="The PyDevices patch queue for MicroPython, kept like a distribution keeps one: an ordered, provenance-tracked patch series over the pinned upstream release (v1.29.0), with presets, boards and variants that build PyDevices modules into firmware with upstream's own make.">
   <link rel="icon" type="image/svg+xml" href="/assets/img/logo.svg">
   <!-- PYDEVICES-HEAD-TAGS: END -->
   <link rel="stylesheet" href="/assets/chrome/site.css">
@@ -22,7 +22,7 @@
         <span class="eyebrow" style="color: var(--tier-5-steel);">micropython-pydevices</span>
       </div>
       <h1>micropython-pydevices — the versioned MicroPython runtime overlay.</h1>
-      <p><code>micropython-pydevices</code> The PyDevices patch queue for MicroPython, kept like a distribution keeps one: an ordered, provenance-tracked patch series over a pinned upstream release, with profiles for Windows networking/FFI, desktop, and WebAssembly, plus the wasm bridge usermod and variant.</p>
+      <p><code>micropython-pydevices</code> The PyDevices patch queue for MicroPython, kept like a distribution keeps one: an ordered, provenance-tracked patch series over the pinned upstream release (v1.29.0), with presets, boards and variants that build PyDevices modules into firmware with upstream's own make.</p>
       <div class="cta">
       <a class="btn primary" style="background: var(--github-ink); color: var(--on-accent); border-color: var(--github-ink);" href="https://github.com/PyDevices/micropython-pydevices">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.9a3.4 3.4 0 0 0-1-2.6c3-.3 6-1.5 6-6.5a5 5 0 0 0-1.4-3.5 4.6 4.6 0 0 0-.1-3.5s-1.1-.3-3.5 1.3a12 12 0 0 0-6 0C6.6 1.7 5.5 2 5.5 2a4.6 4.6 0 0 0-.1 3.5A5 5 0 0 0 4 9c0 5 3 6.2 6 6.5a3.4 3.4 0 0 0-1 2.6V22"/></svg>
@@ -44,6 +44,53 @@
     </div>
   </section>
   <!-- PYDEVICES-ABOVE-THE-FOLD: END -->
+  <main class="wrap" style="padding-bottom: 60px;">
+    <div class="section-head">
+      <h2>Install</h2>
+      <span class="hint">Prepare a MicroPython checkout once</span>
+    </div>
+    <p class="prose" style="margin-top: 14px;">Clone this repository beside a MicroPython clone and the PyDevices modules you want. One script checks out the pinned release (v1.29.0) and applies the whole patch series as a single local commit.</p>
+    <div class="spec-block">
+      <pre><code>git clone https://github.com/PyDevices/micropython-pydevices
+git clone https://github.com/micropython/micropython
+micropython-pydevices/tools/prepare-micropython.sh</code></pre>
+    </div>
+    <div class="section-head" style="margin-top: 36px;">
+      <h2>Try this first</h2>
+      <span class="hint">Build with a preset, using upstream's own make</span>
+    </div>
+    <div class="spec-block">
+      <pre><code>cd micropython/ports/unix
+make VARIANT_DIR=../../../micropython-pydevices/variants/unix/pydevices \
+     FROZEN_MANIFEST=../../../micropython-pydevices/manifests/lvgl.py</code></pre>
+    </div>
+    <p class="prose" style="margin-top: 14px;">A preset is a short list of the sibling repositories a build carries: <code>lvgl.py</code> is displayif with lvgl-micropython, <code>audio.py</code> is audiodsp with audioif, <code>usb.py</code> is usbif. The esp32 boards take <code>BOARD_DIR=</code> the same way. <a href="https://github.com/PyDevices/micropython-pydevices/blob/main/manifests/README.md">The presets</a> lists them all.</p>
+    <div class="section-head" style="margin-top: 36px;">
+      <h2>Read more</h2>
+      <span class="hint">Depth lives in the repository</span>
+    </div>
+    <div class="spec-block">
+      <div class="spec-grid">
+        <div class="spec-item tier-5">
+          <h4><a href="https://github.com/PyDevices/micropython-pydevices/blob/main/docs/newcomers.md">Newcomer's guide</a></h4>
+          <p>The overlay model: patches, then a manifest, a board or a variant, then upstream's build.</p>
+        </div>
+        <div class="spec-item tier-5">
+          <h4><a href="https://github.com/PyDevices/micropython-pydevices/tree/main/patches">Patch series</a></h4>
+          <p>Every downstream patch, each justified in its own header.</p>
+        </div>
+        <div class="spec-item tier-5">
+          <h4><a href="https://github.com/PyDevices/micropython-pydevices#layout">Boards and variants</a></h4>
+          <p>The out-of-tree esp32 boards and the unix, Windows and WebAssembly variants.</p>
+        </div>
+        <div class="spec-item tier-5">
+          <h4><a href="/mpftp/">mpftp firmware builds</a></h4>
+          <p>Pick a preset and extra modules from the editor or the CLI instead of typing paths.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
   <div id="pydevices-site-footer"></div>
   <script src="/assets/chrome/site-chrome.js"></script>
 </body>

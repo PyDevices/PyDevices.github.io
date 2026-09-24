@@ -44,6 +44,57 @@
     </div>
   </section>
   <!-- PYDEVICES-ABOVE-THE-FOLD: END -->
+  <main class="wrap" style="padding-bottom: 60px;">
+    <div class="section-head">
+      <h2>Install</h2>
+      <span class="hint">Download it; nothing has to be built</span>
+    </div>
+    <p class="prose" style="margin-top: 14px;">Get the archive for your platform from the <a href="https://github.com/PyDevices/mpvst/releases/latest">latest release</a>; each comes with a <code>.sha256</code> to check it against.</p>
+    <div class="spec-block">
+      <pre><code># Windows: installs for you alone, so there is no administrator prompt
+MPVST-0.3.0-windows-x86_64-setup.exe
+
+# Linux: copies the bundle to ~/.vst3
+tar xf MPVST-0.3.0-linux-x86_64.tar.gz
+./install.sh               # in the unpacked folder</code></pre>
+    </div>
+    <p class="prose" style="margin-top: 14px;">Then rescan plug-ins in your DAW, and make it a real rescan, not a restart: hosts cache what they found last time. The installers are not code signed, so Windows SmartScreen warns the first time. REAPER is the only DAW tested.</p>
+    <div class="section-head" style="margin-top: 36px;">
+      <h2>Try this first</h2>
+      <span class="hint">Find an instrument by its own name</span>
+    </div>
+    <p class="prose" style="margin-top: 14px;">Search your FX browser for <strong>TR-808</strong>, <strong>Minimoog</strong> or <strong>Tape Delay</strong> and drop it on a track. Every instrument and effect in <a href="/audiocomponents/">audiocomponents</a> shows up under its own name and category. Its editor has a patch selector, a bypass switch, a status light and a slider per macro. The two <strong>MPVST Script Host</strong> entries run a script you point them at, and stay silent until you do.</p>
+    <div class="section-head" style="margin-top: 36px;">
+      <h2>New in 0.3.0</h2>
+      <span class="hint">2026-09-24</span>
+    </div>
+    <p class="prose" style="margin-top: 14px;">A composer project renders to audio without a DAW, and a script's own macro defaults survive a project reload. The <a href="https://github.com/PyDevices/mpvst/blob/main/examples/reaper-composer/mpvst_composer/mpvst_composer_guide.md">composer guide</a> shows how to write a song as Python and render it, or turn it into a REAPER project.</p>
+    <div class="section-head" style="margin-top: 36px;">
+      <h2>Read more</h2>
+      <span class="hint">Depth lives in the repository</span>
+    </div>
+    <div class="spec-block">
+      <div class="spec-grid">
+        <div class="spec-item tier-5">
+          <h4><a href="https://github.com/PyDevices/mpvst/blob/main/docs/getting-started.md">Getting started</a></h4>
+          <p>Installing, finding your first instrument, and the editor.</p>
+        </div>
+        <div class="spec-item tier-5">
+          <h4><a href="https://github.com/PyDevices/mpvst/blob/main/docs/writing-scripts.md">Writing your own</a></h4>
+          <p>What a script declares, and how macros and patches reach it.</p>
+        </div>
+        <div class="spec-item tier-5">
+          <h4><a href="https://github.com/PyDevices/mpvst/blob/main/docs/rendering.md">Hearing what you wrote</a></h4>
+          <p>The four ways to turn a project into audio, and which to reach for.</p>
+        </div>
+        <div class="spec-item tier-5">
+          <h4><a href="https://github.com/PyDevices/mpvst/blob/main/docs/newcomers.md">Newcomer's guide</a></h4>
+          <p>The plug-in and sidecar execution path, for when you work on MPVST itself.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
   <div id="pydevices-site-footer"></div>
   <script src="/assets/chrome/site-chrome.js"></script>
 </body>
