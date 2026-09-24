@@ -35,7 +35,7 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.9a3.4 3.4 0 0 0-1-2.6c3-.3 6-1.5 6-6.5a5 5 0 0 0-1.4-3.5 4.6 4.6 0 0 0-.1-3.5s-1.1-.3-3.5 1.3a12 12 0 0 0-6 0C6.6 1.7 5.5 2 5.5 2a4.6 4.6 0 0 0-.1 3.5A5 5 0 0 0 4 9c0 5 3 6.2 6 6.5a3.4 3.4 0 0 0-1 2.6V22"/></svg>
         GitHub Repo
       </a>
-      <a class="btn" style="border-color: var(--tier-3-blue); color: var(--tier-3-blue);" href="https://pypi.org/project/pydevices-lvgl/">PyPI Package</a>
+      <a class="btn" style="border-color: var(--tier-3-blue); color: var(--tier-3-blue);" href="https://test.pypi.org/project/pydevices-lvgl/">TestPyPI</a>
       <a class="btn" style="border-color: var(--tier-3-blue); color: var(--tier-3-blue);" href="https://pydevices.github.io/pydevices-examples/gallery/">Gallery</a>
       <a class="btn" style="border-color: var(--tier-3-blue); color: var(--tier-3-blue);" href="https://pydevices.github.io/pydevices/">pydevices Core</a>
       </div>
@@ -69,6 +69,35 @@ await micropip.install(
     "pydevices-lvgl",
     index_urls=["https://test.pypi.org/simple/", "https://pypi.org/simple/"],
 )</code></pre>
+    </div>
+    <div class="section-head" style="margin-top: 36px;">
+      <h2>New in 9.5.45</h2>
+      <span class="hint">2026-09-23</span>
+    </div>
+    <p class="prose" style="margin-top: 14px;">The CPython wheels decode JPEG: LVGL's TJPGD decoder is compiled in, started with <code>lv.tjpgd_init()</code>. Wheels now start at Python 3.11 and cover 3.11 to 3.14. The <a href="https://github.com/PyDevices/lvgl-python/releases/tag/v9.5.45">release</a> lists every wheel.</p>
+    <div class="section-head" style="margin-top: 36px;">
+      <h2>Read more</h2>
+      <span class="hint">Depth lives in the repository</span>
+    </div>
+    <div class="spec-block">
+      <div class="spec-grid">
+        <div class="spec-item tier-3">
+          <h4><a href="https://github.com/PyDevices/lvgl-python/blob/main/docs/newcomers.md">Newcomer's guide</a></h4>
+          <p>The repository's architecture and where a change belongs.</p>
+        </div>
+        <div class="spec-item tier-3">
+          <h4><a href="https://github.com/PyDevices/lvgl-python/blob/main/docs/building.md">Building from source</a></h4>
+          <p>The wheel build, for a platform the published wheels do not cover.</p>
+        </div>
+        <div class="spec-item tier-3">
+          <h4><a href="https://pydevices.github.io/pydevices-examples/gallery/">Gallery</a></h4>
+          <p>LVGL examples running in your browser on this same binding.</p>
+        </div>
+        <div class="spec-item tier-3">
+          <h4><a href="/lvgl-bindings/">lvgl-bindings</a></h4>
+          <p>Where the binding is generated.</p>
+        </div>
+      </div>
     </div>
   </main>
 

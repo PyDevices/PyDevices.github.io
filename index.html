@@ -87,14 +87,14 @@
           <span class="tag tag-tier-1">C Audio Usermod</span>
         </div>
         <h3>audiodsp</h3>
-        <p>CircuitPython's audio system (audiocore, synthio, audiomixer, effects, audiomp3) ported to MicroPython and CPython, extending CircuitPython along the way: dynamics, routing, convolution, and offline rendering. Ships as pydevices-audiodsp; the instrument and effect libraries built on it ship from audiocomponents.</p>
+        <p>CircuitPython's audio system (audiocore, synthio, audiomixer, effects, audiomp3) ported to MicroPython and CPython, extending CircuitPython along the way: dynamics, routing, convolution, and offline rendering. On PyPI as pydevices-audiodsp; the instrument and effect libraries built on it ship from audiocomponents.</p>
         <span class="go">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
 
       <a class="card card-tier-1" href="/audioif/">
         <div class="card-top">
           <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10v4M8 7v10M12 4v16M16 7v10M20 10v4"/></svg></span>
-          <span class="tag tag-tier-1">audioif</span>
+          <span class="tag tag-tier-1">C Audio Driver</span>
         </div>
         <h3>audioif</h3>
         <p>The part of the audio stack that knows what a thread is, where the clock comes from and where the sound goes: a pinned task and the I2S peripheral on ESP32, a native thread on unix and Windows, and a CircuitPython-shaped audiobusio.I2SOut over all of it. With it in a firmware, a graph keeps an exact clock while a screen redraws and a USB stack runs, and audiodev plays through it without being asked. The portable half of the pump, and every DSP node, is audiodsp.</p>
@@ -103,18 +103,18 @@
 
       <a class="card card-tier-1" href="/audiocomponents/">
         <div class="card-top">
-          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/></svg></span>
-          <span class="tag tag-tier-1">audiocomponents</span>
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></svg></span>
+          <span class="tag tag-tier-1">Pure-Python Audio</span>
         </div>
         <h3>audiocomponents</h3>
-        <p>The instrument and effect libraries for audiodsp: audioinstruments (53 modelled classics, from the TR-808 to the DX7) and audioeffects (46 effect classes and racks), pure Python on MicroPython and CPython. Ships as pydevices-audioinstruments and pydevices-audioeffects, each a standalone distribution and a MIP package.</p>
+        <p>The instrument and effect libraries for audiodsp: audioinstruments (55 modelled classics, from the TR-808 to the DX7) and audioeffects (45 effect classes and racks), pure Python on MicroPython and CPython. Ships as pydevices-audioinstruments and pydevices-audioeffects, each a standalone distribution and a MIP package.</p>
         <span class="go">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
 
       <a class="card card-tier-1" href="/usbif/">
         <div class="card-top">
-          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/></svg></span>
-          <span class="tag tag-tier-1">usbif</span>
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v14"/><path d="M9 5l3-3 3 3"/><path d="M12 12l-5-3V7M12 14l5-3V9"/><circle cx="12" cy="19" r="3"/></svg></span>
+          <span class="tag tag-tier-1">C USB Usermod</span>
         </div>
         <h3>usbif</h3>
         <p>A board a computer sees as a sound card, a MIDI instrument, a keyboard, a drive or a webcam — and, on the same board, a USB host that a keyboard, thumb drive, MIDI controller or camera plugs into. One of the PyDevices *if modules, with displayif, audioif and cameraif: a native C module with a thin, stable Python surface that runs unchanged on a workstation.</p>
@@ -123,8 +123,8 @@
 
       <a class="card card-tier-1" href="/cameraif/">
         <div class="card-top">
-          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/></svg></span>
-          <span class="tag tag-tier-1">cameraif</span>
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3z"/><circle cx="12" cy="13" r="3"/></svg></span>
+          <span class="tag tag-tier-1">C Camera Usermod</span>
         </div>
         <h3>cameraif</h3>
         <p>Point the board at something and read the frame. The sensor is found by probing rather than named in code, so a different camera is a build-time option away, not a rewrite. Hardware JPEG, zero-copy frames and hardware scaling straight into a display's scanout buffer, with every rate in its README measured on the board it names.</p>
@@ -265,7 +265,7 @@
           <span class="tag tag-tier-5">IDE Extension</span>
         </div>
         <h3>mpftp</h3>
-        <p>Connect MicroPython and CircuitPython boards from VS Code, Cursor, or the CLI: dual-pane file transfer, in-editor REPL, firmware flash, mip/circup, plus RPC, MCP, and an optional browser PWA.</p>
+        <p>Connect MicroPython and CircuitPython boards from VS Code, Cursor, or the CLI, over USB or Wi-Fi: dual-pane file transfer, in-editor REPL, firmware builds and flashing, mip/circup, plus RPC, MCP, and an optional browser PWA.</p>
         <span class="go">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
 
@@ -281,18 +281,18 @@
 
       <a class="card card-tier-5" href="/micropython-pydevices/">
         <div class="card-top">
-          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/></svg></span>
-          <span class="tag tag-tier-5">micropython-pydevices</span>
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg></span>
+          <span class="tag tag-tier-5">Runtime Overlay</span>
         </div>
         <h3>micropython-pydevices</h3>
-        <p>The PyDevices patch queue for MicroPython, kept like a distribution keeps one: an ordered, provenance-tracked patch series over a pinned upstream release, with profiles for Windows networking/FFI, desktop, and WebAssembly, plus the wasm bridge usermod and variant.</p>
+        <p>The PyDevices patch queue for MicroPython, kept like a distribution keeps one: an ordered, provenance-tracked patch series over the pinned upstream release (v1.29.0), with presets, boards and variants that build PyDevices modules into firmware with upstream's own make.</p>
         <span class="go">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
 
       <a class="card card-tier-5" href="/workbench/">
         <div class="card-top">
-          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/></svg></span>
-          <span class="tag tag-tier-5">workbench</span>
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M10 10l-2 2 2 2M14 10l2 2-2 2"/></svg></span>
+          <span class="tag tag-tier-5">Browser IDE</span>
         </div>
         <h3>workbench</h3>
         <p>A ViperIDE fork with a built-in WebAssembly MicroPython simulator: edit, run, and debug PyDevices code against a simulated board entirely in the browser, no hardware required.</p>
@@ -301,11 +301,11 @@
 
       <a class="card card-tier-5" href="/mpvst/">
         <div class="card-top">
-          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/></svg></span>
-          <span class="tag tag-tier-5">mpvst</span>
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></span>
+          <span class="tag tag-tier-5">VST3 Plug-in</span>
         </div>
         <h3>mpvst</h3>
-        <p>A hardware-accurate MicroPython audio engine -- core, effects, and instruments -- packaged as a VST3 sidecar plug-in for building and auditioning racks inside a DAW.</p>
+        <p>Programmable VST3 instruments and effects: every audiocomponents instrument and effect as a named plug-in, each instance running its Python in a sidecar process. Installers for Windows and Linux; nothing has to be built.</p>
         <span class="go">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
     </div>

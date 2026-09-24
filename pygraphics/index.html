@@ -108,6 +108,11 @@ pip install -i https://test.pypi.org/simple/ \
 import mip
 mip.install("pygraphics", index="https://PyDevices.github.io/mip")</code></pre>
     </div>
+    <div class="spec-block">
+      <pre><code># Native C module in your MicroPython 1.29 firmware: one manifest line
+include("/path/to/pygraphics/manifest.py")</code></pre>
+    </div>
+    <p class="prose" style="margin-top: 14px;">Every build reports which pygraphics it is: <code>pygraphics.__version__</code> and <code>pygraphics.__revision__</code>, new in 0.0.39, are stamped at build time on MicroPython, CircuitPython and the CPython wheel. <code>pygraphics.implementation()</code> tells you whether the native module or the pure-Python package is running. The <a href="https://github.com/PyDevices/pygraphics/blob/main/docs/newcomers.md">newcomer's guide</a> maps the rest.</p>
 
     <!-- Code Playground & API Excerpt Component -->
     <div class="section-head" style="margin-top: 36px;">

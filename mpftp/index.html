@@ -3,7 +3,7 @@
 <head>
   <!-- PYDEVICES-HEAD-TAGS: START -->
   <title>PyDevices - mpftp</title>
-  <meta name="description" content="Connect MicroPython and CircuitPython boards from VS Code, Cursor, or the CLI: dual-pane file transfer, in-editor REPL, firmware flash, mip/circup, plus RPC, MCP, and an optional browser PWA.">
+  <meta name="description" content="Connect MicroPython and CircuitPython boards from VS Code, Cursor, or the CLI, over USB or Wi-Fi: dual-pane file transfer, in-editor REPL, firmware builds and flashing, mip/circup, plus RPC, MCP, and an optional browser PWA.">
   <link rel="icon" type="image/svg+xml" href="/assets/img/logo.svg">
   <!-- PYDEVICES-HEAD-TAGS: END -->
   <meta charset="utf-8">
@@ -29,7 +29,7 @@
         <span class="eyebrow" style="color: var(--tier-5-steel);">mpftp</span>
       </div>
       <h1>mpftp — board tools for the editor, CLI, and agents.</h1>
-      <p><code>mpftp</code> Connect MicroPython and CircuitPython boards from VS Code, Cursor, or the CLI: dual-pane file transfer, in-editor REPL, firmware flash, mip/circup, plus RPC, MCP, and an optional browser PWA.</p>
+      <p><code>mpftp</code> Connect MicroPython and CircuitPython boards from VS Code, Cursor, or the CLI, over USB or Wi-Fi: dual-pane file transfer, in-editor REPL, firmware builds and flashing, mip/circup, plus RPC, MCP, and an optional browser PWA.</p>
       <div class="cta">
       <a class="btn primary" style="background: var(--github-ink); color: var(--on-accent); border-color: var(--github-ink);" href="https://github.com/PyDevices/mpftp">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.9a3.4 3.4 0 0 0-1-2.6c3-.3 6-1.5 6-6.5a5 5 0 0 0-1.4-3.5 4.6 4.6 0 0 0-.1-3.5s-1.1-.3-3.5 1.3a12 12 0 0 0-6 0C6.6 1.7 5.5 2 5.5 2a4.6 4.6 0 0 0-.1 3.5A5 5 0 0 0 4 9c0 5 3 6.2 6 6.5a3.4 3.4 0 0 0-1 2.6V22"/></svg>
@@ -37,7 +37,7 @@
       </a>
       <a class="btn" style="border-color: var(--tier-5-steel); color: var(--tier-5-steel);" href="https://github.com/PyDevices/mpftp/blob/main/docs/user-guide.md">User Guide</a>
       <a class="btn" style="border-color: var(--tier-5-steel); color: var(--tier-5-steel);" href="https://github.com/PyDevices/mpftp/blob/main/docs/agent-guide.md">Agent guide</a>
-      <a class="btn" style="border-color: var(--tier-5-steel); color: var(--tier-5-steel);" href="https://github.com/PyDevices/mpftp/tree/main/integrations">Integrations</a>
+      <a class="btn" style="border-color: var(--tier-5-steel); color: var(--tier-5-steel);" href="https://github.com/PyDevices/mpftp/releases/latest">Releases</a>
       </div>
     </div>
     <div class="hero-canvas-wrap" data-hero-canvas="hero_canvas" data-hero-app="ftp_scope" data-hero-deps="pydevices,pydevices-pygraphics,pydevices-palettes" data-hero-app-url="https://PyDevices.github.io/assets/apps/ftp_scope.py">
@@ -110,7 +110,41 @@ $ mpftp firmware flash
         </div>
         <div class="spec-item tier-5">
           <h4>Optional browser PWA</h4>
-          <p>No editor required: <code>pip install -i https://test.pypi.org/simple/ pydevices-mpftp && python -m mpftp</code> opens file transfer and REPL in a local browser tab. (In the published 0.0.3 package the PWA is not yet included — run from a clone until the next release.)</p>
+          <p>No editor required: <code>pip install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ pydevices-mpftp</code>, then <code>python -m mpftp</code> opens file transfer and the REPL in a local browser tab.</p>
+        </div>
+      </div>
+    </div>
+    <div class="section-head" style="margin-top: 36px;">
+      <h2>Install</h2>
+      <span class="hint">A .vsix for the editor, a wheel for the CLI</span>
+    </div>
+    <p class="prose" style="margin-top: 14px;">mpftp is not on the VS Code Marketplace or Open VSX yet. Download <code>mpftp-*.vsix</code> from the <a href="https://github.com/PyDevices/mpftp/releases/latest">latest release</a> and run <strong>Extensions: Install from VSIX…</strong> in VS Code, Cursor or VSCodium. You also need Python with <code>mpremote</code>, and <code>circup</code> for CircuitPython packages.</p>
+    <div class="section-head" style="margin-top: 36px;">
+      <h2>New in 0.0.6 and 0.0.7</h2>
+      <span class="hint">2026-09-24</span>
+    </div>
+    <p class="prose" style="margin-top: 14px;">Wi-Fi is a first-class connection. Over USB, <strong>Enable Wi-Fi access</strong> shows you the <code>boot.py</code> change, then the board appears by name in the Wi-Fi list and the REPL and file transfer run over WebREPL. On the CLI, every board command takes <code>-d ws://HOST</code>. Firmware builds now take a selection of modules, or a preset from <a href="/micropython-pydevices/">micropython-pydevices</a>, instead of every sibling folder.</p>
+    <div class="section-head" style="margin-top: 36px;">
+      <h2>Read more</h2>
+      <span class="hint">Depth lives in the repository</span>
+    </div>
+    <div class="spec-block">
+      <div class="spec-grid">
+        <div class="spec-item tier-5">
+          <h4><a href="https://github.com/PyDevices/mpftp/blob/main/docs/newcomers.md">Newcomer's guide</a></h4>
+          <p>Entry points, who owns the board session, and the repository map.</p>
+        </div>
+        <div class="spec-item tier-5">
+          <h4><a href="https://github.com/PyDevices/mpftp/blob/main/docs/plans/wifi-webrepl.md">mpftp over Wi-Fi</a></h4>
+          <p>Setting a board up for WebREPL, and what changes when you connect without a cable.</p>
+        </div>
+        <div class="spec-item tier-5">
+          <h4><a href="https://github.com/PyDevices/mpftp/blob/main/docs/firmware-modules.md">Firmware modules</a></h4>
+          <p>Picking modules and presets for a build.</p>
+        </div>
+        <div class="spec-item tier-5">
+          <h4><a href="https://github.com/PyDevices/mpftp/tree/main/integrations">Integrations</a></h4>
+          <p>The MCP server, a Claude Code plugin and a Codex CLI snippet.</p>
         </div>
       </div>
     </div>

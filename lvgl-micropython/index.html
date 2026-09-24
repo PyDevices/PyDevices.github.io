@@ -35,6 +35,7 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.9a3.4 3.4 0 0 0-1-2.6c3-.3 6-1.5 6-6.5a5 5 0 0 0-1.4-3.5 4.6 4.6 0 0 0-.1-3.5s-1.1-.3-3.5 1.3a12 12 0 0 0-6 0C6.6 1.7 5.5 2 5.5 2a4.6 4.6 0 0 0-.1 3.5A5 5 0 0 0 4 9c0 5 3 6.2 6 6.5a3.4 3.4 0 0 0-1 2.6V22"/></svg>
         GitHub Repo
       </a>
+      <a class="btn" style="border-color: var(--tier-3-blue); color: var(--tier-3-blue);" href="https://github.com/PyDevices/lvgl-micropython/blob/main/docs/newcomers.md">Newcomer's guide</a>
       <a class="btn" style="border-color: var(--tier-3-blue); color: var(--tier-3-blue);" href="https://pydevices.github.io/lvgl-bindings/">lvgl-bindings</a>
       <a class="btn" style="border-color: var(--tier-3-blue); color: var(--tier-3-blue);" href="https://pydevices.github.io/pydevices/">pydevices Core</a>
       </div>
@@ -53,17 +54,56 @@
 
   <main class="wrap" style="padding-bottom: 60px;">
     <div class="section-head">
-      <h2>Build Firmware Instructions</h2>
-      <span class="hint">Compile as a MicroPython User C Module</span>
+      <h2>Build firmware with LVGL</h2>
+      <span class="hint">MicroPython 1.29, one manifest line</span>
     </div>
-
     <div class="spec-block">
-      <pre><code># Clone lvgl-micropython:
-git clone https://github.com/PyDevices/lvgl-micropython.git
+      <pre><code>git clone https://github.com/PyDevices/lvgl-micropython
+git clone https://github.com/PyDevices/lvgl-bindings
+git -C lvgl-bindings checkout "$(cat lvgl-micropython/LVGL_BINDINGS_COMMIT)"
+git -C lvgl-bindings submodule update --init lvgl
 
-# Build MicroPython firmware with LVGL enabled:
-cd micropython/ports/esp32
-make BOARD=ESP32_GENERIC_S3 USER_C_MODULES=../../../lvgl-micropython</code></pre>
+# then add one line to the manifest your build already uses
+include("/path/to/lvgl-micropython/manifest.py")</code></pre>
+    </div>
+    <p class="prose" style="margin-top: 14px;">The binding is generated and committed in lvgl-bindings, so there is nothing to generate; the build stops if that checkout does not match the pin. The include brings in the <code>lvgl</code> module and freezes <code>display_driver</code> and <code>fs_driver</code>. Builds older than 1.29 and your own <code>FROZEN_MANIFEST</code> are in the <a href="https://github.com/PyDevices/lvgl-micropython#build">README</a>; <a href="/micropython-pydevices/">micropython-pydevices</a> has an <code>lvgl.py</code> preset that adds displayif.</p>
+    <div class="section-head" style="margin-top: 36px;">
+      <h2>Try this first</h2>
+      <span class="hint">A button on a board that has a board_config</span>
+    </div>
+    <div class="spec-block">
+      <pre><code>import display_driver  # sets up the display, input and a timer
+import lvgl as lv
+
+scr = lv.screen_active()
+btn = lv.button(scr)
+btn.center()
+label = lv.label(btn)
+label.set_text("Hello MicroPython LVGL!")</code></pre>
+    </div>
+    <div class="section-head" style="margin-top: 36px;">
+      <h2>Read more</h2>
+      <span class="hint">Depth lives in the repository</span>
+    </div>
+    <div class="spec-block">
+      <div class="spec-grid">
+        <div class="spec-item tier-3">
+          <h4><a href="https://github.com/PyDevices/lvgl-micropython/blob/main/docs/newcomers.md">Newcomer's guide</a></h4>
+          <p>The generated-bindings boundary, the runtime entry point, and the MicroPython integration map.</p>
+        </div>
+        <div class="spec-item tier-3">
+          <h4><a href="/lvgl-bindings/">lvgl-bindings</a></h4>
+          <p>Where the binding is generated, once for all three interpreters.</p>
+        </div>
+        <div class="spec-item tier-3">
+          <h4><a href="/displayif/">displayif</a></h4>
+          <p>The bus drivers LVGL draws through on real panels.</p>
+        </div>
+        <div class="spec-item tier-3">
+          <h4><a href="/pydevices/">pydevices</a></h4>
+          <p>The <code>board_config</code> that <code>display_driver</code> reads.</p>
+        </div>
+      </div>
     </div>
   </main>
 

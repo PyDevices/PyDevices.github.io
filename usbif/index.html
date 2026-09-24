@@ -18,7 +18,7 @@
   <section class="hero wrap has-hero-canvas">
     <div class="hero-main">
       <div class="hero-lead">
-        <div class="logo-badge product-mark" style="background: linear-gradient(135deg, var(--tier-1-amber), var(--tier-1-deep)); color: var(--on-accent);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/></svg></div>
+        <div class="logo-badge product-mark" style="background: linear-gradient(135deg, var(--tier-1-amber), var(--tier-1-deep)); color: var(--on-accent);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v14"/><path d="M9 5l3-3 3 3"/><path d="M12 12l-5-3V7M12 14l5-3V9"/><circle cx="12" cy="19" r="3"/></svg></div>
         <span class="eyebrow" style="color: var(--tier-1-amber);">usbif</span>
       </div>
       <h1>usbif — native USB for MicroPython: device, host, and both at once.</h1>
@@ -31,7 +31,6 @@
       <a class="btn" style="border-color: var(--tier-1-amber); color: var(--tier-1-amber);" href="https://github.com/PyDevices/usbif/blob/main/lib/usbif/README.md">Portable API</a>
       <a class="btn" style="border-color: var(--tier-1-amber); color: var(--tier-1-amber);" href="https://github.com/PyDevices/usbif/tree/main/examples">Examples</a>
       <a class="btn" style="border-color: var(--tier-1-amber); color: var(--tier-1-amber);" href="https://pydevices.github.io/audiodsp/">audiodsp</a>
-      <a class="btn" style="border-color: var(--tier-1-amber); color: var(--tier-1-amber);" href="https://pydevices.github.io/displayif/">displayif</a>
       </div>
     </div>
     <div class="hero-canvas-wrap" data-hero-canvas="hero_canvas" data-hero-app="encoder" data-hero-deps="pydevices,pydevices-lvgl" data-hero-app-url="https://PyDevices.github.io/assets/apps/encoder.py">
@@ -45,6 +44,58 @@
     </div>
   </section>
   <!-- PYDEVICES-ABOVE-THE-FOLD: END -->
+  <main class="wrap" style="padding-bottom: 60px;">
+    <div class="section-head">
+      <h2>Install</h2>
+      <span class="hint">Early development: build it into firmware yourself</span>
+    </div>
+    <p class="prose" style="margin-top: 14px;">Nothing is released yet. usbif runs on the ESP32-S2, S3 and P4, the parts with a USB OTG controller. Patch your MicroPython 1.29 tree, point your board at the extension header, then add one line to your board's manifest.</p>
+    <div class="spec-block">
+      <pre><code>/path/to/usbif/apply_patches.sh --apply /path/to/micropython
+
+# in the manifest your board build already uses
+include("/path/to/usbif/manifest.py")</code></pre>
+    </div>
+    <p class="prose" style="margin-top: 14px;"><a href="https://github.com/PyDevices/usbif#building">Building</a> has the <code>mpconfigboard.h</code> line and the older-than-1.29 route. The esp32 boards in <a href="/micropython-pydevices/">micropython-pydevices</a> already carry the header line.</p>
+    <div class="section-head" style="margin-top: 36px;">
+      <h2>Try this first</h2>
+      <span class="hint">Choose what the computer sees, from Python</span>
+    </div>
+    <div class="spec-block">
+      <pre><code>import usbif.auto
+
+dev = usbif.auto.device()
+dev.functions("cdc", "uac")      # a console and a sound card
+dev.functions("midi")            # a bare MIDI instrument
+dev.functions()                  # -&gt; frozenset({'midi'})</code></pre>
+    </div>
+    <p class="prose" style="margin-top: 14px;">Each call re-enumerates, so the host sees a new device. <code>examples/costume_selftest.py</code> lists which combinations the board you run it on can wear; an S2 or S3 has fewer endpoints than a P4.</p>
+    <div class="section-head" style="margin-top: 36px;">
+      <h2>Read more</h2>
+      <span class="hint">Depth lives in the repository</span>
+    </div>
+    <div class="spec-block">
+      <div class="spec-grid">
+        <div class="spec-item tier-1">
+          <h4><a href="https://github.com/PyDevices/usbif/blob/main/docs/newcomers.md">Newcomer's guide</a></h4>
+          <p>USB identity, host sessions, event delivery, and the firmware boundary.</p>
+        </div>
+        <div class="spec-item tier-1">
+          <h4><a href="https://github.com/PyDevices/usbif/blob/main/lib/usbif/README.md">Portable API</a></h4>
+          <p>The Python surface that also runs on a workstation, over the OS's own USB services.</p>
+        </div>
+        <div class="spec-item tier-1">
+          <h4><a href="https://github.com/PyDevices/usbif/tree/main/examples">Examples</a></h4>
+          <p>A sound card, MIDI in and out, HID, a USB drive, a webcam, and a host that enumerates devices.</p>
+        </div>
+        <div class="spec-item tier-1">
+          <h4><a href="/audiodsp/">audiodsp</a></h4>
+          <p>The audio engine the sound card function pumps.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
   <div id="pydevices-site-footer"></div>
   <script src="/assets/chrome/site-chrome.js"></script>
 </body>
