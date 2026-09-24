@@ -54,6 +54,16 @@
 
   <main class="wrap" style="padding-bottom: 60px;">
     <div class="section-head">
+      <h2>Just running an example?</h2>
+      <span class="hint">No build needed</span>
+    </div>
+
+    <p>You don't need this template to put an example on your phone. <code>android.py</code> installs the prebuilt
+      <a href="https://github.com/PyDevices/android-runner/releases">PyDevices Runner</a> and stages any script onto it
+      over <code>adb</code>. See <a href="https://github.com/PyDevices/pydevices/blob/main/docs/android.md#staging-a-script-with-androidpy">Staging a script with android.py</a>.
+      Build from this template when you want your own app, with its own name and icon.</p>
+
+    <div class="section-head" style="margin-top: 40px;">
       <h2>Build APK Instructions</h2>
       <span class="hint">Requires Android SDK/NDK &amp; buildozer</span>
     </div>
@@ -66,8 +76,8 @@ cd android-template
 # Run automated Android build script:
 ./build_android.sh --title "PyDevices Demo App"
 
-# Generated APK output:
-# p4a_app/bin/pydevicesdemoapp-0.1-debug.apk</code></pre>
+# Generated APK output (package.name and version in p4a_app/buildozer.spec):
+# p4a_app/bin/myapp-0.1.0-*-debug.apk</code></pre>
     </div>
   </main>
 
