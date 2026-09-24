@@ -163,6 +163,35 @@ app.run()</code></pre>
         </div>
       </div>
     </div>
+    <div class="section-head" style="margin-top: 36px;">
+      <h2>New in 0.5</h2>
+      <span class="hint">0.5.1 to 0.5.3, 2026-09-24</span>
+    </div>
+    <p class="prose" style="margin-top: 14px;">A board config hands each driver its bus rather than its pins, and four I2S boards give <code>audiodev</code> the wire and a power hook so the audio pump drives them. <code>android.py</code> stages multi-file examples and their pure-Python dependencies onto the PyDevices Runner on your phone, fetching a missing package from the MIP index. Everything is in the <a href="https://github.com/PyDevices/pydevices/blob/main/CHANGELOG.md">changelog</a>.</p>
+    <div class="section-head" style="margin-top: 36px;">
+      <h2>Read more</h2>
+      <span class="hint">Depth lives in the repository</span>
+    </div>
+    <div class="spec-block">
+      <div class="spec-grid">
+        <div class="spec-item tier-1">
+          <h4><a href="https://github.com/PyDevices/pydevices/blob/main/docs/newcomers.md">Newcomer's guide</a></h4>
+          <p>Installation, the board contract, the architecture and the repository map in one place.</p>
+        </div>
+        <div class="spec-item tier-1">
+          <h4><a href="https://github.com/PyDevices/pydevices/blob/main/docs/board-bringup.md">Board bring-up</a></h4>
+          <p>From a freshly flashed board to a running example: Wi-Fi, then <code>mip</code>.</p>
+        </div>
+        <div class="spec-item tier-1">
+          <h4><a href="https://github.com/PyDevices/pydevices/blob/main/docs/android.md">Android</a></h4>
+          <p>The prebuilt Runner APK and <code>android.py</code>, which stages any script onto it.</p>
+        </div>
+        <div class="spec-item tier-1">
+          <h4><a href="https://github.com/PyDevices/pydevices-examples/blob/main/lib/examples/google_photos/README.md">Google Photos example</a></h4>
+          <p>Pick photos on your phone and browse them on the board: an LVGL app on MicroPython, CircuitPython and CPython.</p>
+        </div>
+      </div>
+    </div>
   </main>
 
   <div id="pydevices-site-footer"></div>

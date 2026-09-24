@@ -132,6 +132,8 @@ primary_color = palette.RED
 shade_dark = palette.RED_S900</code></pre>
     </div>
 
+    <p class="prose" style="margin-top: 14px;"><strong>Changed in 0.0.14:</strong> the name tables (<code>WIN16</code> and the cube tables) are ordered tuples of <code>(0xRRGGBB, name)</code> pairs, not dicts, so palette order is the same on CPython, MicroPython and CircuitPython. Code that looked a color up with <code>WIN16[0xFF0000]</code> or called <code>.items()</code> needs to change; the <a href="https://github.com/PyDevices/palettes/blob/main/CHANGELOG.md">changelog</a> has the details.</p>
+
     <div class="section-head" style="margin-top: 36px;">
       <h2><code>get_palette</code> Options &amp; Kwargs</h2>
       <span class="hint">Supports 16-bit RGB565, 24-bit RGB888, and byte-swapped hardware formats</span>

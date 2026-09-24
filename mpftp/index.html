@@ -110,7 +110,41 @@ $ mpftp firmware flash
         </div>
         <div class="spec-item tier-5">
           <h4>Optional browser PWA</h4>
-          <p>No editor required: <code>pip install -i https://test.pypi.org/simple/ pydevices-mpftp && python -m mpftp</code> opens file transfer and REPL in a local browser tab. (In the published 0.0.3 package the PWA is not yet included — run from a clone until the next release.)</p>
+          <p>No editor required: <code>pip install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ pydevices-mpftp</code>, then <code>python -m mpftp</code> opens file transfer and the REPL in a local browser tab.</p>
+        </div>
+      </div>
+    </div>
+    <div class="section-head" style="margin-top: 36px;">
+      <h2>Install</h2>
+      <span class="hint">A .vsix for the editor, a wheel for the CLI</span>
+    </div>
+    <p class="prose" style="margin-top: 14px;">mpftp is not on the VS Code Marketplace or Open VSX yet. Download <code>mpftp-*.vsix</code> from the <a href="https://github.com/PyDevices/mpftp/releases/latest">latest release</a> and run <strong>Extensions: Install from VSIX…</strong> in VS Code, Cursor or VSCodium. You also need Python with <code>mpremote</code>, and <code>circup</code> for CircuitPython packages.</p>
+    <div class="section-head" style="margin-top: 36px;">
+      <h2>New in 0.0.6 and 0.0.7</h2>
+      <span class="hint">2026-09-24</span>
+    </div>
+    <p class="prose" style="margin-top: 14px;">Wi-Fi is a first-class connection. Over USB, <strong>Enable Wi-Fi access</strong> shows you the <code>boot.py</code> change, then the board appears by name in the Wi-Fi list and the REPL and file transfer run over WebREPL. On the CLI, every board command takes <code>-d ws://HOST</code>. Firmware builds now take a selection of modules, or a preset from <a href="/micropython-pydevices/">micropython-pydevices</a>, instead of every sibling folder.</p>
+    <div class="section-head" style="margin-top: 36px;">
+      <h2>Read more</h2>
+      <span class="hint">Depth lives in the repository</span>
+    </div>
+    <div class="spec-block">
+      <div class="spec-grid">
+        <div class="spec-item tier-5">
+          <h4><a href="https://github.com/PyDevices/mpftp/blob/main/docs/newcomers.md">Newcomer's guide</a></h4>
+          <p>Entry points, who owns the board session, and the repository map.</p>
+        </div>
+        <div class="spec-item tier-5">
+          <h4><a href="https://github.com/PyDevices/mpftp/blob/main/docs/plans/wifi-webrepl.md">mpftp over Wi-Fi</a></h4>
+          <p>Setting a board up for WebREPL, and what changes when you connect without a cable.</p>
+        </div>
+        <div class="spec-item tier-5">
+          <h4><a href="https://github.com/PyDevices/mpftp/blob/main/docs/firmware-modules.md">Firmware modules</a></h4>
+          <p>Picking modules and presets for a build.</p>
+        </div>
+        <div class="spec-item tier-5">
+          <h4><a href="https://github.com/PyDevices/mpftp/tree/main/integrations">Integrations</a></h4>
+          <p>The MCP server, a Claude Code plugin and a Codex CLI snippet.</p>
         </div>
       </div>
     </div>

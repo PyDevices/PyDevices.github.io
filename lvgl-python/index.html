@@ -70,6 +70,35 @@ await micropip.install(
     index_urls=["https://test.pypi.org/simple/", "https://pypi.org/simple/"],
 )</code></pre>
     </div>
+    <div class="section-head" style="margin-top: 36px;">
+      <h2>New in 9.5.45</h2>
+      <span class="hint">2026-09-23</span>
+    </div>
+    <p class="prose" style="margin-top: 14px;">The CPython wheels decode JPEG: LVGL's TJPGD decoder is compiled in, started with <code>lv.tjpgd_init()</code>. Wheels now start at Python 3.11 and cover 3.11 to 3.14. The <a href="https://github.com/PyDevices/lvgl-python/releases/tag/v9.5.45">release</a> lists every wheel.</p>
+    <div class="section-head" style="margin-top: 36px;">
+      <h2>Read more</h2>
+      <span class="hint">Depth lives in the repository</span>
+    </div>
+    <div class="spec-block">
+      <div class="spec-grid">
+        <div class="spec-item tier-3">
+          <h4><a href="https://github.com/PyDevices/lvgl-python/blob/main/docs/newcomers.md">Newcomer's guide</a></h4>
+          <p>The repository's architecture and where a change belongs.</p>
+        </div>
+        <div class="spec-item tier-3">
+          <h4><a href="https://github.com/PyDevices/lvgl-python/blob/main/docs/building.md">Building from source</a></h4>
+          <p>The wheel build, for a platform the published wheels do not cover.</p>
+        </div>
+        <div class="spec-item tier-3">
+          <h4><a href="https://pydevices.github.io/pydevices-examples/gallery/">Gallery</a></h4>
+          <p>LVGL examples running in your browser on this same binding.</p>
+        </div>
+        <div class="spec-item tier-3">
+          <h4><a href="/lvgl-bindings/">lvgl-bindings</a></h4>
+          <p>Where the binding is generated.</p>
+        </div>
+      </div>
+    </div>
   </main>
 
   <div id="pydevices-site-footer"></div>

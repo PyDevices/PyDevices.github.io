@@ -78,7 +78,7 @@
 
         <div class="spec-item tier-1">
           <h4><code>mipidsi</code> &amp; <code>picodvi</code></h4>
-          <p>MIPI DSI differential lane support and RP2040 DVI video output hardware backends.</p>
+          <p>MIPI DSI panels on the ESP32-P4 and i.MX RT1176, and DVI output from RP2040 PIO or RP2350 HSTX.</p>
         </div>
       </div>
     </div>
@@ -86,17 +86,18 @@
     <!-- Compilation & Build Instructions -->
     <div class="section-head" style="margin-top: 36px;">
       <h2>Building MicroPython Firmware with <code>displayif</code></h2>
-      <span class="hint">Compile as a user C module with USER_C_MODULES flag</span>
+      <span class="hint">One manifest line on MicroPython 1.29</span>
     </div>
 
     <div class="spec-block">
-      <pre><code># Clone displayif alongside micropython repository:
-git clone https://github.com/PyDevices/displayif.git
+      <pre><code># Add one line to the manifest your build already uses:
+include("/path/to/displayif/manifest.py")
 
-# Compile MicroPython firmware with displayif enabled:
+# Then build as usual, e.g. esp32 after sourcing ESP-IDF's export.sh:
 cd micropython/ports/esp32
-make BOARD=ESP32_GENERIC_S3 USER_C_MODULES=../../../displayif</code></pre>
+make BOARD=ESP32_GENERIC_S3</code></pre>
     </div>
+    <p class="prose" style="margin-top: 14px;">The build picks the modules your port supports; on unix that is <code>usdl2</code> and <code>jpegio</code>. Your own <code>FROZEN_MANIFEST</code> and builds older than 1.29 are in the <a href="https://github.com/PyDevices/displayif#readme">README</a>, and <a href="/micropython-pydevices/">micropython-pydevices</a> has presets that build displayif with the rest of the stack.</p>
 
     <!-- Supported MCU Architecture Matrix -->
     <div class="section-head" style="margin-top: 36px;">
@@ -116,11 +117,11 @@ make BOARD=ESP32_GENERIC_S3 USER_C_MODULES=../../../displayif</code></pre>
         </thead>
         <tbody>
           <tr>
-            <td><strong>ESP32-S3 (Espressif)</strong></td>
+            <td><strong>ESP32-S3 / ESP32-P4 (Espressif)</strong></td>
             <td><span class="check">✓</span> (SPI DMA)</td>
             <td><span class="check">✓</span> (LCD Peripheral)</td>
             <td><span class="check">✓</span> (RGB Peripheral)</td>
-            <td><span class="dash">—</span></td>
+            <td><span class="check">✓</span> (MIPI DSI, P4)</td>
           </tr>
           <tr>
             <td><strong>RP2040 / RP2350 (Raspberry Pi)</strong></td>
@@ -130,11 +131,11 @@ make BOARD=ESP32_GENERIC_S3 USER_C_MODULES=../../../displayif</code></pre>
             <td><span class="check">✓</span> (PicoDVI)</td>
           </tr>
           <tr>
-            <td><strong>i.MX RT1062 (Teensy 4.x)</strong></td>
+            <td><strong>i.MX RT1062 / RT1176</strong></td>
             <td><span class="check">✓</span> (LPSPI)</td>
             <td><span class="check">✓</span> (FlexIO)</td>
             <td><span class="check">✓</span> (eLCDIF)</td>
-            <td><span class="dash">—</span></td>
+            <td><span class="check">✓</span> (MIPI DSI, RT1176)</td>
           </tr>
           <tr>
             <td><strong>SAMD51 (Microchip)</strong></td>
@@ -145,6 +146,30 @@ make BOARD=ESP32_GENERIC_S3 USER_C_MODULES=../../../displayif</code></pre>
           </tr>
         </tbody>
       </table>
+    </div>
+    <div class="section-head" style="margin-top: 36px;">
+      <h2>Read more</h2>
+      <span class="hint">Depth lives in the repository</span>
+    </div>
+    <div class="spec-block">
+      <div class="spec-grid">
+        <div class="spec-item tier-1">
+          <h4><a href="https://github.com/PyDevices/displayif/blob/main/docs/newcomers.md">Newcomer's guide</a></h4>
+          <p>The board-to-backend map, the firmware boundary, and the lifecycle rules.</p>
+        </div>
+        <div class="spec-item tier-1">
+          <h4><a href="https://github.com/PyDevices/displayif/blob/main/docs/port-matrix.md">Port matrix</a></h4>
+          <p>Every native module on every port, with its status and constructor notes.</p>
+        </div>
+        <div class="spec-item tier-1">
+          <h4><a href="https://github.com/PyDevices/displayif/blob/main/docs/soft-reset-and-bring-up.md">Bring-up</a></h4>
+          <p>Getting a new panel lit, and the symptoms that point at each mistake.</p>
+        </div>
+        <div class="spec-item tier-1">
+          <h4><a href="/pydevices/">pydevices</a></h4>
+          <p>The board configs that hand these buses to <code>displaydev</code>.</p>
+        </div>
+      </div>
     </div>
   </main>
 
