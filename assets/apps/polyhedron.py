@@ -1,5 +1,5 @@
 """
-PyDevices 3D Spinning Polyhedron (Hero Canvas App for cmods)
+PyDevices 3D Spinning Polyhedron (Hero Canvas App)
 ===========================================================
 Real-time 3D projected faceted icosahedron with 3-axis matrix rotation,
 depth sorting, light-source vector dot-product shading, and interactive touch tumbling.
@@ -240,7 +240,7 @@ class PolyhedronHero:
             pygraphics.line(display, int(x2), int(y2), int(x0), int(y0), edge)
 
         # 6. Tech HUD Overlay
-        _text(display, "CMODS 3D ENGINE", 12, 20, "#94A3B8")
+        _text(display, "PYDEVICES 3D ENGINE", 12, 20, "#94A3B8")
         _text(display, "60 FPS", w - 12, 20, "#94A3B8", "right")
 
         if hasattr(self.drv, "show"):
