@@ -44,8 +44,8 @@
 import os, sys
 if "/" not in sys.path: sys.path.insert(0, "/")
 os.chdir("/")
-import mip
-mip.install("pydevices-desktop", index="https://PyDevices.github.io/mip", target="lib")
+# The PyDevices stack and the desktop board_config are frozen into the
+# runtime; nothing is installed. A runtime without them fails right here.
 from displaydev import env_set
 env_set("PYDEVICES_CANVAS_ID", ${JSON.stringify(canvasId)})
 env_set("PYDEVICES_WIDTH", ${JSON.stringify(String(canvasWidth))})
