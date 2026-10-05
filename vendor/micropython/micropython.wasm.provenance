@@ -1,32 +1,44 @@
 {
   "binary": {
-    "mtime": "2026-09-26T07:55:58-05:00",
+    "mtime": "2026-10-05T17:03:35-05:00",
     "name": "micropython.wasm",
-    "sha256": "a7ddaf21a96e81aac63497b48382e7aa0d098044ab15550b6389feedbd73a4bd",
-    "size": 5880566
+    "sha256": "4cc43ae8a82e709e3bfbc56272bab1396ea73e0c5b433bd93d39e49e9993bb39",
+    "size": 6714453
   },
   "format": 1,
   "install_only": false,
   "overlays": [
+    "0001-micropython-windows-enable-networking-sockets-select-ssl-msvc.patch",
+    "0002-micropython-unix-raise-MICROPY_SCHEDULER_DEPTH-for-desktop-SDL.patch",
+    "0003-micropython-windows-enable-ffi-modffi-libffi.patch",
     "0004-micropython-webassembly-allow-Asyncify-in-runPythonAsync.patch",
     "0005-micropython-webassembly-fix-node-hook-ccall-signatures.patch",
     "0006-micropython-webassembly-support-soft-reinitialization.patch",
     "0007-micropython-webassembly-inert-jsffi-callbacks-across-reinit.patch",
-    "0008-micropython-webassembly-fix-empty-single-input-lexer-eof-primer.patch"
+    "0008-micropython-webassembly-fix-empty-single-input-lexer-eof-primer.patch",
+    "0009-micropython-esp32s3-add-SPIRAM_OCT_DEBUG-variant.patch",
+    "0010-micropython-esp32-i2s-mck-pin.patch",
+    "0011-micropython-esp32-webrepl-ctrl-c-in-tight-loops.patch",
+    "0012-micropython-unix-variant-configurable-default-heap-size.patch",
+    "0013-micropython-windows-read-piped-stdin-in-the-repl.patch",
+    "0014-micropython-esp32-tinyusb-0.21.patch",
+    "0015-micropython-windows-timing-module-and-idle-console.patch",
+    "0016-micropython-esp32-machine-timer-fire-during-reinit.patch",
+    "0017-micropython-py-makeqstrdefs-incremental-build-header-qstr.patch"
   ],
   "sources": {
     "audiodsp": {
-      "committed": "2026-09-25T06:49:25-05:00",
-      "describe": "v0.0.3-279-g094dde5",
+      "committed": "2026-10-05T15:26:05-05:00",
+      "describe": "v0.0.3-309-g79616ba",
       "dirty": false,
-      "head": "094dde5203dadcbf30fe5f2b6a88c16e413799b8",
+      "head": "79616bae165b63069ccecc6d335c00ca334b193c",
       "path": "/home/brad/gh/pydevices/audiodsp"
     },
     "audioif": {
-      "committed": "2026-09-24T09:44:37-05:00",
-      "describe": "v0.1.1",
+      "committed": "2026-10-05T16:59:29-05:00",
+      "describe": "v0.1.1-1-gb6b35a4",
       "dirty": false,
-      "head": "71c78419c7199258933ea555591ed4e6f20c0e89",
+      "head": "b6b35a48a0cd23ddc549f8c0643d77ffe778da28",
       "path": "/home/brad/gh/pydevices/audioif"
     },
     "cameraif": {
@@ -44,55 +56,55 @@
       "path": "/home/brad/gh/pydevices/circuitpython"
     },
     "displayif": {
-      "committed": "2026-09-25T18:57:38-05:00",
-      "describe": "6ea4d30",
+      "committed": "2026-10-05T15:58:30-05:00",
+      "describe": "370dad6",
       "dirty": false,
-      "head": "6ea4d30e5562bd55c3aee43a422aec439ca095ba",
+      "head": "370dad6fb7119ed80a35d782302d4ae52a0f50c5",
       "path": "/home/brad/gh/pydevices/displayif"
     },
     "lvgl-circuitpython": {
-      "committed": "2026-09-26T07:13:38-05:00",
-      "describe": "3b6e652",
+      "committed": "2026-09-26T18:07:40-05:00",
+      "describe": "caaf6dc",
       "dirty": false,
-      "head": "3b6e652e1d37f1a1081d7f91e3a7dcd8738d8dd6",
+      "head": "caaf6dc8e3c5975fe61488814a9176bcd2cf138f",
       "path": "/home/brad/gh/pydevices/lvgl-circuitpython"
     },
     "lvgl-micropython": {
-      "committed": "2026-09-26T07:13:33-05:00",
-      "describe": "1024064",
+      "committed": "2026-10-05T16:59:29-05:00",
+      "describe": "821fc45",
       "dirty": false,
-      "head": "1024064e0e0ed4e986383bf2ad08416b3767d51b",
+      "head": "821fc459e6210cf0ee441fc9a65a13a223ab8d84",
       "path": "/home/brad/gh/pydevices/lvgl-micropython"
     },
     "micropython": {
-      "committed": "2026-09-26T01:50:11-05:00",
-      "describe": "v1.29.0-1-g152121c",
+      "committed": "2026-10-05T16:10:55-05:00",
+      "describe": "v1.29.0-1-g8a22473",
       "dirty": false,
-      "head": "152121ce6a427ef8a83c7b2f68e4bf7aa39b69cd",
+      "head": "8a224736515fca0ef6288059fa9635560858d5a5",
       "path": "/home/brad/gh/pydevices/micropython"
     },
     "micropython-pydevices": {
-      "committed": "2026-09-26T06:17:21-05:00",
-      "describe": "6e29120",
-      "dirty": true,
-      "head": "6e29120c80995dca606ad344179e39c6d7523319",
+      "committed": "2026-10-05T16:59:10-05:00",
+      "describe": "3fa0688",
+      "dirty": false,
+      "head": "3fa068873cb135566356386d2810ed0e86a6758e",
       "path": "/home/brad/gh/pydevices/micropython-pydevices"
     },
     "pygraphics": {
-      "committed": "2026-09-23T22:38:03-05:00",
-      "describe": "v0.0.32-84-g04f5b44",
+      "committed": "2026-09-26T19:35:02-05:00",
+      "describe": "v0.0.32-86-gb4d4c49",
       "dirty": false,
-      "head": "04f5b44850fcb8aa83f6798eb68fb57fb1578d88",
+      "head": "b4d4c49cc2a22cdd2632f2eea2593b4cc4df4db1",
       "path": "/home/brad/gh/pydevices/pygraphics"
     },
     "usbif": {
-      "committed": "2026-09-25T22:28:49-05:00",
-      "describe": "c37ce17",
-      "dirty": true,
-      "head": "c37ce17f281ded56da8f04b9f9a8c29a8cba298d",
+      "committed": "2026-09-26T17:28:03-05:00",
+      "describe": "4c01722",
+      "dirty": false,
+      "head": "4c01722e9e0474697dcb2734fb0953bb3019e99c",
       "path": "/home/brad/gh/pydevices/usbif"
     }
   },
-  "stamped": "2026-09-26T07:55:59-05:00",
+  "stamped": "2026-10-05T17:03:35-05:00",
   "target": "mp-wasm"
 }
