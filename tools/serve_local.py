@@ -5,6 +5,10 @@ The organization portal is the default document root.  Pages sites published
 by sibling repositories are mounted at their production URL prefixes.  A
 mounted request first checks the repository's editable ``.site`` tree, then
 falls back to the complete static tree stored on ``origin/gh-pages``.
+
+It is the organization's one portal server (dotgithub's serve_portal.py was
+folded into it, 2026-10-05). pydevices-examples keeps its own
+``tools/serve.py`` for anyone who clones just that repository.
 """
 
 from __future__ import annotations
@@ -36,7 +40,9 @@ class WorkspaceRequestHandler(SimpleHTTPRequestHandler):
         self.send_header("Cross-Origin-Embedder-Policy", "credentialless")
         self.send_header("Cross-Origin-Resource-Policy", "cross-origin")
         self.send_header("Access-Control-Allow-Origin", "*")
-        self.send_header("X-PyDevices-Server", "workspace")
+        # pydevices' wasm.py and pyscript.py probe for this header and reuse
+        # a running server that says "portal" instead of starting their own.
+        self.send_header("X-PyDevices-Server", "portal")
         super().end_headers()
 
     def send_head(self):
