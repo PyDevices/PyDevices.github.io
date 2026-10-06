@@ -47,24 +47,24 @@
   <main class="wrap" style="padding-bottom: 60px;">
     <div class="section-head">
       <h2>Install</h2>
-      <span class="hint">Prepare a MicroPython checkout once</span>
+      <span class="hint">One line, on Linux or WSL</span>
     </div>
-    <p class="prose" style="margin-top: 14px;">Clone this repository beside a MicroPython clone and the PyDevices modules you want. One script checks out the pinned release (v1.29.0) and applies the whole patch series as a single local commit.</p>
     <div class="spec-block">
-      <pre><code>git clone https://github.com/PyDevices/micropython-pydevices
-git clone https://github.com/micropython/micropython
-micropython-pydevices/tools/prepare-micropython.sh</code></pre>
+      <pre><code>curl -fsSL https://pydevices.github.io/install.sh | sh</code></pre>
     </div>
+    <p class="prose" style="margin-top: 14px;">It clones this repository into <code>~/micropython-pydevices</code> (or updates the clone already there), checks the tools every build needs, and tells you what's missing for each port. Add a build after <code>--</code> to do both at once: <code>curl -fsSL https://pydevices.github.io/install.sh | sh -s -- --port unix --variant pydevices --modules all</code></p>
     <div class="section-head" style="margin-top: 36px;">
-      <h2>Try this first</h2>
-      <span class="hint">Build with a preset, using upstream's own make</span>
+      <h2>Build</h2>
+      <span class="hint">One command; the first run fetches what it needs</span>
     </div>
     <div class="spec-block">
-      <pre><code>cd micropython/ports/unix
-make VARIANT_DIR=../../../micropython-pydevices/variants/unix/pydevices \
-     FROZEN_MANIFEST=../../../micropython-pydevices/manifests/lvgl.py</code></pre>
+      <pre><code>cd ~/micropython-pydevices
+./build_mp.py          # asks for port, board, variant, flash size and modules
+./build_mp.py --port unix --variant pydevices --modules all
+./build_mp.py --port esp32 --board ESP32_GENERIC_S3 --variant SPIRAM_OCT --flash 8MB --modules all
+./build_mp.py --port rp2 --board RPI_PICO2 --modules displayif,lvgl-micropython</code></pre>
     </div>
-    <p class="prose" style="margin-top: 14px;">A preset is a short list of the sibling repositories a build carries: <code>lvgl.py</code> is displayif with lvgl-micropython, <code>audio.py</code> is audiodsp with audioif, <code>usb.py</code> is usbif. The esp32 boards take <code>BOARD_DIR=</code> the same way. <a href="https://github.com/PyDevices/micropython-pydevices/blob/main/manifests/README.md">The presets</a> lists them all.</p>
+    <p class="prose" style="margin-top: 14px;"><code>build_mp.py</code> fetches the pinned MicroPython release, applies the patch series, fetches the PyDevices modules you name at their pinned commits and each port's toolchain, and builds into <code>builds/</code>. An esp32 build grows its app partition to fit, and a Pico build sizes its filesystem around the firmware.</p>
     <div class="section-head" style="margin-top: 36px;">
       <h2>Read more</h2>
       <span class="hint">Depth lives in the repository</span>
@@ -73,19 +73,15 @@ make VARIANT_DIR=../../../micropython-pydevices/variants/unix/pydevices \
       <div class="spec-grid">
         <div class="spec-item tier-5">
           <h4><a href="https://github.com/PyDevices/micropython-pydevices/blob/main/docs/newcomers.md">Newcomer's guide</a></h4>
-          <p>The overlay model: patches, then a manifest, a board or a variant, then upstream's build.</p>
+          <p>How a build is put together: the pinned release, our patches, the modules and the variants.</p>
         </div>
         <div class="spec-item tier-5">
           <h4><a href="https://github.com/PyDevices/micropython-pydevices/tree/main/patches">Patch series</a></h4>
           <p>Every downstream patch, each justified in its own header.</p>
         </div>
         <div class="spec-item tier-5">
-          <h4><a href="https://github.com/PyDevices/micropython-pydevices#layout">Boards and variants</a></h4>
-          <p>The out-of-tree esp32 boards and the unix, Windows and WebAssembly variants.</p>
-        </div>
-        <div class="spec-item tier-5">
-          <h4><a href="/mpftp/">mpftp firmware builds</a></h4>
-          <p>Pick a preset and extra modules from the editor or the CLI instead of typing paths.</p>
+          <h4><a href="https://github.com/PyDevices/micropython-pydevices/blob/main/docs/newcomers.md#boards-we-build-for">Boards we build for</a></h4>
+          <p>The esp32 boards and variants, the Picos, and the unix, Windows and WebAssembly variants.</p>
         </div>
       </div>
     </div>
