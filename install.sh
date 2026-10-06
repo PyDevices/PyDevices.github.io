@@ -4,13 +4,13 @@
 #   curl -fsSL https://pydevices.github.io/install.sh | sh
 #   curl -fsSL https://pydevices.github.io/install.sh | sh -s -- --port unix --variant pydevices --modules all
 #
-# Clones micropython-pydevices into ~/micropython-pydevices (or updates the
-# clone already there), checks the tools every build needs, and says what to
+# Clones micropython-pydevices into ./micropython-pydevices, in the current
+# directory (or updates the clone already there), checks the tools every build needs, and says what to
 # run next. Arguments after "--" go to build_mp.py, which fetches MicroPython,
 # the modules and each port's toolchain on its first run.
 #
 # Environment:
-#   PYDEVICES_DIR     where to clone (default ~/micropython-pydevices)
+#   PYDEVICES_DIR     where to clone (default ./micropython-pydevices)
 #   PYDEVICES_BRANCH  branch to check out (default main)
 #
 # Plain POSIX sh, and everything runs from main() on the last line, so a
@@ -91,7 +91,7 @@ main() {
         Linux) ;;
         *) say "Note: the build system is tested on Linux (WSL included); $(uname -s) may need more." ;;
     esac
-    dir=${PYDEVICES_DIR:-$HOME/micropython-pydevices}
+    dir=${PYDEVICES_DIR:-micropython-pydevices}
     branch=${PYDEVICES_BRANCH:-main}
 
     check_tools
