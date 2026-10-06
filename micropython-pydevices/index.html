@@ -52,13 +52,13 @@
     <div class="spec-block">
       <pre><code>curl -fsSL https://pydevices.github.io/install.sh | sh</code></pre>
     </div>
-    <p class="prose" style="margin-top: 14px;">It clones this repository into <code>~/micropython-pydevices</code> (or updates the clone already there), checks the tools every build needs, and tells you what's missing for each port. Add a build after <code>--</code> to do both at once: <code>curl -fsSL https://pydevices.github.io/install.sh | sh -s -- --port unix --variant pydevices --modules all</code></p>
+    <p class="prose" style="margin-top: 14px;">It clones this repository into <code>micropython-pydevices</code> in the current directory (or updates the clone already there), checks the tools every build needs, and tells you what's missing for each port. Add a build after <code>--</code> to do both at once: <code>curl -fsSL https://pydevices.github.io/install.sh | sh -s -- --port unix --variant pydevices --modules all</code></p>
     <div class="section-head" style="margin-top: 36px;">
       <h2>Build</h2>
       <span class="hint">One command; the first run fetches what it needs</span>
     </div>
     <div class="spec-block">
-      <pre><code>cd ~/micropython-pydevices
+      <pre><code>cd micropython-pydevices
 ./build_mp.py          # asks for port, board, variant, flash size and modules
 ./build_mp.py --port unix --variant pydevices --modules all
 ./build_mp.py --port esp32 --board ESP32_GENERIC_S3 --variant SPIRAM_OCT --flash 8MB --modules all
