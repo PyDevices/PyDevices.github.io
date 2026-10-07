@@ -100,7 +100,7 @@ def main() -> None:
 
     handler = partial(WorkspaceRequestHandler, directory=str(PORTAL_ROOT))
     server = ThreadingHTTPServer((args.bind, args.port), handler)
-    print(f"Serving PyDevices workspace at http://{args.bind}:{server.server_port}/")
+    print(f"Serving the sibling checkouts at http://{args.bind}:{server.server_port}/")
     print("  /                    -> PyDevices.github.io")
     print("  /mip/                -> mip/.site + origin/gh-pages")
     print("  /pydevices-examples/ -> pydevices-examples/.site + origin/gh-pages")
