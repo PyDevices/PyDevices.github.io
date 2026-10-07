@@ -23,7 +23,7 @@ itself lives in the [org profile](https://github.com/PyDevices) and
 | `assets/chrome/` | Shared first-party chrome, synced from `dotgithub/assets/`: `site.css`, `site-chrome.js`, `theme-toggle.js`, `hero-runtime.js`. |
 | `assets/apps/` | Interactive pure-Python apps, synced from `dotgithub/assets/apps/`. |
 | `pyscript-template/pwa/` | The `pyscript-template` repo's offline PWA demo, mirrored in whole by the generator's `sync_assets()` step so it publishes from this Pages root. Re-vendor it by re-running the generator after `pyscript-template` bumps its PyScript pin — don't hand-edit the copy here. |
-| `vendor/micropython/` | Centralized WebAssembly MicroPython runtime, rebuilt separately from this generator by the workspace anchor's `tools/build_interpreters.sh --only mp-wasm` from the `micropython-pydevices` overlay; `micropython.wasm.provenance` beside it says what went in. |
+| `vendor/micropython/` | Centralized WebAssembly MicroPython runtime, rebuilt separately from this generator, from the `micropython-pydevices` overlay (`build_mp.py --port webassembly`); `micropython.wasm.provenance` beside it says what went in. |
 | `404.html` | Custom GitHub Pages 404. |
 | `.nojekyll` | Bypasses Jekyll on GitHub Pages. |
 
@@ -61,3 +61,5 @@ moment you would notice it.
 
 Pushes to `main` publish the repository root to GitHub Pages at
 <https://pydevices.github.io/>. There is no build step.
+
+What's planned next is in [ROADMAP.md](ROADMAP.md).
