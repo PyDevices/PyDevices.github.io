@@ -47,12 +47,13 @@
   <main class="wrap" style="padding-bottom: 60px;">
     <div class="section-head">
       <h2>Install</h2>
-      <span class="hint">One line, on Linux or WSL</span>
+      <span class="hint">One line, on Linux, WSL, or Git Bash on Windows</span>
     </div>
     <div class="spec-block">
       <pre><code>curl -fsSL https://pydevices.github.io/install.sh | sh</code></pre>
     </div>
     <p class="prose" style="margin-top: 14px;">It clones this repository into <code>micropython-pydevices</code> in the current directory (or updates the clone already there), checks the tools every build needs, and tells you what's missing for each port. Add a build after <code>--</code> to do both at once: <code>curl -fsSL https://pydevices.github.io/install.sh | sh -s -- --port unix --variant pydevices --modules all</code></p>
+    <p class="prose">On Windows, run it from Git Bash (Start menu, Git Bash), not PowerShell. It clones first, then checks for Python and the MSYS2 toolchain that builds the windows port natively, and prints the install lines for whatever is missing. After that you build from PowerShell or Git Bash with <code>python build_mp.py --port windows --variant pydevices --modules all</code>; the <a href="https://github.com/PyDevices/micropython-pydevices/blob/main/docs/newcomers.md#on-windows">Windows steps</a> have the rest. The other ports build from WSL.</p>
     <div class="section-head" style="margin-top: 36px;">
       <h2>Build</h2>
       <span class="hint">One command; the first run fetches what it needs</span>
