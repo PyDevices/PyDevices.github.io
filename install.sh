@@ -9,6 +9,9 @@
 # run next. Arguments after "--" go to build_mp.py, which fetches MicroPython,
 # the modules and each port's toolchain on its first run.
 #
+# On Windows, run it from Git Bash. There it clones first, then checks for
+# Python and the MSYS2 toolchain that builds the windows port natively.
+#
 # Environment:
 #   PYDEVICES_DIR     where to clone (default ./micropython-pydevices)
 #   PYDEVICES_BRANCH  branch to check out (default main)
@@ -24,6 +27,64 @@ URL=https://github.com/PyDevices/micropython-pydevices.git
 say() { echo "$*"; }
 fail() { echo "install.sh: $*" >&2; exit 1; }
 have() { command -v "$1" >/dev/null 2>&1; }
+
+# Git Bash (MINGW), MSYS2 or Cygwin: native Windows, where Python is python or
+# "py -3" and the windows port builds with MSYS2's make and MinGW gcc.
+windows_host() {
+    case "$(uname -s)" in
+        MINGW*|MSYS*|CYGWIN*) return 0 ;;
+    esac
+    return 1
+}
+
+# The first that really runs Python 3.9 or newer. Windows' python3 is often
+# the Microsoft Store stub, which exits non-zero, so it's tried, not trusted.
+find_python() {
+    for p in python3 python "py -3"; do
+        # shellcheck disable=SC2086 # "py -3" is two words on purpose
+        if have ${p%% *} && $p -c 'import sys; sys.exit(sys.version_info < (3, 9))' >/dev/null 2>&1; then
+            PYTHON=$p
+            return 0
+        fi
+    done
+    PYTHON=
+    return 1
+}
+
+windows_tools() {
+    # What build_mp.py uses on Windows: MSYS2 at $MSYS2_ROOT (C:\msys64), or a
+    # make and gcc already on PATH. A warning, never a stop: the clone is done.
+    missing=
+    find_python || missing="$missing Python-3.9+"
+    root=$(cygpath -u "${MSYS2_ROOT:-C:\\msys64}" 2>/dev/null || echo /c/msys64)
+    if [ -x "$root/usr/bin/make.exe" ] || have make; then :; else missing="$missing make"; fi
+    if [ -x "$root/mingw64/bin/gcc.exe" ] || have gcc; then :; else missing="$missing gcc"; fi
+    if [ -x "$root/usr/bin/autoreconf" ] || have autoreconf; then :; else missing="$missing autotools"; fi
+    [ -z "$missing" ] && return 0
+    say ""
+    say "Not installed yet:$missing"
+    say ""
+    case "$missing" in
+        *Python*)
+            say "Python: install it from https://www.python.org/downloads/ (it's python or py,"
+            say "never python3). If python opens the Microsoft Store, turn off the python.exe and"
+            say "python3.exe aliases in Settings, Apps, Advanced app settings, App execution aliases."
+            say "" ;;
+    esac
+    case "$missing" in
+        *make*|*gcc*|*autotools*)
+            say "MSYS2's MinGW toolchain, which builds the windows port. From PowerShell:"
+            say ""
+            say "  winget install --id MSYS2.MSYS2 -e"
+            printf '%s\n' "  C:\\msys64\\usr\\bin\\bash.exe -lc \"pacman -Syu --noconfirm\""
+            printf '%s\n' "  C:\\msys64\\usr\\bin\\bash.exe -lc \"pacman -S --needed --noconfirm make mingw-w64-x86_64-gcc autoconf automake libtool\""
+            say ""
+            say "(Run the first pacman line again if it says it must close.) build_mp.py finds"
+            printf '%s\n' "MSYS2 in C:\\msys64 by itself; set MSYS2_ROOT if it's elsewhere."
+            say "" ;;
+    esac
+    return 1
+}
 
 check_tools() {
     missing=
@@ -86,13 +147,52 @@ fetch() {  # dir branch
     say "micropython-pydevices $(git -C "$1" rev-parse --short HEAD) ($2)"
 }
 
+main_windows() {  # dir branch [build_mp.py arguments]
+    dir=$1 branch=$2
+    shift 2
+    have git || fail "git is missing; install Git for Windows (https://git-scm.com), then run this again from Git Bash"
+    fetch "$dir" "$branch"
+    windows_tools
+    ready=$?
+
+    if [ $# -gt 0 ]; then
+        [ -n "$PYTHON" ] || fail "no Python to build with; install it, then run this again"
+        say ""
+        say "Building: $PYTHON build_mp.py $*"
+        cd "$dir" || fail "cannot enter $dir"
+        # shellcheck disable=SC2086
+        if [ -r /dev/tty ] && ( : < /dev/tty ) 2>/dev/null; then
+            exec $PYTHON build_mp.py "$@" < /dev/tty
+        fi
+        # shellcheck disable=SC2086
+        exec $PYTHON build_mp.py "$@" < /dev/null
+    fi
+
+    if [ "$ready" -eq 0 ]; then
+        say ""
+        say "Ready. To build the windows port, in PowerShell or here:"
+    else
+        say "Once those are installed, build the windows port, in PowerShell or here:"
+    fi
+    say ""
+    say "  cd $dir"
+    say "  ${PYTHON:-python} build_mp.py --port windows --variant pydevices --modules all"
+    say ""
+    say "Every other port (esp32, rp2, webassembly, unix) builds from WSL, as on Linux."
+    say "The guide: https://github.com/PyDevices/micropython-pydevices/blob/main/docs/newcomers.md#on-windows"
+}
+
 main() {
+    dir=${PYDEVICES_DIR:-micropython-pydevices}
+    branch=${PYDEVICES_BRANCH:-main}
+    if windows_host; then
+        main_windows "$dir" "$branch" "$@"
+        return
+    fi
     case "$(uname -s)" in
         Linux) ;;
         *) say "Note: the build system is tested on Linux (WSL included); $(uname -s) may need more." ;;
     esac
-    dir=${PYDEVICES_DIR:-micropython-pydevices}
-    branch=${PYDEVICES_BRANCH:-main}
 
     check_tools
     fetch "$dir" "$branch"
