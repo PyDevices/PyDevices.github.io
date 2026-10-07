@@ -19,7 +19,7 @@ import display_driver  # wires LVGL display/input into the app
 import lvgl as lv
 from board_config import display_drv
 from display_driver import app
-from displaydev import env_int
+from boarddev import env_int
 
 # MicroPython's time.localtime() has no timezone support — it's always UTC.
 # hero-runtime.js sets this from the browser's Date.getTimezoneOffset() (same

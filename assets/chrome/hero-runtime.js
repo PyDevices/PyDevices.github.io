@@ -46,7 +46,7 @@ if "/" not in sys.path: sys.path.insert(0, "/")
 os.chdir("/")
 # The PyDevices stack and the desktop board_config are frozen into the
 # runtime; nothing is installed. A runtime without them fails right here.
-from displaydev import env_set
+from boarddev import env_set
 env_set("PYDEVICES_CANVAS_ID", ${JSON.stringify(canvasId)})
 env_set("PYDEVICES_WIDTH", ${JSON.stringify(String(canvasWidth))})
 env_set("PYDEVICES_HEIGHT", ${JSON.stringify(String(canvasHeight))})

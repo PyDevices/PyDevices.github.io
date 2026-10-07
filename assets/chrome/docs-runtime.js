@@ -49,7 +49,7 @@ os.chdir("/")
       const source = JSON.stringify(editor.value);
       const canvasId = JSON.stringify(canvas.id);
       await mp.runPythonAsync(`
-from displaydev import env_set
+from boarddev import env_set
 env_set("PYDEVICES_CANVAS_ID", ${canvasId})
 CANVAS_ID = ${canvasId}
 _source = ${source}
