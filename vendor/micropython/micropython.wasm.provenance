@@ -1,9 +1,9 @@
 {
   "binary": {
-    "mtime": "2026-10-05T17:03:35-05:00",
+    "mtime": "2026-10-08T04:29:32-05:00",
     "name": "micropython.wasm",
-    "sha256": "4cc43ae8a82e709e3bfbc56272bab1396ea73e0c5b433bd93d39e49e9993bb39",
-    "size": 6714453
+    "sha256": "8318c76c2d21453fe48323363bbc40e5fdd0928a6837e42036863dbf21d86faf",
+    "size": 6826651
   },
   "format": 1,
   "install_only": false,
@@ -24,87 +24,92 @@
     "0014-micropython-esp32-tinyusb-0.21.patch",
     "0015-micropython-windows-timing-module-and-idle-console.patch",
     "0016-micropython-esp32-machine-timer-fire-during-reinit.patch",
-    "0017-micropython-py-makeqstrdefs-incremental-build-header-qstr.patch"
+    "0017-micropython-py-makeqstrdefs-incremental-build-header-qstr.patch",
+    "0018-micropython-esp32-drop-missing-usermod-include-dirs.patch",
+    "0019-micropython-tools-makemanifest-c-modules-forward-slashes.patch",
+    "0020-micropython-py-mkrules-qstr-response-file-on-windows.patch",
+    "0021-micropython-tools-makemanifest-mpy-tool-response-file-on-windows.patch",
+    "0022-micropython-py-mkrules-link-response-file-on-windows.patch"
   ],
   "sources": {
     "audiodsp": {
-      "committed": "2026-10-05T15:26:05-05:00",
-      "describe": "v0.0.3-309-g79616ba",
+      "committed": "2026-10-08T04:19:08-05:00",
+      "describe": "v0.0.3-322-g1b56554",
       "dirty": false,
-      "head": "79616bae165b63069ccecc6d335c00ca334b193c",
-      "path": "/home/brad/gh/pydevices/audiodsp"
+      "head": "1b56554e65dc340ffd4ebefecfd5fa4d3e73b6c6",
+      "path": "audiodsp"
     },
     "audioif": {
       "committed": "2026-10-05T16:59:29-05:00",
       "describe": "v0.1.1-1-gb6b35a4",
       "dirty": false,
       "head": "b6b35a48a0cd23ddc549f8c0643d77ffe778da28",
-      "path": "/home/brad/gh/pydevices/audioif"
+      "path": "audioif"
     },
     "cameraif": {
-      "committed": "2026-09-23T20:35:43-05:00",
-      "describe": "8c0244f",
+      "committed": "2026-10-08T04:18:36-05:00",
+      "describe": "028be76",
       "dirty": false,
-      "head": "8c0244fed64d42a2dcb6616d1c37d7426de24315",
-      "path": "/home/brad/gh/pydevices/cameraif"
+      "head": "028be768197d7f40b918e61dc6ae048da8fb5e1d",
+      "path": "cameraif"
     },
     "circuitpython": {
       "committed": "2026-08-28T15:55:13-04:00",
       "describe": "v1.25.0-24997-gd897c15-dirty",
       "dirty": true,
       "head": "d897c15f24b2a6de6529f138aed4705327020dab",
-      "path": "/home/brad/gh/pydevices/circuitpython"
+      "path": "circuitpython"
     },
     "displayif": {
-      "committed": "2026-10-05T15:58:30-05:00",
-      "describe": "370dad6",
+      "committed": "2026-10-08T03:19:01-05:00",
+      "describe": "38acfed",
       "dirty": false,
-      "head": "370dad6fb7119ed80a35d782302d4ae52a0f50c5",
-      "path": "/home/brad/gh/pydevices/displayif"
+      "head": "38acfed2c41d84a8facefb004d361b5880e8d996",
+      "path": "displayif"
     },
     "lvgl-circuitpython": {
       "committed": "2026-09-26T18:07:40-05:00",
       "describe": "caaf6dc",
       "dirty": false,
       "head": "caaf6dc8e3c5975fe61488814a9176bcd2cf138f",
-      "path": "/home/brad/gh/pydevices/lvgl-circuitpython"
+      "path": "lvgl-circuitpython"
     },
     "lvgl-micropython": {
-      "committed": "2026-10-05T16:59:29-05:00",
-      "describe": "821fc45",
+      "committed": "2026-10-07T17:14:08-05:00",
+      "describe": "04d0f77",
       "dirty": false,
-      "head": "821fc459e6210cf0ee441fc9a65a13a223ab8d84",
-      "path": "/home/brad/gh/pydevices/lvgl-micropython"
+      "head": "04d0f77943d3935f9f0906c6a2a5465e79abdfc2",
+      "path": "lvgl-micropython"
     },
     "micropython": {
-      "committed": "2026-10-05T16:10:55-05:00",
-      "describe": "v1.29.0-1-g8a22473",
+      "committed": "2026-10-08T04:04:37-05:00",
+      "describe": "v1.29.0-1-gc0eeee0",
       "dirty": false,
-      "head": "8a224736515fca0ef6288059fa9635560858d5a5",
-      "path": "/home/brad/gh/pydevices/micropython"
+      "head": "c0eeee029e20230a68488df34589565d6f7e90b5",
+      "path": "micropython"
     },
     "micropython-pydevices": {
-      "committed": "2026-10-05T16:59:10-05:00",
-      "describe": "3fa0688",
+      "committed": "2026-10-08T04:21:52-05:00",
+      "describe": "59cb3bd",
       "dirty": false,
-      "head": "3fa068873cb135566356386d2810ed0e86a6758e",
-      "path": "/home/brad/gh/pydevices/micropython-pydevices"
+      "head": "59cb3bd346028fc531ce5d9d4b5e0d0b245c35be",
+      "path": "micropython-pydevices"
     },
     "pygraphics": {
-      "committed": "2026-09-26T19:35:02-05:00",
-      "describe": "v0.0.32-86-gb4d4c49",
+      "committed": "2026-10-08T03:15:51-05:00",
+      "describe": "v0.0.32-94-g4fb4d8b",
       "dirty": false,
-      "head": "b4d4c49cc2a22cdd2632f2eea2593b4cc4df4db1",
-      "path": "/home/brad/gh/pydevices/pygraphics"
+      "head": "4fb4d8b5f1ca3ef4d35c7665ed8e9300930c6297",
+      "path": "pygraphics"
     },
     "usbif": {
-      "committed": "2026-09-26T17:28:03-05:00",
-      "describe": "4c01722",
+      "committed": "2026-10-07T23:07:45-05:00",
+      "describe": "4ddddfb",
       "dirty": false,
-      "head": "4c01722e9e0474697dcb2734fb0953bb3019e99c",
-      "path": "/home/brad/gh/pydevices/usbif"
+      "head": "4ddddfb67a6c2229bc39d3c2ca243b26f466bae1",
+      "path": "usbif"
     }
   },
-  "stamped": "2026-10-05T17:03:35-05:00",
+  "stamped": "2026-10-08T04:29:33-05:00",
   "target": "mp-wasm"
 }
