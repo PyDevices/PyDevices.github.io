@@ -17,7 +17,7 @@ import time
 # hero-runtime.js already sets these to 480x480 in production; set them here
 # too so this square-canvas app also renders correctly under bin/wasm.py's
 # generic (default 320x480) local test harness.
-from displaydev import env_set
+from boarddev import env_set
 
 env_set("PYDEVICES_WIDTH", "480")
 env_set("PYDEVICES_HEIGHT", "480")
