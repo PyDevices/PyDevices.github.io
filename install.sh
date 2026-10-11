@@ -108,23 +108,75 @@ check_tools() {
     fi
 }
 
+# "a b c" as "a, b and c".
+list() {
+    # shellcheck disable=SC2086 # split on spaces on purpose
+    set -- $1
+    out=
+    while [ $# -gt 0 ]; do
+        if [ -z "$out" ]; then out=$1
+        elif [ $# -eq 1 ]; then out="$out and $1"
+        else out="$out, $1"
+        fi
+        shift
+    done
+    echo "$out"
+}
+
+# Port by port: what's installed, and the Debian package for what isn't.
+# Sets READY (ports that build now), WAITING (ports that don't yet), NOTES
+# (a line per waiting port) and PKGS (one apt line per waiting port).
 port_notes() {
-    # What each port needs beyond the essentials; a build says so too, later.
-    notes=
-    have pkg-config && pkg-config --exists sdl2 2>/dev/null || notes="$notes
-  unix:         libsdl2-dev, libffi-dev and pkg-config (the desktop display)"
-    have x86_64-w64-mingw32-gcc && have libtoolize || notes="$notes
-  windows:      gcc-mingw-w64-x86-64, libtool, libltdl-dev, autoconf, automake"
-    have arm-none-eabi-gcc || notes="$notes
-  rp2:          gcc-arm-none-eabi and libnewlib-arm-none-eabi"
-    have node || notes="$notes
-  webassembly:  nodejs (emsdk itself is fetched)"
-    have ninja && python3 -c 'import venv' 2>/dev/null || notes="$notes
-  esp32:        ninja-build and python3-venv (ESP-IDF itself is fetched)"
-    if [ -n "$notes" ]; then
-        say ""
-        say "Not installed yet, needed only for these ports:$notes"
+    READY='' WAITING='' NOTES='' PKGS=''
+    unix='' windows='' rp2='' wasm='' esp32=''
+    if ! have pkg-config; then unix="pkg-config libsdl2-dev libffi-dev"
+    else
+        pkg-config --exists sdl2 2>/dev/null || unix="libsdl2-dev"
+        pkg-config --exists libffi 2>/dev/null || unix="$unix libffi-dev"
     fi
+    have x86_64-w64-mingw32-gcc || windows="gcc-mingw-w64-x86-64"
+    have libtoolize || windows="$windows libtool libltdl-dev"
+    have autoreconf || windows="$windows autoconf automake"
+    have arm-none-eabi-gcc || rp2="gcc-arm-none-eabi libnewlib-arm-none-eabi"
+    have node || wasm="nodejs"
+    have ninja || esp32="ninja-build"
+    python3 -c 'import venv' 2>/dev/null || esp32="$esp32 python3-venv"
+    port_note unix "$unix" "the desktop display"
+    port_note esp32 "$esp32" "ESP-IDF itself is fetched"
+    port_note rp2 "$rp2" "the pico-sdk is fetched"
+    port_note windows "$windows" "SDL2 for MinGW is fetched"
+    port_note webassembly "$wasm" "emsdk itself is fetched"
+    [ -n "$WAITING" ] || return 0
+    say ""
+    say "Not installed yet, needed only for these ports:$NOTES"
+    say ""
+    say "On Debian or Ubuntu (WSL included), this installs them:"
+    say ""
+    say "  sudo apt-get update && sudo apt-get install -y \\"
+    printf '%s\n' "$PKGS" | {
+        prev=
+        while IFS= read -r line; do
+            [ -z "$prev" ] || say "    $prev \\"
+            prev=$line
+        done
+        say "    $prev"
+    }
+    say ""
+    say "Other distributions carry the same tools under their own names. A build"
+    say "for a port that's still missing something stops and says so."
+}
+
+port_note() {  # port "missing packages" aside
+    if [ -z "$2" ]; then
+        READY="$READY $1"
+        return 0
+    fi
+    pkgs=$(echo "$2" | sed 's/^ *//')
+    WAITING="$WAITING $1"
+    NOTES="$NOTES
+$(printf '  %-14s%s (%s)' "$1:" "$(echo "$pkgs" | sed 's/ /, /g')" "$3")"
+    PKGS="${PKGS}${PKGS:+
+}$pkgs"
 }
 
 fetch() {  # dir branch
@@ -209,7 +261,13 @@ main() {
 
     port_notes
     say ""
-    say "Ready. To build:"
+    if [ -z "$WAITING" ]; then
+        say "Ready. To build:"
+    elif [ -z "$READY" ]; then
+        say "Nothing builds until those are installed. Then:"
+    else
+        say "Ready for $(list "$READY"); $(list "$WAITING") once those are installed. To build:"
+    fi
     say ""
     say "  cd $dir"
     say "  ./build_mp.py          # asks for port, board, variant, flash size and modules"
