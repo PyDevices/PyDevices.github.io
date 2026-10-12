@@ -135,7 +135,11 @@ port_notes() {
         pkg-config --exists libffi 2>/dev/null || unix="$unix libffi-dev"
     fi
     have x86_64-w64-mingw32-gcc || windows="gcc-mingw-w64-x86-64"
-    have libtoolize || windows="$windows libtool libltdl-dev"
+    have libtoolize || windows="$windows libtool"
+    # libffi's autoreconf needs libltdl's macros (LT_SYS_SYMBOL_USCORE), which
+    # come apart from libtoolize: libltdl-dev on Debian.
+    [ -f "$(aclocal --print-ac-dir 2>/dev/null || echo /usr/share/aclocal)/ltdl.m4" ] ||
+        windows="$windows libltdl-dev"
     have autoreconf || windows="$windows autoconf automake"
     have arm-none-eabi-gcc || rp2="gcc-arm-none-eabi libnewlib-arm-none-eabi"
     have node || wasm="nodejs"
