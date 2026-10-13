@@ -101,7 +101,8 @@ check_tools() {
         say ""
         say "  sudo apt-get update && sudo apt-get install -y git make cmake ninja-build \\"
         say "    python3 python3-venv python3-pip gcc g++ pkg-config libffi-dev libsdl2-dev \\"
-        say "    gcc-mingw-w64-x86-64 libtool libltdl-dev autoconf automake \\"
+        say "    gcc-mingw-w64-x86-64 binutils-mingw-w64-x86-64 libtool libltdl-dev \\"
+        say "    autoconf automake \\"
         say "    gcc-arm-none-eabi libnewlib-arm-none-eabi nodejs"
         say ""
         fail "install those, then run this again"
@@ -125,7 +126,8 @@ list() {
 
 # Port by port: what's installed, and the Debian package for what isn't.
 # Sets READY (ports that build now), WAITING (ports that don't yet), NOTES
-# (a line per waiting port) and PKGS (one apt line per waiting port).
+# (a line per waiting port) and PKGS (a line per waiting port: the port, then
+# its packages).
 port_notes() {
     READY='' WAITING='' NOTES='' PKGS=''
     unix='' windows='' rp2='' wasm='' esp32=''
@@ -135,6 +137,7 @@ port_notes() {
         pkg-config --exists libffi 2>/dev/null || unix="$unix libffi-dev"
     fi
     have x86_64-w64-mingw32-gcc || windows="gcc-mingw-w64-x86-64"
+    have x86_64-w64-mingw32-windres || windows="$windows binutils-mingw-w64-x86-64"
     have libtoolize || windows="$windows libtool"
     # libffi's autoreconf needs libltdl's macros (LT_SYS_SYMBOL_USCORE), which
     # come apart from libtoolize: libltdl-dev on Debian.
@@ -154,17 +157,14 @@ port_notes() {
     say ""
     say "Not installed yet, needed only for these ports:$NOTES"
     say ""
-    say "On Debian or Ubuntu (WSL included), this installs them:"
+    say "On Debian or Ubuntu (WSL included), this installs them, a line per port;"
+    say "leave out the lines for ports you won't build:"
     say ""
-    say "  sudo apt-get update && sudo apt-get install -y \\"
-    printf '%s\n' "$PKGS" | {
-        prev=
-        while IFS= read -r line; do
-            [ -z "$prev" ] || say "    $prev \\"
-            prev=$line
-        done
-        say "    $prev"
-    }
+    say "  sudo apt-get update"
+    width=$(printf '%s\n' "$PKGS" | while read -r port pkgs; do echo "${#pkgs}"; done | sort -n | tail -n 1)
+    printf '%s\n' "$PKGS" | while read -r port pkgs; do
+        say "$(printf '  sudo apt-get install -y %-*s  # %s' "$width" "$pkgs" "$port")"
+    done
     say ""
     say "Other distributions carry the same tools under their own names. A build"
     say "for a port that's still missing something stops and says so."
@@ -180,7 +180,7 @@ port_note() {  # port "missing packages" aside
     NOTES="$NOTES
 $(printf '  %-14s%s (%s)' "$1:" "$(echo "$pkgs" | sed 's/ /, /g')" "$3")"
     PKGS="${PKGS}${PKGS:+
-}$pkgs"
+}$1 $pkgs"
 }
 
 fetch() {  # dir branch
