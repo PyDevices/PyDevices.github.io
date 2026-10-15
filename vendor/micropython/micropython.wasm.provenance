@@ -1,9 +1,9 @@
 {
   "binary": {
-    "mtime": "2026-10-08T04:29:32-05:00",
+    "mtime": "2026-10-15T11:48:04-05:00",
     "name": "micropython.wasm",
-    "sha256": "8318c76c2d21453fe48323363bbc40e5fdd0928a6837e42036863dbf21d86faf",
-    "size": 6826651
+    "sha256": "caada1471410a578784dc727c154f07077b44e89789674d0aeed8b83faf257ac",
+    "size": 7105006
   },
   "format": 1,
   "install_only": false,
@@ -29,87 +29,94 @@
     "0019-micropython-tools-makemanifest-c-modules-forward-slashes.patch",
     "0020-micropython-py-mkrules-qstr-response-file-on-windows.patch",
     "0021-micropython-tools-makemanifest-mpy-tool-response-file-on-windows.patch",
-    "0022-micropython-py-mkrules-link-response-file-on-windows.patch"
+    "0022-micropython-py-mkrules-link-response-file-on-windows.patch",
+    "0023-micropython-esp32-nimble-default-eventq-deinit-without-controller.patch",
+    "0024-micropython-shared-tinyusb-cdc-keep-tx-fifo-during-in-transfer.patch",
+    "0025-micropython-shared-tinyusb-usbd-stall-cdc-in-before-clearing-tx-fifo.patch",
+    "0027-micropython-esp32-sdcard-stage-unaligned-buffers-for-multi-sector-dma.patch",
+    "0028-micropython-esp32-i2s-pdm-rx.patch",
+    "0029-micropython-py-mkrules-cmake-short-qstr-include-paths.patch",
+    "0030-micropython-py-mkrules-qstr-arguments-in-a-response-file.patch"
   ],
   "sources": {
-    "audiodsp": {
-      "committed": "2026-10-08T04:19:08-05:00",
-      "describe": "v0.0.3-322-g1b56554",
+    "audiocomponents": {
+      "committed": "2026-10-15T11:46:27-05:00",
+      "describe": "v0.0.3-531-gade9391",
       "dirty": false,
-      "head": "1b56554e65dc340ffd4ebefecfd5fa4d3e73b6c6",
+      "head": "ade93916acd2f696bb29107dc181dad8e6684e37",
+      "path": "audiocomponents"
+    },
+    "audiodsp": {
+      "committed": "2026-10-15T10:11:23-05:00",
+      "describe": "v0.0.3-410-g5ef58a4",
+      "dirty": false,
+      "head": "5ef58a489f538edceed2d9cd3fd0737f0cc954fa",
       "path": "audiodsp"
     },
     "audioif": {
-      "committed": "2026-10-05T16:59:29-05:00",
-      "describe": "v0.1.1-1-gb6b35a4",
+      "committed": "2026-10-12T16:38:56-05:00",
+      "describe": "v0.1.2-2-g7f1cd37",
       "dirty": false,
-      "head": "b6b35a48a0cd23ddc549f8c0643d77ffe778da28",
+      "head": "7f1cd3723f8dde185717e2643e1580e1f5ee53ef",
       "path": "audioif"
     },
     "cameraif": {
-      "committed": "2026-10-08T04:18:36-05:00",
-      "describe": "028be76",
+      "committed": "2026-10-13T00:06:44-05:00",
+      "describe": "9f7616d",
       "dirty": false,
-      "head": "028be768197d7f40b918e61dc6ae048da8fb5e1d",
+      "head": "9f7616d592ad7bc0baf6502d64f1c45966fae77e",
       "path": "cameraif"
     },
-    "circuitpython": {
-      "committed": "2026-08-28T15:55:13-04:00",
-      "describe": "v1.25.0-24997-gd897c15-dirty",
-      "dirty": true,
-      "head": "d897c15f24b2a6de6529f138aed4705327020dab",
-      "path": "circuitpython"
-    },
     "displayif": {
-      "committed": "2026-10-08T03:19:01-05:00",
-      "describe": "38acfed",
+      "committed": "2026-10-10T09:37:00-05:00",
+      "describe": "0360c53",
       "dirty": false,
-      "head": "38acfed2c41d84a8facefb004d361b5880e8d996",
+      "head": "0360c536178cb875ecfe39b149a862dc214785af",
       "path": "displayif"
     },
     "lvgl-circuitpython": {
-      "committed": "2026-09-26T18:07:40-05:00",
-      "describe": "caaf6dc",
+      "committed": "2026-10-12T22:09:21-05:00",
+      "describe": "f2b0c35",
       "dirty": false,
-      "head": "caaf6dc8e3c5975fe61488814a9176bcd2cf138f",
+      "head": "f2b0c359494a7c151ef01ba7a7b3cb02e0e06fa2",
       "path": "lvgl-circuitpython"
     },
     "lvgl-micropython": {
-      "committed": "2026-10-07T17:14:08-05:00",
-      "describe": "04d0f77",
+      "committed": "2026-10-12T22:05:32-05:00",
+      "describe": "05adf2a",
       "dirty": false,
-      "head": "04d0f77943d3935f9f0906c6a2a5465e79abdfc2",
+      "head": "05adf2a70532c5d521c086b880a65382626790cf",
       "path": "lvgl-micropython"
     },
     "micropython": {
-      "committed": "2026-10-08T04:04:37-05:00",
-      "describe": "v1.29.0-1-gc0eeee0",
+      "committed": "2026-10-12T22:02:03-05:00",
+      "describe": "v1.29.0-1-g549f2a5",
       "dirty": false,
-      "head": "c0eeee029e20230a68488df34589565d6f7e90b5",
+      "head": "549f2a5657ee62b70adb9830b03f63eac53e7494",
       "path": "micropython"
     },
     "micropython-pydevices": {
-      "committed": "2026-10-08T04:21:52-05:00",
-      "describe": "59cb3bd",
+      "committed": "2026-10-13T03:29:35-05:00",
+      "describe": "c07aae0",
       "dirty": false,
-      "head": "59cb3bd346028fc531ce5d9d4b5e0d0b245c35be",
+      "head": "c07aae0589f5173de2b1b1c05402ffba369aa758",
       "path": "micropython-pydevices"
     },
     "pygraphics": {
-      "committed": "2026-10-08T03:15:51-05:00",
-      "describe": "v0.0.32-94-g4fb4d8b",
+      "committed": "2026-10-08T12:30:47-05:00",
+      "describe": "v0.0.32-95-g2d7ca35",
       "dirty": false,
-      "head": "4fb4d8b5f1ca3ef4d35c7665ed8e9300930c6297",
+      "head": "2d7ca35847db78d450428cdc0cb5aa69ab81c809",
       "path": "pygraphics"
     },
     "usbif": {
-      "committed": "2026-10-07T23:07:45-05:00",
-      "describe": "4ddddfb",
+      "committed": "2026-10-13T22:14:13-05:00",
+      "describe": "900fd14",
       "dirty": false,
-      "head": "4ddddfb67a6c2229bc39d3c2ca243b26f466bae1",
+      "head": "900fd1461dd42830d921c13b32a9cd8c0a5faa79",
       "path": "usbif"
     }
   },
-  "stamped": "2026-10-08T04:29:33-05:00",
+  "stamped": "2026-10-15T11:48:04-05:00",
   "target": "mp-wasm"
 }
