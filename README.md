@@ -3,8 +3,8 @@
 Source for the organization landing portal at <https://pydevices.github.io/>.
 
 This repository is not a blank shell — it holds the portal's own `index.html`,
-a per-repo landing page for every tier-1..5 project (`displayif/`, `pygraphics/`,
-`mpftp/`, `workbench/`, …), the `404.html` error page, a vendored copy of the
+a per-repo landing page for every tier-1..5 project (`pygraphics/`, `mpftp/`,
+`workbench/`, …), the `404.html` error page, a vendored copy of the
 `pyscript-template` PWA demo, and a `vendor/` tree of prebuilt WebAssembly
 runtimes. What it does **not** hold is the source of truth for that content:
 the head tags and hero section of every generated page (title, description,
@@ -18,7 +18,7 @@ itself lives in the [org profile](https://github.com/PyDevices) and
 | Path | Role |
 |---|---|
 | `index.html` | The portal page. The regions between `<!-- PYDEVICES-…: START/END -->` markers are generated — edit the database, not the markup. |
-| `<repo>/index.html` | One landing page per repo (e.g. `displayif/`, `pygraphics/`, `mpftp/`, `workbench/`). The head-tags and above-the-fold hero regions are generated the same way as the portal page; everything below the hero (feature grids, code samples) is hand-authored directly in this repo and is untouched by regeneration. |
+| `<repo>/index.html` | One landing page per repo (e.g. `pygraphics/`, `mpftp/`, `workbench/`). The head-tags and above-the-fold hero regions are generated the same way as the portal page; everything below the hero (feature grids, code samples) is hand-authored directly in this repo and is untouched by regeneration. |
 | `assets/img/` | Brand marks, synced from `dotgithub/assets/img/`: `logo.svg`, `logo-512.png`, `logo-avatar.png`. |
 | `assets/chrome/` | Shared first-party chrome, synced from `dotgithub/assets/`: `site.css`, `site-chrome.js`, `theme-toggle.js`, `hero-runtime.js`. |
 | `assets/apps/` | Interactive pure-Python apps, synced from `dotgithub/assets/apps/`. |
