@@ -42,7 +42,7 @@
     '/pydevices/">Core Stack</a>' +
     '<a href="' +
     ROOT +
-    '/displayif/">DisplayIF</a>' +
+    '/micropython-pydevices/">Firmware</a>' +
     '<a href="' +
     ROOT +
     '/workbench/">Workbench</a>' +
@@ -102,30 +102,12 @@
           icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>'
         },
         {
-          id: "displayif",
-          name: "displayif",
-          path: "/displayif/",
-          url: ROOT + "/displayif/",
-          tag: "C Bus",
-          desc: "Native C SPI, I2C, 8080 & RGB usermods",
-          icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>'
-        },
-        {
           id: "audiodsp",
           name: "audiodsp",
           path: "/audiodsp/",
           url: ROOT + "/audiodsp/",
           tag: "C Audio",
           desc: "CircuitPython audio stack as MicroPython usermods",
-          icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 10v4M8 7v10M12 4v16M16 7v10M20 10v4"/></svg>'
-        },
-        {
-          id: "audioif",
-          name: "audioif",
-          path: "/audioif/",
-          url: ROOT + "/audioif/",
-          tag: "C Audio Driver",
-          desc: "I2S drivers and the audio pump's platform threads",
           icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 10v4M8 7v10M12 4v16M16 7v10M20 10v4"/></svg>'
         },
         {
@@ -136,24 +118,6 @@
           tag: "Instruments & FX",
           desc: "55 instruments and 45 effects on audiodsp",
           icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></svg>'
-        },
-        {
-          id: "usbif",
-          name: "usbif",
-          path: "/usbif/",
-          url: ROOT + "/usbif/",
-          tag: "C USB",
-          desc: "USB device and host classes for MicroPython",
-          icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v14"/><path d="M9 5l3-3 3 3"/><path d="M12 12l-5-3V7M12 14l5-3V9"/><circle cx="12" cy="19" r="3"/></svg>'
-        },
-        {
-          id: "cameraif",
-          name: "cameraif",
-          path: "/cameraif/",
-          url: ROOT + "/cameraif/",
-          tag: "C Camera",
-          desc: "MIPI-CSI camera as a MicroPython object",
-          icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3z"/><circle cx="12" cy="13" r="3"/></svg>'
         },
         {
           id: "pydevices-examples",
