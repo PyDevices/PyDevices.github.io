@@ -58,13 +58,15 @@
     </div>
 
     <div class="spec-block">
-      <pre><code># CircuitPython has no USER_C_MODULES — apply_cp_patches.sh patches the tree instead:
-cd lvgl-circuitpython
-./apply_cp_patches.sh --apply --port unix --variant coverage
+      <pre><code># From a micropython-pydevices checkout, with lvgl-circuitpython beside it.
+# build_mp.py fetches CircuitPython and builds this repo into it as a user C module:
+./build_mp.py --interpreter circuitpython --port unix \
+    --modules /path/to/lvgl-circuitpython
 
-# Then build with plain make:
-cd ../circuitpython/ports/unix
-make -j VARIANT=coverage</code></pre>
+# For a board, name CircuitPython's port and board:
+./build_mp.py --interpreter circuitpython --port espressif \
+    --board &lt;board&gt; --modules /path/to/lvgl-circuitpython CIRCUITPY_GIFIO=0</code></pre>
+      <p>The <a href="https://github.com/PyDevices/lvgl-circuitpython/blob/main/docs/build-and-flash.md">build and flash notes</a> have the full Adafruit Qualia S3 command, with its larger app partition.</p>
     </div>
     <div class="section-head" style="margin-top: 36px;">
       <h2>Read more</h2>
