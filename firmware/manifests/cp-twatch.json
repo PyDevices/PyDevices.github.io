@@ -1,6 +1,6 @@
 {
  "name": "OmniPython CircuitPython-compatible for the LilyGO T-Watch S3",
- "version": "staged-20261020",
+ "version": "staged-20261021",
  "new_install_prompt_erase": true,
  "new_install_improv_wait_time": 0,
  "builds": [

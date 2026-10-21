@@ -163,7 +163,8 @@
     if (b.interpreter === 'micropython') {
       steps.push(h('li', {}, 'Check it. Install mpremote, open the REPL and print the version:',
         pre('pip install mpremote\nmpremote\n>>> import sys; print(sys.version)'),
-        'It starts with ', code('3.4.0; MicroPython'), '.'));
+        'It starts with ', code('3.4.0; MicroPython ' + b.interpreter_version), ', then a build number and the commit, ',
+        'for example ', code('v1.30.0-preview.160.gb70ae1aca6'), ', and the build date.'));
     } else {
       steps.push(h('li', {}, 'Check it. A drive named CIRCUITPY appears. Open the board\'s serial port in any terminal ' +
         '(Thonny, or ', code('python -m serial.tools.miniterm'), '), press a key, and print the version:',
