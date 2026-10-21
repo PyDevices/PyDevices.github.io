@@ -1,0 +1,1327 @@
+{
+ "schema": 1,
+ "tag": "staged-20261020",
+ "built": "2026-10-21T04:27:55Z",
+ "run": "https://github.com/PyDevices/micropython-pydevices/actions/runs/39543660463",
+ "micropython": "v1.30.0-preview",
+ "circuitpython": "11.0.0-alpha.1",
+ "preview": true,
+ "preview_reasons": [
+  "MicroPython is v1.30.0-preview, not a tagged release",
+  "CircuitPython is 11.0.0-alpha.1, a pre-release"
+ ],
+ "pins": {
+  "UPSTREAM": "b70ae1aca657bb93e2857dac4e2a2d21a3803200",
+  "deps.lock": {
+   "esp-idf": "v5.5.4",
+   "emsdk": "6.0.1",
+   "SDL2": "2.30.10",
+   "espressif__tinyusb": "v0.21.0.1-micropython1",
+   "circuitpython": "11.0.0-alpha.1",
+   "esp_cam_sensor": "2.6.0",
+   "esp_sccb_intf": "0.0.9",
+   "cmake_utilities": "0.5.3"
+  },
+  "modules.lock": {
+   "audiocomponents": "b2ebc92c77276229a40d7c279c0a321550a68103",
+   "audiodsp": "c23f67a3b5f8ab9b4450b4bb49777782d9537f9d",
+   "lvgl-bindings": "7740c2fae0daa10992f5f8fe54acf670a70e2d3b",
+   "lvgl-micropython": "48937fcd87e574488178997e2bafe73d9bf02240",
+   "palettes": "f3dfad0bac281f1e8816b30861445498b4137de6",
+   "pdwidgets": "e92267f2ef938b60ba3b97177ceb2bd0e0d402d3",
+   "pydevices": "323c97ff98da112154fb0f2672671470a0fc23b7",
+   "pygraphics": "2d7ca35847db78d450428cdc0cb5aa69ab81c809",
+   "ulab": "1d3ddd8f5228e2c7335dac71f4846e6abb0ec9f9"
+  },
+  "lvgl-circuitpython": "7fb257a5f3d0d5c2f28c27c235e6239714e740c4"
+ },
+ "builds": [
+  {
+   "id": "mp-p4-devkit",
+   "label": "ESP32-P4-WIFI6-DEV-KIT",
+   "interpreter": "micropython",
+   "interpreter_version": "v1.30.0-preview",
+   "board": "ESP32_GENERIC_P4",
+   "variant": "WIFI6_DEV_KIT_H2",
+   "chip": "esp32p4",
+   "flash": "16MB",
+   "modules": "all",
+   "flash_offset": "0x2000",
+   "build_seconds": 229,
+   "module_revisions": {
+    "audiocomponents": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/audiocomponents",
+     "revision": "b2ebc92c7727",
+     "commit": "b2ebc92c77276229a40d7c279c0a321550a68103",
+     "dirty": false,
+     "changes": null
+    },
+    "audiodsp": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/audiodsp",
+     "revision": "c23f67a3b5f8",
+     "commit": "c23f67a3b5f8ab9b4450b4bb49777782d9537f9d",
+     "dirty": false,
+     "changes": null
+    },
+    "audioif": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/audioif",
+     "revision": "d882924b76f7",
+     "commit": "d882924b76f759a5cb86a0ea6da2037ec35de1bd",
+     "dirty": false,
+     "changes": null
+    },
+    "cameraif": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/cameraif",
+     "revision": "d882924b76f7",
+     "commit": "d882924b76f759a5cb86a0ea6da2037ec35de1bd",
+     "dirty": false,
+     "changes": null
+    },
+    "castif": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/castif",
+     "revision": "d882924b76f7",
+     "commit": "d882924b76f759a5cb86a0ea6da2037ec35de1bd",
+     "dirty": false,
+     "changes": null
+    },
+    "displayif": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/displayif",
+     "revision": "d882924b76f7",
+     "commit": "d882924b76f759a5cb86a0ea6da2037ec35de1bd",
+     "dirty": false,
+     "changes": null
+    },
+    "h264enc": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/h264enc",
+     "revision": "d882924b76f7",
+     "commit": "d882924b76f759a5cb86a0ea6da2037ec35de1bd",
+     "dirty": false,
+     "changes": null
+    },
+    "jpegio": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/jpegio",
+     "revision": "d882924b76f7",
+     "commit": "d882924b76f759a5cb86a0ea6da2037ec35de1bd",
+     "dirty": false,
+     "changes": null
+    },
+    "lvgl-bindings": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/.lvgl-bindings",
+     "revision": "7740c2fae0da",
+     "commit": "7740c2fae0daa10992f5f8fe54acf670a70e2d3b",
+     "dirty": false,
+     "changes": null
+    },
+    "lvgl-micropython": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/lvgl-micropython",
+     "revision": "48937fcd87e5",
+     "commit": "48937fcd87e574488178997e2bafe73d9bf02240",
+     "dirty": false,
+     "changes": null
+    },
+    "mdns": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/mdns",
+     "revision": "d882924b76f7",
+     "commit": "d882924b76f759a5cb86a0ea6da2037ec35de1bd",
+     "dirty": false,
+     "changes": null
+    },
+    "palettes": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/palettes",
+     "revision": "f3dfad0bac28",
+     "commit": "f3dfad0bac281f1e8816b30861445498b4137de6",
+     "dirty": false,
+     "changes": null
+    },
+    "pdwidgets": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/pdwidgets",
+     "revision": "e92267f2ef93",
+     "commit": "e92267f2ef938b60ba3b97177ceb2bd0e0d402d3",
+     "dirty": false,
+     "changes": null
+    },
+    "pngio": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/pngio",
+     "revision": "d882924b76f7",
+     "commit": "d882924b76f759a5cb86a0ea6da2037ec35de1bd",
+     "dirty": false,
+     "changes": null
+    },
+    "ppa": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/ppa",
+     "revision": "d882924b76f7",
+     "commit": "d882924b76f759a5cb86a0ea6da2037ec35de1bd",
+     "dirty": false,
+     "changes": null
+    },
+    "pydevices": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/pydevices",
+     "revision": "323c97ff98da",
+     "commit": "323c97ff98da112154fb0f2672671470a0fc23b7",
+     "dirty": false,
+     "changes": null
+    },
+    "pygraphics": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/pygraphics",
+     "revision": "2d7ca35847db",
+     "commit": "2d7ca35847db78d450428cdc0cb5aa69ab81c809",
+     "dirty": false,
+     "changes": null
+    },
+    "tsmux": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/tsmux",
+     "revision": "d882924b76f7",
+     "commit": "d882924b76f759a5cb86a0ea6da2037ec35de1bd",
+     "dirty": false,
+     "changes": null
+    },
+    "ulab": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/ulab",
+     "revision": "1d3ddd8f5228",
+     "commit": "1d3ddd8f5228e2c7335dac71f4846e6abb0ec9f9",
+     "dirty": false,
+     "changes": null
+    },
+    "usbhost": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/usbhost",
+     "revision": "d882924b76f7",
+     "commit": "d882924b76f759a5cb86a0ea6da2037ec35de1bd",
+     "dirty": false,
+     "changes": null
+    }
+   },
+   "app_offset": "0x10000",
+   "esptool": {
+    "chip": "esp32p4",
+    "flash_settings": {
+     "flash_mode": "dio",
+     "flash_size": "16MB",
+     "flash_freq": "80m"
+    },
+    "flash_files": {
+     "0x2000": "bootloader/bootloader.bin",
+     "0x10000": "micropython.bin",
+     "0x8000": "partition_table/partition-table.bin"
+    }
+   },
+   "files": [
+    {
+     "role": "flash",
+     "name": "omnipython-mp-esp32_generic_p4-wifi6_dev_kit_h2-staged-20261020.bin",
+     "size": 4827040,
+     "sha256": "b6ec7619a5d38e04f4e3a88846ccb3e2223f6dd5dc59f3085c572839fa06b1a6"
+    },
+    {
+     "role": "app",
+     "name": "omnipython-mp-esp32_generic_p4-wifi6_dev_kit_h2-staged-20261020.app.bin",
+     "size": 4769696,
+     "sha256": "65b3501e58e1aa9e78ca11405002ab854089bcfe1835d62a2fe4b8e6519b6bdf"
+    },
+    {
+     "role": "elf",
+     "name": "omnipython-mp-esp32_generic_p4-wifi6_dev_kit_h2-staged-20261020.elf",
+     "size": 60851592,
+     "sha256": "7be8f0819b63cde67e493ffab1b58fe5a8d689b69f1567e0682dbd206fa4de73"
+    },
+    {
+     "role": "map",
+     "name": "omnipython-mp-esp32_generic_p4-wifi6_dev_kit_h2-staged-20261020.map",
+     "size": 18272332,
+     "sha256": "3bacc58a3aad75c7fbc2b4d252c2c49db577e6bd16ea916171e96bef1be2e9f9"
+    },
+    {
+     "role": "partitions",
+     "name": "omnipython-mp-esp32_generic_p4-wifi6_dev_kit_h2-staged-20261020.partitions.bin",
+     "size": 3072,
+     "sha256": "5786490cf0e666a9cf05ff4bc87024459d0a7364e1609130ac4f09d97ced5c0f"
+    }
+   ]
+  },
+  {
+   "id": "mp-p4-panel",
+   "label": "ESP32-P4-WIFI6-Touch-LCD-4B",
+   "interpreter": "micropython",
+   "interpreter_version": "v1.30.0-preview",
+   "board": "ESP32_GENERIC_P4",
+   "variant": "PRE_REV3_C6_WIFI",
+   "chip": "esp32p4",
+   "flash": "32MB",
+   "modules": "all",
+   "flash_offset": "0x2000",
+   "build_seconds": 201,
+   "module_revisions": {
+    "audiocomponents": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/audiocomponents",
+     "revision": "b2ebc92c7727",
+     "commit": "b2ebc92c77276229a40d7c279c0a321550a68103",
+     "dirty": false,
+     "changes": null
+    },
+    "audiodsp": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/audiodsp",
+     "revision": "c23f67a3b5f8",
+     "commit": "c23f67a3b5f8ab9b4450b4bb49777782d9537f9d",
+     "dirty": false,
+     "changes": null
+    },
+    "audioif": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/audioif",
+     "revision": "d882924b76f7",
+     "commit": "d882924b76f759a5cb86a0ea6da2037ec35de1bd",
+     "dirty": false,
+     "changes": null
+    },
+    "cameraif": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/cameraif",
+     "revision": "d882924b76f7",
+     "commit": "d882924b76f759a5cb86a0ea6da2037ec35de1bd",
+     "dirty": false,
+     "changes": null
+    },
+    "castif": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/castif",
+     "revision": "d882924b76f7",
+     "commit": "d882924b76f759a5cb86a0ea6da2037ec35de1bd",
+     "dirty": false,
+     "changes": null
+    },
+    "displayif": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/displayif",
+     "revision": "d882924b76f7",
+     "commit": "d882924b76f759a5cb86a0ea6da2037ec35de1bd",
+     "dirty": false,
+     "changes": null
+    },
+    "h264enc": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/h264enc",
+     "revision": "d882924b76f7",
+     "commit": "d882924b76f759a5cb86a0ea6da2037ec35de1bd",
+     "dirty": false,
+     "changes": null
+    },
+    "jpegio": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/jpegio",
+     "revision": "d882924b76f7",
+     "commit": "d882924b76f759a5cb86a0ea6da2037ec35de1bd",
+     "dirty": false,
+     "changes": null
+    },
+    "lvgl-bindings": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/.lvgl-bindings",
+     "revision": "7740c2fae0da",
+     "commit": "7740c2fae0daa10992f5f8fe54acf670a70e2d3b",
+     "dirty": false,
+     "changes": null
+    },
+    "lvgl-micropython": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/lvgl-micropython",
+     "revision": "48937fcd87e5",
+     "commit": "48937fcd87e574488178997e2bafe73d9bf02240",
+     "dirty": false,
+     "changes": null
+    },
+    "mdns": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/mdns",
+     "revision": "d882924b76f7",
+     "commit": "d882924b76f759a5cb86a0ea6da2037ec35de1bd",
+     "dirty": false,
+     "changes": null
+    },
+    "palettes": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/palettes",
+     "revision": "f3dfad0bac28",
+     "commit": "f3dfad0bac281f1e8816b30861445498b4137de6",
+     "dirty": false,
+     "changes": null
+    },
+    "pdwidgets": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/pdwidgets",
+     "revision": "e92267f2ef93",
+     "commit": "e92267f2ef938b60ba3b97177ceb2bd0e0d402d3",
+     "dirty": false,
+     "changes": null
+    },
+    "pngio": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/pngio",
+     "revision": "d882924b76f7",
+     "commit": "d882924b76f759a5cb86a0ea6da2037ec35de1bd",
+     "dirty": false,
+     "changes": null
+    },
+    "ppa": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/ppa",
+     "revision": "d882924b76f7",
+     "commit": "d882924b76f759a5cb86a0ea6da2037ec35de1bd",
+     "dirty": false,
+     "changes": null
+    },
+    "pydevices": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/pydevices",
+     "revision": "323c97ff98da",
+     "commit": "323c97ff98da112154fb0f2672671470a0fc23b7",
+     "dirty": false,
+     "changes": null
+    },
+    "pygraphics": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/pygraphics",
+     "revision": "2d7ca35847db",
+     "commit": "2d7ca35847db78d450428cdc0cb5aa69ab81c809",
+     "dirty": false,
+     "changes": null
+    },
+    "tsmux": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/tsmux",
+     "revision": "d882924b76f7",
+     "commit": "d882924b76f759a5cb86a0ea6da2037ec35de1bd",
+     "dirty": false,
+     "changes": null
+    },
+    "ulab": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/ulab",
+     "revision": "1d3ddd8f5228",
+     "commit": "1d3ddd8f5228e2c7335dac71f4846e6abb0ec9f9",
+     "dirty": false,
+     "changes": null
+    },
+    "usbhost": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/usbhost",
+     "revision": "d882924b76f7",
+     "commit": "d882924b76f759a5cb86a0ea6da2037ec35de1bd",
+     "dirty": false,
+     "changes": null
+    }
+   },
+   "app_offset": "0x10000",
+   "esptool": {
+    "chip": "esp32p4",
+    "flash_settings": {
+     "flash_mode": "dio",
+     "flash_size": "32MB",
+     "flash_freq": "40m"
+    },
+    "flash_files": {
+     "0x2000": "bootloader/bootloader.bin",
+     "0x10000": "micropython.bin",
+     "0x8000": "partition_table/partition-table.bin"
+    }
+   },
+   "files": [
+    {
+     "role": "flash",
+     "name": "omnipython-mp-esp32_generic_p4-pre_rev3_c6_wifi-staged-20261020.bin",
+     "size": 4763552,
+     "sha256": "7498914cd004b31b42f6e1bbae8690dc12b2853cc987e76a5d8714255a064627"
+    },
+    {
+     "role": "app",
+     "name": "omnipython-mp-esp32_generic_p4-pre_rev3_c6_wifi-staged-20261020.app.bin",
+     "size": 4706208,
+     "sha256": "0eb30eb87b1f093093d0ccc2dc90df5e37a883077717c82338e93d99baabb4f6"
+    },
+    {
+     "role": "elf",
+     "name": "omnipython-mp-esp32_generic_p4-pre_rev3_c6_wifi-staged-20261020.elf",
+     "size": 60459716,
+     "sha256": "8ad8b99f2e84f5fde8db179c43d43df2df22f5689873e4a2bc11dd11a602b890"
+    },
+    {
+     "role": "map",
+     "name": "omnipython-mp-esp32_generic_p4-pre_rev3_c6_wifi-staged-20261020.map",
+     "size": 18148058,
+     "sha256": "6ab69cce72fe330756a006b5b0ed83113bf886037f260475480d4c71dd6c70da"
+    },
+    {
+     "role": "partitions",
+     "name": "omnipython-mp-esp32_generic_p4-pre_rev3_c6_wifi-staged-20261020.partitions.bin",
+     "size": 3072,
+     "sha256": "ad5b9d31df3a68669707adebd69f8ac42641efb509abb7ba6c08f5fcf57ee7ac"
+    }
+   ]
+  },
+  {
+   "id": "mp-s3-lcd7",
+   "label": "ESP32-S3-Touch-LCD-7",
+   "interpreter": "micropython",
+   "interpreter_version": "v1.30.0-preview",
+   "board": "ESP32_GENERIC_S3",
+   "variant": "LCD_7",
+   "chip": "esp32s3",
+   "flash": "8MB",
+   "modules": "all",
+   "flash_offset": "0x0",
+   "build_seconds": 271,
+   "module_revisions": {
+    "audiocomponents": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/audiocomponents",
+     "revision": "b2ebc92c7727",
+     "commit": "b2ebc92c77276229a40d7c279c0a321550a68103",
+     "dirty": false,
+     "changes": null
+    },
+    "audiodsp": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/audiodsp",
+     "revision": "c23f67a3b5f8",
+     "commit": "c23f67a3b5f8ab9b4450b4bb49777782d9537f9d",
+     "dirty": false,
+     "changes": null
+    },
+    "audioif": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/audioif",
+     "revision": "d882924b76f7",
+     "commit": "d882924b76f759a5cb86a0ea6da2037ec35de1bd",
+     "dirty": false,
+     "changes": null
+    },
+    "cameraif": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/cameraif",
+     "revision": "d882924b76f7",
+     "commit": "d882924b76f759a5cb86a0ea6da2037ec35de1bd",
+     "dirty": false,
+     "changes": null
+    },
+    "castif": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/castif",
+     "revision": "d882924b76f7",
+     "commit": "d882924b76f759a5cb86a0ea6da2037ec35de1bd",
+     "dirty": false,
+     "changes": null
+    },
+    "displayif": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/displayif",
+     "revision": "d882924b76f7",
+     "commit": "d882924b76f759a5cb86a0ea6da2037ec35de1bd",
+     "dirty": false,
+     "changes": null
+    },
+    "h264enc": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/h264enc",
+     "revision": "d882924b76f7",
+     "commit": "d882924b76f759a5cb86a0ea6da2037ec35de1bd",
+     "dirty": false,
+     "changes": null
+    },
+    "jpegio": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/jpegio",
+     "revision": "d882924b76f7",
+     "commit": "d882924b76f759a5cb86a0ea6da2037ec35de1bd",
+     "dirty": false,
+     "changes": null
+    },
+    "lvgl-bindings": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/.lvgl-bindings",
+     "revision": "7740c2fae0da",
+     "commit": "7740c2fae0daa10992f5f8fe54acf670a70e2d3b",
+     "dirty": false,
+     "changes": null
+    },
+    "lvgl-micropython": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/lvgl-micropython",
+     "revision": "48937fcd87e5",
+     "commit": "48937fcd87e574488178997e2bafe73d9bf02240",
+     "dirty": false,
+     "changes": null
+    },
+    "mdns": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/mdns",
+     "revision": "d882924b76f7",
+     "commit": "d882924b76f759a5cb86a0ea6da2037ec35de1bd",
+     "dirty": false,
+     "changes": null
+    },
+    "palettes": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/palettes",
+     "revision": "f3dfad0bac28",
+     "commit": "f3dfad0bac281f1e8816b30861445498b4137de6",
+     "dirty": false,
+     "changes": null
+    },
+    "pdwidgets": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/pdwidgets",
+     "revision": "e92267f2ef93",
+     "commit": "e92267f2ef938b60ba3b97177ceb2bd0e0d402d3",
+     "dirty": false,
+     "changes": null
+    },
+    "pngio": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/pngio",
+     "revision": "d882924b76f7",
+     "commit": "d882924b76f759a5cb86a0ea6da2037ec35de1bd",
+     "dirty": false,
+     "changes": null
+    },
+    "ppa": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/ppa",
+     "revision": "d882924b76f7",
+     "commit": "d882924b76f759a5cb86a0ea6da2037ec35de1bd",
+     "dirty": false,
+     "changes": null
+    },
+    "pydevices": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/pydevices",
+     "revision": "323c97ff98da",
+     "commit": "323c97ff98da112154fb0f2672671470a0fc23b7",
+     "dirty": false,
+     "changes": null
+    },
+    "pygraphics": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/pygraphics",
+     "revision": "2d7ca35847db",
+     "commit": "2d7ca35847db78d450428cdc0cb5aa69ab81c809",
+     "dirty": false,
+     "changes": null
+    },
+    "tsmux": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/tsmux",
+     "revision": "d882924b76f7",
+     "commit": "d882924b76f759a5cb86a0ea6da2037ec35de1bd",
+     "dirty": false,
+     "changes": null
+    },
+    "ulab": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/ulab",
+     "revision": "1d3ddd8f5228",
+     "commit": "1d3ddd8f5228e2c7335dac71f4846e6abb0ec9f9",
+     "dirty": false,
+     "changes": null
+    },
+    "usbhost": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/usbhost",
+     "revision": "d882924b76f7",
+     "commit": "d882924b76f759a5cb86a0ea6da2037ec35de1bd",
+     "dirty": false,
+     "changes": null
+    }
+   },
+   "app_offset": "0x10000",
+   "esptool": {
+    "chip": "esp32s3",
+    "flash_settings": {
+     "flash_mode": "dio",
+     "flash_size": "8MB",
+     "flash_freq": "80m"
+    },
+    "flash_files": {
+     "0x0": "bootloader/bootloader.bin",
+     "0x10000": "micropython.bin",
+     "0x8000": "partition_table/partition-table.bin"
+    }
+   },
+   "files": [
+    {
+     "role": "flash",
+     "name": "omnipython-mp-esp32_generic_s3-lcd_7-staged-20261020.bin",
+     "size": 4386048,
+     "sha256": "fa4bc191f5ff75f628809d64a31d1fe881074308511a79552505f686dfc45d2f"
+    },
+    {
+     "role": "app",
+     "name": "omnipython-mp-esp32_generic_s3-lcd_7-staged-20261020.app.bin",
+     "size": 4320512,
+     "sha256": "8e069066f2326831097c71581b2c69e3db19bb1333aedef3bf6fec93fbeea4dc"
+    },
+    {
+     "role": "elf",
+     "name": "omnipython-mp-esp32_generic_s3-lcd_7-staged-20261020.elf",
+     "size": 51415656,
+     "sha256": "fd8479859f9b466b20d777ca9f43523ed8fcf3f1298fe9c30bcfa03015494843"
+    },
+    {
+     "role": "map",
+     "name": "omnipython-mp-esp32_generic_s3-lcd_7-staged-20261020.map",
+     "size": 26142429,
+     "sha256": "1d8650744c96d42771185c4c751fe18f828ef6a94aeaf182bd9933df7d87aa72"
+    },
+    {
+     "role": "partitions",
+     "name": "omnipython-mp-esp32_generic_s3-lcd_7-staged-20261020.partitions.bin",
+     "size": 3072,
+     "sha256": "ade7226f48cc73caceeae525ec1521735319130d291c6c8610e97753642a6ce5"
+    }
+   ]
+  },
+  {
+   "id": "mp-s3-lcd43",
+   "label": "ESP32-S3-Touch-LCD-4.3",
+   "interpreter": "micropython",
+   "interpreter_version": "v1.30.0-preview",
+   "board": "ESP32_GENERIC_S3",
+   "variant": "SPIRAM_OCT",
+   "chip": "esp32s3",
+   "flash": "8MB",
+   "modules": "all",
+   "flash_offset": "0x0",
+   "build_seconds": 187,
+   "module_revisions": {
+    "audiocomponents": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/audiocomponents",
+     "revision": "b2ebc92c7727",
+     "commit": "b2ebc92c77276229a40d7c279c0a321550a68103",
+     "dirty": false,
+     "changes": null
+    },
+    "audiodsp": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/audiodsp",
+     "revision": "c23f67a3b5f8",
+     "commit": "c23f67a3b5f8ab9b4450b4bb49777782d9537f9d",
+     "dirty": false,
+     "changes": null
+    },
+    "audioif": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/audioif",
+     "revision": "d882924b76f7",
+     "commit": "d882924b76f759a5cb86a0ea6da2037ec35de1bd",
+     "dirty": false,
+     "changes": null
+    },
+    "cameraif": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/cameraif",
+     "revision": "d882924b76f7",
+     "commit": "d882924b76f759a5cb86a0ea6da2037ec35de1bd",
+     "dirty": false,
+     "changes": null
+    },
+    "castif": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/castif",
+     "revision": "d882924b76f7",
+     "commit": "d882924b76f759a5cb86a0ea6da2037ec35de1bd",
+     "dirty": false,
+     "changes": null
+    },
+    "displayif": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/displayif",
+     "revision": "d882924b76f7",
+     "commit": "d882924b76f759a5cb86a0ea6da2037ec35de1bd",
+     "dirty": false,
+     "changes": null
+    },
+    "h264enc": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/h264enc",
+     "revision": "d882924b76f7",
+     "commit": "d882924b76f759a5cb86a0ea6da2037ec35de1bd",
+     "dirty": false,
+     "changes": null
+    },
+    "jpegio": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/jpegio",
+     "revision": "d882924b76f7",
+     "commit": "d882924b76f759a5cb86a0ea6da2037ec35de1bd",
+     "dirty": false,
+     "changes": null
+    },
+    "lvgl-bindings": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/.lvgl-bindings",
+     "revision": "7740c2fae0da",
+     "commit": "7740c2fae0daa10992f5f8fe54acf670a70e2d3b",
+     "dirty": false,
+     "changes": null
+    },
+    "lvgl-micropython": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/lvgl-micropython",
+     "revision": "48937fcd87e5",
+     "commit": "48937fcd87e574488178997e2bafe73d9bf02240",
+     "dirty": false,
+     "changes": null
+    },
+    "mdns": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/mdns",
+     "revision": "d882924b76f7",
+     "commit": "d882924b76f759a5cb86a0ea6da2037ec35de1bd",
+     "dirty": false,
+     "changes": null
+    },
+    "palettes": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/palettes",
+     "revision": "f3dfad0bac28",
+     "commit": "f3dfad0bac281f1e8816b30861445498b4137de6",
+     "dirty": false,
+     "changes": null
+    },
+    "pdwidgets": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/pdwidgets",
+     "revision": "e92267f2ef93",
+     "commit": "e92267f2ef938b60ba3b97177ceb2bd0e0d402d3",
+     "dirty": false,
+     "changes": null
+    },
+    "pngio": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/pngio",
+     "revision": "d882924b76f7",
+     "commit": "d882924b76f759a5cb86a0ea6da2037ec35de1bd",
+     "dirty": false,
+     "changes": null
+    },
+    "ppa": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/ppa",
+     "revision": "d882924b76f7",
+     "commit": "d882924b76f759a5cb86a0ea6da2037ec35de1bd",
+     "dirty": false,
+     "changes": null
+    },
+    "pydevices": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/pydevices",
+     "revision": "323c97ff98da",
+     "commit": "323c97ff98da112154fb0f2672671470a0fc23b7",
+     "dirty": false,
+     "changes": null
+    },
+    "pygraphics": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/pygraphics",
+     "revision": "2d7ca35847db",
+     "commit": "2d7ca35847db78d450428cdc0cb5aa69ab81c809",
+     "dirty": false,
+     "changes": null
+    },
+    "tsmux": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/tsmux",
+     "revision": "d882924b76f7",
+     "commit": "d882924b76f759a5cb86a0ea6da2037ec35de1bd",
+     "dirty": false,
+     "changes": null
+    },
+    "ulab": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/ulab",
+     "revision": "1d3ddd8f5228",
+     "commit": "1d3ddd8f5228e2c7335dac71f4846e6abb0ec9f9",
+     "dirty": false,
+     "changes": null
+    },
+    "usbhost": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/usbhost",
+     "revision": "d882924b76f7",
+     "commit": "d882924b76f759a5cb86a0ea6da2037ec35de1bd",
+     "dirty": false,
+     "changes": null
+    }
+   },
+   "app_offset": "0x10000",
+   "esptool": {
+    "chip": "esp32s3",
+    "flash_settings": {
+     "flash_mode": "dio",
+     "flash_size": "8MB",
+     "flash_freq": "80m"
+    },
+    "flash_files": {
+     "0x0": "bootloader/bootloader.bin",
+     "0x10000": "micropython.bin",
+     "0x8000": "partition_table/partition-table.bin"
+    }
+   },
+   "files": [
+    {
+     "role": "flash",
+     "name": "omnipython-mp-esp32_generic_s3-spiram_oct-staged-20261020.bin",
+     "size": 4386368,
+     "sha256": "3c54675fa1c67f4351bf0e303bc2e177decc00572b60262cbd6ab8a9a6e07bc0"
+    },
+    {
+     "role": "app",
+     "name": "omnipython-mp-esp32_generic_s3-spiram_oct-staged-20261020.app.bin",
+     "size": 4320832,
+     "sha256": "7d083e006944da780bf24bb4a58d18a0cc1fb510a4c435047bcbf398c22161b3"
+    },
+    {
+     "role": "elf",
+     "name": "omnipython-mp-esp32_generic_s3-spiram_oct-staged-20261020.elf",
+     "size": 51401188,
+     "sha256": "84f48d539e17939b195d05553c6813c96e6609658d3b867e4b9e9fe6ebc530bd"
+    },
+    {
+     "role": "map",
+     "name": "omnipython-mp-esp32_generic_s3-spiram_oct-staged-20261020.map",
+     "size": 26142127,
+     "sha256": "fb31f422f8301f2bbf888d4f6429aae7b3ecce496e3e8421c0e1f9e464b6c455"
+    },
+    {
+     "role": "partitions",
+     "name": "omnipython-mp-esp32_generic_s3-spiram_oct-staged-20261020.partitions.bin",
+     "size": 3072,
+     "sha256": "ade7226f48cc73caceeae525ec1521735319130d291c6c8610e97753642a6ce5"
+    }
+   ]
+  },
+  {
+   "id": "mp-s3-tembed",
+   "label": "LilyGO T-Embed S3",
+   "interpreter": "micropython",
+   "interpreter_version": "v1.30.0-preview",
+   "board": "ESP32_GENERIC_S3",
+   "variant": "T_EMBED",
+   "chip": "esp32s3",
+   "flash": "16MB",
+   "modules": "all",
+   "flash_offset": "0x0",
+   "build_seconds": 213,
+   "module_revisions": {
+    "audiocomponents": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/audiocomponents",
+     "revision": "b2ebc92c7727",
+     "commit": "b2ebc92c77276229a40d7c279c0a321550a68103",
+     "dirty": false,
+     "changes": null
+    },
+    "audiodsp": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/audiodsp",
+     "revision": "c23f67a3b5f8",
+     "commit": "c23f67a3b5f8ab9b4450b4bb49777782d9537f9d",
+     "dirty": false,
+     "changes": null
+    },
+    "audioif": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/audioif",
+     "revision": "d882924b76f7",
+     "commit": "d882924b76f759a5cb86a0ea6da2037ec35de1bd",
+     "dirty": false,
+     "changes": null
+    },
+    "cameraif": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/cameraif",
+     "revision": "d882924b76f7",
+     "commit": "d882924b76f759a5cb86a0ea6da2037ec35de1bd",
+     "dirty": false,
+     "changes": null
+    },
+    "castif": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/castif",
+     "revision": "d882924b76f7",
+     "commit": "d882924b76f759a5cb86a0ea6da2037ec35de1bd",
+     "dirty": false,
+     "changes": null
+    },
+    "displayif": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/displayif",
+     "revision": "d882924b76f7",
+     "commit": "d882924b76f759a5cb86a0ea6da2037ec35de1bd",
+     "dirty": false,
+     "changes": null
+    },
+    "h264enc": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/h264enc",
+     "revision": "d882924b76f7",
+     "commit": "d882924b76f759a5cb86a0ea6da2037ec35de1bd",
+     "dirty": false,
+     "changes": null
+    },
+    "jpegio": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/jpegio",
+     "revision": "d882924b76f7",
+     "commit": "d882924b76f759a5cb86a0ea6da2037ec35de1bd",
+     "dirty": false,
+     "changes": null
+    },
+    "lvgl-bindings": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/.lvgl-bindings",
+     "revision": "7740c2fae0da",
+     "commit": "7740c2fae0daa10992f5f8fe54acf670a70e2d3b",
+     "dirty": false,
+     "changes": null
+    },
+    "lvgl-micropython": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/lvgl-micropython",
+     "revision": "48937fcd87e5",
+     "commit": "48937fcd87e574488178997e2bafe73d9bf02240",
+     "dirty": false,
+     "changes": null
+    },
+    "mdns": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/mdns",
+     "revision": "d882924b76f7",
+     "commit": "d882924b76f759a5cb86a0ea6da2037ec35de1bd",
+     "dirty": false,
+     "changes": null
+    },
+    "palettes": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/palettes",
+     "revision": "f3dfad0bac28",
+     "commit": "f3dfad0bac281f1e8816b30861445498b4137de6",
+     "dirty": false,
+     "changes": null
+    },
+    "pdwidgets": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/pdwidgets",
+     "revision": "e92267f2ef93",
+     "commit": "e92267f2ef938b60ba3b97177ceb2bd0e0d402d3",
+     "dirty": false,
+     "changes": null
+    },
+    "pngio": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/pngio",
+     "revision": "d882924b76f7",
+     "commit": "d882924b76f759a5cb86a0ea6da2037ec35de1bd",
+     "dirty": false,
+     "changes": null
+    },
+    "ppa": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/ppa",
+     "revision": "d882924b76f7",
+     "commit": "d882924b76f759a5cb86a0ea6da2037ec35de1bd",
+     "dirty": false,
+     "changes": null
+    },
+    "pydevices": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/pydevices",
+     "revision": "323c97ff98da",
+     "commit": "323c97ff98da112154fb0f2672671470a0fc23b7",
+     "dirty": false,
+     "changes": null
+    },
+    "pygraphics": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/pygraphics",
+     "revision": "2d7ca35847db",
+     "commit": "2d7ca35847db78d450428cdc0cb5aa69ab81c809",
+     "dirty": false,
+     "changes": null
+    },
+    "tsmux": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/tsmux",
+     "revision": "d882924b76f7",
+     "commit": "d882924b76f759a5cb86a0ea6da2037ec35de1bd",
+     "dirty": false,
+     "changes": null
+    },
+    "ulab": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/ulab",
+     "revision": "1d3ddd8f5228",
+     "commit": "1d3ddd8f5228e2c7335dac71f4846e6abb0ec9f9",
+     "dirty": false,
+     "changes": null
+    },
+    "usbhost": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/usbhost",
+     "revision": "d882924b76f7",
+     "commit": "d882924b76f759a5cb86a0ea6da2037ec35de1bd",
+     "dirty": false,
+     "changes": null
+    }
+   },
+   "app_offset": "0x10000",
+   "esptool": {
+    "chip": "esp32s3",
+    "flash_settings": {
+     "flash_mode": "dio",
+     "flash_size": "16MB",
+     "flash_freq": "80m"
+    },
+    "flash_files": {
+     "0x0": "bootloader/bootloader.bin",
+     "0x10000": "micropython.bin",
+     "0x8000": "partition_table/partition-table.bin"
+    }
+   },
+   "files": [
+    {
+     "role": "flash",
+     "name": "omnipython-mp-esp32_generic_s3-t_embed-staged-20261020.bin",
+     "size": 4386800,
+     "sha256": "7bc0342110ee32bb79bb0c5a5f5a8fa16568386225230c1ebfe6d0fe4b9afd88"
+    },
+    {
+     "role": "app",
+     "name": "omnipython-mp-esp32_generic_s3-t_embed-staged-20261020.app.bin",
+     "size": 4321264,
+     "sha256": "240121e1ceccc3dfefe058beb0d804f02c442efa21c030edb46c0e6a8e0eb0c3"
+    },
+    {
+     "role": "elf",
+     "name": "omnipython-mp-esp32_generic_s3-t_embed-staged-20261020.elf",
+     "size": 51401124,
+     "sha256": "86f42e8bdbd310657602fea0cafde9ceb74625d8a5b8d5db61fb57fd790d7a0c"
+    },
+    {
+     "role": "map",
+     "name": "omnipython-mp-esp32_generic_s3-t_embed-staged-20261020.map",
+     "size": 26139664,
+     "sha256": "d014b6ee106265789008d90c1c84ba185c4b80e55bbe4d0659d635a1657a8e22"
+    },
+    {
+     "role": "partitions",
+     "name": "omnipython-mp-esp32_generic_s3-t_embed-staged-20261020.partitions.bin",
+     "size": 3072,
+     "sha256": "ade7226f48cc73caceeae525ec1521735319130d291c6c8610e97753642a6ce5"
+    }
+   ]
+  },
+  {
+   "id": "cp-p4-devkit",
+   "label": "ESP32-P4-WIFI6-DEV-KIT",
+   "interpreter": "circuitpython",
+   "interpreter_version": "11.0.0-alpha.1-dirty",
+   "board": "waveshare_esp32p4_wifi6_dev_kit",
+   "variant": null,
+   "chip": "esp32p4",
+   "flash": "16MB",
+   "modules": "audiodsp,pygraphics,@lvgl-circuitpython",
+   "flash_offset": "0x0",
+   "build_seconds": 108,
+   "module_revisions": {
+    "audiodsp": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/audiodsp",
+     "revision": "c23f67a3b5f8",
+     "commit": "c23f67a3b5f8ab9b4450b4bb49777782d9537f9d",
+     "dirty": false,
+     "changes": null
+    },
+    "lvgl-circuitpython": {
+     "path": "/home/runner/work/_temp/ws/lvgl-circuitpython",
+     "revision": "7fb257a5f3d0",
+     "commit": "7fb257a5f3d0d5c2f28c27c235e6239714e740c4",
+     "dirty": false,
+     "changes": null
+    },
+    "pygraphics": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/pygraphics",
+     "revision": "2d7ca35847db",
+     "commit": "2d7ca35847db78d450428cdc0cb5aa69ab81c809",
+     "dirty": false,
+     "changes": null
+    }
+   },
+   "app_offset": "0x10000",
+   "circuitpython_patches": [
+    "0001-qstr-offsets-of-four-bytes-when-a-build-asks.patch",
+    "0002-espressif-link-from-a-response-file.patch",
+    "0003-mipidsi-non-burst-video-and-a-continuous-clock.patch",
+    "0004-mipidsi-a-dsi-phy-clock-that-revision-3-p4s-have.patch",
+    "0005-audiobusio-write-each-i2s-buffer-back-from-the-cache.patch",
+    "0006-espressif-esp-idf-components-a-user-c-module-asks-for.patch",
+    "0007-audiomixer-level-one-passes-samples-through-unchanged.patch",
+    "0008-audiodelays-a-looping-source-that-comes-back-empty-no-longer-hangs-the-pull.patch",
+    "0009-audiodelays-multitapdelay-a-looping-source-that-comes-back-empty-no-longer-hangs-the-pull.patch"
+   ],
+   "files": [
+    {
+     "role": "flash",
+     "name": "omnipython-cp-waveshare_esp32p4_wifi6_dev_kit-11.0.0-alpha.1-20261021.bin",
+     "size": 2021600,
+     "sha256": "89ba1fefea48420444a3200cd016f8fcbcbb2d5afc27f07ff087780b362d27d0"
+    },
+    {
+     "role": "app",
+     "name": "omnipython-cp-waveshare_esp32p4_wifi6_dev_kit-11.0.0-alpha.1-20261021.app.bin",
+     "size": 1956064,
+     "sha256": "052e23cf3e49dd8fbb7ae06994706ba6c75714665f34b0986b9fdc7ac6944bbb"
+    },
+    {
+     "role": "elf",
+     "name": "omnipython-cp-waveshare_esp32p4_wifi6_dev_kit-11.0.0-alpha.1-20261021.elf",
+     "size": 13730188,
+     "sha256": "ae0f9252da550caa000757653d6c6acd7747114cff531880e2f1d5ff65db26f5"
+    },
+    {
+     "role": "map",
+     "name": "omnipython-cp-waveshare_esp32p4_wifi6_dev_kit-11.0.0-alpha.1-20261021.map",
+     "size": 12741131,
+     "sha256": "5365f2cf77c42d63920a790567212f911f9335b621d4254e3758de47342af299"
+    }
+   ]
+  },
+  {
+   "id": "cp-s3-lcd7",
+   "label": "ESP32-S3-Touch-LCD-7",
+   "interpreter": "circuitpython",
+   "interpreter_version": "11.0.0-alpha.1-dirty",
+   "board": "waveshare_esp32s3_touch_lcd_7",
+   "variant": null,
+   "chip": "esp32s3",
+   "flash": "8MB",
+   "modules": "audiodsp,pygraphics,@lvgl-circuitpython",
+   "flash_offset": "0x0",
+   "build_seconds": 230,
+   "module_revisions": {
+    "audiodsp": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/audiodsp",
+     "revision": "c23f67a3b5f8",
+     "commit": "c23f67a3b5f8ab9b4450b4bb49777782d9537f9d",
+     "dirty": false,
+     "changes": null
+    },
+    "lvgl-circuitpython": {
+     "path": "/home/runner/work/_temp/ws/lvgl-circuitpython",
+     "revision": "7fb257a5f3d0",
+     "commit": "7fb257a5f3d0d5c2f28c27c235e6239714e740c4",
+     "dirty": false,
+     "changes": null
+    },
+    "pygraphics": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/pygraphics",
+     "revision": "2d7ca35847db",
+     "commit": "2d7ca35847db78d450428cdc0cb5aa69ab81c809",
+     "dirty": false,
+     "changes": null
+    }
+   },
+   "app_offset": "0x10000",
+   "circuitpython_patches": [
+    "0001-qstr-offsets-of-four-bytes-when-a-build-asks.patch",
+    "0002-espressif-link-from-a-response-file.patch",
+    "0003-mipidsi-non-burst-video-and-a-continuous-clock.patch",
+    "0004-mipidsi-a-dsi-phy-clock-that-revision-3-p4s-have.patch",
+    "0005-audiobusio-write-each-i2s-buffer-back-from-the-cache.patch",
+    "0006-espressif-esp-idf-components-a-user-c-module-asks-for.patch",
+    "0007-audiomixer-level-one-passes-samples-through-unchanged.patch",
+    "0008-audiodelays-a-looping-source-that-comes-back-empty-no-longer-hangs-the-pull.patch",
+    "0009-audiodelays-multitapdelay-a-looping-source-that-comes-back-empty-no-longer-hangs-the-pull.patch"
+   ],
+   "files": [
+    {
+     "role": "flash",
+     "name": "omnipython-cp-waveshare_esp32s3_touch_lcd_7-11.0.0-alpha.1-20261021.bin",
+     "size": 3154112,
+     "sha256": "a37e12eb7dbab0768a0bd8b05d9fccf8c9c452314a69f8d5996cd48402a95bee"
+    },
+    {
+     "role": "app",
+     "name": "omnipython-cp-waveshare_esp32s3_touch_lcd_7-11.0.0-alpha.1-20261021.app.bin",
+     "size": 3088576,
+     "sha256": "3366bfebfeab7f563e81ec85ca266c0bc3bf50f1950003d0adfe344a12ceee37"
+    },
+    {
+     "role": "elf",
+     "name": "omnipython-cp-waveshare_esp32s3_touch_lcd_7-11.0.0-alpha.1-20261021.elf",
+     "size": 16913076,
+     "sha256": "6a6871745d0e48f787eed75e98ce166d5195125393d5962fccc0ecf6cbac87d9"
+    },
+    {
+     "role": "map",
+     "name": "omnipython-cp-waveshare_esp32s3_touch_lcd_7-11.0.0-alpha.1-20261021.map",
+     "size": 24488958,
+     "sha256": "8e81ca1e6da9dc56e5e022cd4ae4d8738f955f4f2a53c6b319f00bb0856bac17"
+    }
+   ]
+  },
+  {
+   "id": "cp-twatch",
+   "label": "LilyGO T-Watch S3",
+   "interpreter": "circuitpython",
+   "interpreter_version": "11.0.0-alpha.1-dirty",
+   "board": "lilygo_twatch_s3_single_app",
+   "variant": null,
+   "chip": "esp32s3",
+   "flash": "16MB",
+   "modules": "audiodsp,pygraphics,@lvgl-circuitpython",
+   "flash_offset": "0x0",
+   "build_seconds": 183,
+   "module_revisions": {
+    "audiodsp": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/audiodsp",
+     "revision": "c23f67a3b5f8",
+     "commit": "c23f67a3b5f8ab9b4450b4bb49777782d9537f9d",
+     "dirty": false,
+     "changes": null
+    },
+    "lvgl-circuitpython": {
+     "path": "/home/runner/work/_temp/ws/lvgl-circuitpython",
+     "revision": "7fb257a5f3d0",
+     "commit": "7fb257a5f3d0d5c2f28c27c235e6239714e740c4",
+     "dirty": false,
+     "changes": null
+    },
+    "pygraphics": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/pygraphics",
+     "revision": "2d7ca35847db",
+     "commit": "2d7ca35847db78d450428cdc0cb5aa69ab81c809",
+     "dirty": false,
+     "changes": null
+    }
+   },
+   "app_offset": "0x10000",
+   "circuitpython_patches": [
+    "0001-qstr-offsets-of-four-bytes-when-a-build-asks.patch",
+    "0002-espressif-link-from-a-response-file.patch",
+    "0003-mipidsi-non-burst-video-and-a-continuous-clock.patch",
+    "0004-mipidsi-a-dsi-phy-clock-that-revision-3-p4s-have.patch",
+    "0005-audiobusio-write-each-i2s-buffer-back-from-the-cache.patch",
+    "0006-espressif-esp-idf-components-a-user-c-module-asks-for.patch",
+    "0007-audiomixer-level-one-passes-samples-through-unchanged.patch",
+    "0008-audiodelays-a-looping-source-that-comes-back-empty-no-longer-hangs-the-pull.patch",
+    "0009-audiodelays-multitapdelay-a-looping-source-that-comes-back-empty-no-longer-hangs-the-pull.patch"
+   ],
+   "files": [
+    {
+     "role": "flash",
+     "name": "omnipython-cp-lilygo_twatch_s3_single_app-11.0.0-alpha.1-20261021.bin",
+     "size": 3096576,
+     "sha256": "fe00ee18ee1b8f4e111c22af8ac2180a82a19f25a3f0df7e27c484281ccadc79"
+    },
+    {
+     "role": "app",
+     "name": "omnipython-cp-lilygo_twatch_s3_single_app-11.0.0-alpha.1-20261021.app.bin",
+     "size": 3031040,
+     "sha256": "6b7c26f78702e17edc75efc56c3fdb5012a7f26629fa84bd05e1e5a03e705b25"
+    },
+    {
+     "role": "elf",
+     "name": "omnipython-cp-lilygo_twatch_s3_single_app-11.0.0-alpha.1-20261021.elf",
+     "size": 16351208,
+     "sha256": "ed29817db0eb5a0a8e3b0e531274e9c611eb945bd6527a3364db07f78a32a5d0"
+    },
+    {
+     "role": "map",
+     "name": "omnipython-cp-lilygo_twatch_s3_single_app-11.0.0-alpha.1-20261021.map",
+     "size": 23801981,
+     "sha256": "27d421d08497c72be9ffd216014acf7ec5224e56d64b150510709028e4ec88a7"
+    }
+   ]
+  },
+  {
+   "id": "cp-feather-rp2040",
+   "label": "Adafruit Feather RP2040 + display wing",
+   "interpreter": "circuitpython",
+   "interpreter_version": "11.0.0-alpha.1-dirty",
+   "board": "feather_rp2040_lvgl",
+   "variant": null,
+   "chip": "rp2040",
+   "flash": "8MB",
+   "modules": "pygraphics,@lvgl-circuitpython",
+   "flash_offset": null,
+   "build_seconds": 186,
+   "module_revisions": {
+    "lvgl-circuitpython": {
+     "path": "/home/runner/work/_temp/ws/lvgl-circuitpython",
+     "revision": "7fb257a5f3d0",
+     "commit": "7fb257a5f3d0d5c2f28c27c235e6239714e740c4",
+     "dirty": false,
+     "changes": null
+    },
+    "pygraphics": {
+     "path": "/home/runner/work/micropython-pydevices/micropython-pydevices/modules/pygraphics",
+     "revision": "2d7ca35847db",
+     "commit": "2d7ca35847db78d450428cdc0cb5aa69ab81c809",
+     "dirty": false,
+     "changes": null
+    }
+   },
+   "circuitpython_patches": [
+    "0001-qstr-offsets-of-four-bytes-when-a-build-asks.patch",
+    "0002-espressif-link-from-a-response-file.patch",
+    "0003-mipidsi-non-burst-video-and-a-continuous-clock.patch",
+    "0004-mipidsi-a-dsi-phy-clock-that-revision-3-p4s-have.patch",
+    "0005-audiobusio-write-each-i2s-buffer-back-from-the-cache.patch",
+    "0006-espressif-esp-idf-components-a-user-c-module-asks-for.patch",
+    "0007-audiomixer-level-one-passes-samples-through-unchanged.patch",
+    "0008-audiodelays-a-looping-source-that-comes-back-empty-no-longer-hangs-the-pull.patch",
+    "0009-audiodelays-multitapdelay-a-looping-source-that-comes-back-empty-no-longer-hangs-the-pull.patch"
+   ],
+   "files": [
+    {
+     "role": "uf2",
+     "name": "omnipython-cp-feather_rp2040_lvgl-11.0.0-alpha.1-20261021.uf2",
+     "size": 3752448,
+     "sha256": "b8b4e2b1f8fa5aecc65698692f4fb84d60c1b89d96f9769428c31207e9f81a0f"
+    },
+    {
+     "role": "elf",
+     "name": "omnipython-cp-feather_rp2040_lvgl-11.0.0-alpha.1-20261021.elf",
+     "size": 3005636,
+     "sha256": "3fa4a90678e946ba4e5baad6bb27c340267932a810fd03c4aae89b648fc4aa3b"
+    },
+    {
+     "role": "map",
+     "name": "omnipython-cp-feather_rp2040_lvgl-11.0.0-alpha.1-20261021.map",
+     "size": 7533173,
+     "sha256": "377ef4a4c5a2681a4ba213c757410b64c688e5942b038efccfc36dd69744557d"
+    }
+   ]
+  }
+ ]
+}

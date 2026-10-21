@@ -1,0 +1,36 @@
+{
+ "tag": "v0.5.5",
+ "provenance": "built by the workspace anchor's tools/build_interpreters.sh on the maintainer workstation",
+ "files": {
+  "micropython": {
+   "sha256": "5fccb83203a276716812f862b0c5d01648b99223405d0d781a4ea5510a46dee9",
+   "size": 3535848,
+   "platform": "linux-x86_64",
+   "version": "3.4.0; MicroPython v1.29.0-1.gb41df1ec1c on 2026-09-24"
+  },
+  "micropython.exe": {
+   "sha256": "7a14839857b45b863cdaeb95e0837a62b74098588f89202685d9f1c90b1a22c9",
+   "size": 4706304,
+   "platform": "windows-amd64",
+   "version": "3.4.0; MicroPython v1.29.0-1.gb41df1ec1c on 2026-09-24"
+  },
+  "circuitpython": {
+   "sha256": "97e9e8c0d22735c63f30c42f6b37ac225b46deb52329763301b3d9c2e9276f80",
+   "size": 27982504,
+   "platform": "linux-x86_64",
+   "version": "3.4.0; CircuitPython 10.3.0-dirty on 2026-09-24"
+  },
+  "micropython.mjs": {
+   "sha256": "6bdad3fc4892bc409c292d8b6605e0162d3420425af1e69e4c04a3168248d329",
+   "size": 270254,
+   "platform": "node/browser wasm32",
+   "version": "3.4.0; MicroPython v1.29.0-1.gb41df1ec1c on 2026-09-24"
+  },
+  "micropython.wasm": {
+   "sha256": "f0e6588b96ebf250ac37d01d28177b730c121da50bdc3161919b21bc8651acf0",
+   "size": 5878836,
+   "platform": "node/browser wasm32",
+   "version": "3.4.0; MicroPython v1.29.0-1.gb41df1ec1c on 2026-09-24"
+  }
+ }
+}
