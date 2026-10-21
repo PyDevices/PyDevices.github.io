@@ -1,6 +1,6 @@
 {
  "name": "OmniPython CircuitPython-compatible for the ESP32-S3-Touch-LCD-7",
- "version": "staged-20261021",
+ "version": "staged-20261021b",
  "new_install_prompt_erase": true,
  "new_install_improv_wait_time": 0,
  "builds": [
