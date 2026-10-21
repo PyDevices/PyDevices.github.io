@@ -147,10 +147,15 @@
     $('fw-steps-title').textContent = canBrowser(b) ? 'Or with esptool, in any browser' : 'Steps';
 
     if (isEsp(b)) {
-      steps.push(h('li', {}, 'Install esptool: ', pre('pip install esptool')));
+      steps.push(h('li', {}, 'Install esptool in a virtual environment and activate it, so the ', code('esptool'),
+        ' you run is the one you just installed. In each new terminal, activate it again before you run esptool.',
+        pre('# Windows\npython -m venv v\nv\\Scripts\\activate\npip install esptool\n\n' +
+            '# Linux and macOS\npython3 -m venv v\nsource v/bin/activate\npip install esptool')));
       steps.push(h('li', {}, link(local(f), 'Download ' + name), ' (' + mb(f.size) + '), then write it. ' +
         'The port is COM3 or similar on Windows, /dev/ttyACM0 or /dev/ttyUSB0 on Linux, /dev/cu.usbmodem... on macOS. ' +
-        'On a board with two USB ports, use the one wired to the serial chip, usually marked UART.',
+        'On a board with two USB ports, use the one wired to the serial chip, usually marked UART. ',
+        'If your board\'s USB-serial bridge takes a faster speed, add ', code('--baud 921600'),
+        ' after the port to shorten the write; the line below works without it, only slower.',
         pre('esptool --chip ' + b.chip + ' --port COM3 write-flash ' + b.flash_offset + ' ' + name)));
       steps.push(h('li', {}, 'Coming from another firmware, or want a clean board? Erase the flash first, then write as above (this removes your files):',
         pre('esptool --chip ' + b.chip + ' --port COM3 erase-flash')));
@@ -197,7 +202,7 @@
     var app = fileOf(b, 'app');
     if (app && b.app_offset) {
       note += ' To update a board that already runs a build with this layout without touching its other partitions, write the app image alone: esptool --chip ' +
-        b.chip + ' write-flash ' + b.app_offset + ' ' + app.name + '.';
+        b.chip + ' --port COM3 write-flash ' + b.app_offset + ' ' + app.name + '.';
     }
     $('fw-files-note').textContent = note;
     $('fw-verify').textContent = 'gh attestation verify ' + mainFile(b).name + ' --repo ' + REPO;
