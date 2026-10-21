@@ -168,7 +168,8 @@
     } else {
       steps.push(h('li', {}, 'Check it. A drive named CIRCUITPY appears. Open the board\'s serial port in any terminal ' +
         '(Thonny, or ', code('python -m serial.tools.miniterm'), '), press a key, and print the version:',
-        pre('>>> import sys; print(sys.version)'), 'It mentions ', code('CircuitPython'), '.'));
+        pre('>>> import sys; print(sys.version)'),
+        'It starts with ', code('3.4.0; CircuitPython ' + b.interpreter_version), ' and ends with the build date.'));
     }
     steps.push(h('li', {}, 'Next, install your board\'s package from the ', link(MIP, 'mip index'), '.'));
     steps.forEach(function (s) { ol.appendChild(s); });
