@@ -1,0 +1,17 @@
+{
+ "name": "OmniPython CircuitPython-compatible for the LilyGO T-Watch S3",
+ "version": "staged-20261020",
+ "new_install_prompt_erase": true,
+ "new_install_improv_wait_time": 0,
+ "builds": [
+  {
+   "chipFamily": "ESP32-S3",
+   "parts": [
+    {
+     "path": "../files/omnipython-cp-lilygo_twatch_s3_single_app-11.0.0-alpha.1-20261021.bin",
+     "offset": 0
+    }
+   ]
+  }
+ ]
+}

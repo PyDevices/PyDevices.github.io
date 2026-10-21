@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PyDevices - firmware downloads</title>
+  <meta name="description" content="Flashable OmniPython firmware for the boards we have run: MicroPython and CircuitPython-compatible images, an Install button for Chrome and Edge, and the esptool steps for everything else.">
+  <meta name="robots" content="noindex">
+  <script>try{if(localStorage.getItem('pydevices-theme')==='light'){document.documentElement.setAttribute('data-theme','light');}}catch(e){}</script>
+  <link rel="icon" type="image/svg+xml" href="/assets/img/logo.svg">
+  <link rel="stylesheet" href="/assets/chrome/site.css">
+  <link rel="stylesheet" href="page.css">
+</head>
+<body>
+  <div id="pydevices-site-header"></div>
+
+  <main class="wrap fw" style="padding-bottom: 60px;">
+    <div class="section-head" style="margin-top: 36px;">
+      <h1 style="margin: 0;">Firmware downloads</h1>
+      <span class="hint">OmniPython MP and CP, for the boards we have run</span>
+    </div>
+    <p class="prose">Pick your board, then press Install in Chrome or Edge, or follow the esptool steps in any browser. Everything here is built by public CI from one pinned commit and attested, so you can check a file came from it.</p>
+
+    <noscript><p class="fw-warn">This page builds its steps from <code>firmware.json</code> with a little script, so it needs JavaScript. The files are listed in <a href="firmware.json">firmware.json</a>.</p></noscript>
+    <div id="fw-set" class="fw-set" hidden></div>
+
+    <div class="spec-block">
+      <label for="fw-board" class="fw-label">Your board</label>
+      <select id="fw-board" class="fw-select" disabled><option>Loading...</option></select>
+      <p id="fw-build-note" class="fw-muted"></p>
+    </div>
+
+    <div id="fw-out" hidden>
+      <div class="fw-warn" role="note">
+        <strong>Copy your files off the board first, <code>secrets.py</code> above all.</strong>
+        A build can move the filesystem, and flashing across a layout change leaves it empty.
+        Coming from another firmware (MicroPython to CircuitPython, or back), erase the flash first.
+      </div>
+
+      <div id="fw-install" class="spec-block" hidden>
+        <h2>Install from the browser</h2>
+        <p class="prose" id="fw-install-text"></p>
+        <div id="fw-install-button"></div>
+        <p class="fw-muted" id="fw-install-hint"></p>
+      </div>
+
+      <div class="spec-block">
+        <h2 id="fw-steps-title">Steps</h2>
+        <ol id="fw-steps" class="fw-steps"></ol>
+      </div>
+
+      <div class="spec-block">
+        <h2>Files</h2>
+        <div class="fw-scroll"><table id="fw-files" class="fw-table"></table></div>
+        <p class="fw-muted" id="fw-files-note"></p>
+        <p class="prose">Check a download came from our CI: <code id="fw-verify"></code></p>
+      </div>
+    </div>
+
+    <div class="section-head" style="margin-top: 36px;">
+      <h2>Desktop interpreters</h2>
+      <span class="hint">Linux, Windows and the browser, with every PyDevices module</span>
+    </div>
+    <div id="fw-interp" class="spec-block"><p class="fw-muted">Loading...</p></div>
+
+    <details class="fw-pins">
+      <summary>What is in this set</summary>
+      <div id="fw-pins"></div>
+    </details>
+  </main>
+
+  <div id="pydevices-site-footer"></div>
+  <script src="/assets/chrome/site-chrome.js"></script>
+  <script type="module" src="vendor/esp-web-tools/install-button.js"></script>
+  <script src="page.js"></script>
+</body>
+</html>
