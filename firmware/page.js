@@ -154,6 +154,9 @@
       steps.push(h('li', {}, link(local(f), 'Download ' + name), ' (' + mb(f.size) + '), then write it. ' +
         'The port is COM3 or similar on Windows, /dev/ttyACM0 or /dev/ttyUSB0 on Linux, /dev/cu.usbmodem... on macOS. ' +
         'On a board with two USB ports, use the one wired to the serial chip, usually marked UART. ',
+        'If esptool can not reach the board and its USB port goes straight to the chip ' +
+        '(the LilyGO T-Embed S3 and the native port of the ESP32-S3-Touch-LCD-7 do), put it in download mode first: ' +
+        'hold BOOT, press and release RESET, then release BOOT. The port\'s COM number can change in download mode, so check which port it is now. ',
         'If your board\'s USB-serial bridge takes a faster speed, add ', code('--baud 921600'),
         ' after the port to shorten the write; the line below works without it, only slower.',
         pre('esptool --chip ' + b.chip + ' --port COM3 write-flash ' + b.flash_offset + ' ' + name)));
