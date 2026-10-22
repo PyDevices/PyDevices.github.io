@@ -11,6 +11,15 @@
   // Chips the browser flasher (ESP Web Tools) can write. Set a chip to false to send its
   // boards to the esptool steps alone.
   var BROWSER_INSTALL = { esp32s3: true, esp32p4: true };
+  // ESP Web Tools' names for the chips, as the release manifests use them.
+  var CHIP_FAMILY = { esp32s3: 'ESP32-S3', esp32p4: 'ESP32-P4', esp32: 'ESP32', esp32c3: 'ESP32-C3',
+    esp32c6: 'ESP32-C6', esp32s2: 'ESP32-S2' };
+  // Where a merged image, which starts with the bootloader, is written on each chip. A file
+  // that does not start with an image header is a whole-flash image and goes at 0x0.
+  var BOOT_OFFSET = { esp32s3: '0x0', esp32p4: '0x2000', esp32: '0x1000', esp32c3: '0x0',
+    esp32c6: '0x0', esp32s2: '0x1000' };
+  // The chip id an image header carries at byte 12 (esp_chip_id_t).
+  var CHIP_ID = { 0: 'esp32', 2: 'esp32s2', 5: 'esp32c3', 9: 'esp32s3', 13: 'esp32c6', 18: 'esp32p4' };
   var ROLES = {
     flash: 'Flash image: the file to write',
     uf2: 'UF2: the file to copy',
@@ -124,19 +133,30 @@
       'Chrome or Edge on a computer. Plug the board in, press Install, pick its serial port and confirm. ' +
       'It asks whether to erase the board first: tick that when you come from another firmware. ' +
       'Writing ' + mb(f.size) + ' takes a few minutes; leave the board plugged in until it says it is done.'));
-    var btn = document.createElement('esp-web-install-button');
-    btn.setAttribute('manifest', 'manifests/' + b.id + '.json');
-    btn.appendChild(h('button', { slot: 'activate', class: 'btn primary', type: 'button', text: 'Install ' + kind(b) }));
-    btn.appendChild(h('span', { slot: 'unsupported', class: 'fw-muted',
-      text: 'This browser can not write to a board. Use Chrome or Edge on a computer, or the esptool steps below.' }));
-    btn.appendChild(h('span', { slot: 'not-allowed', class: 'fw-muted',
-      text: 'Browsers only allow this on https pages or on localhost. Use the esptool steps below.' }));
-    holder.appendChild(btn);
+    holder.appendChild(installButton('manifests/' + b.id + '.json', 'Install ' + kind(b)));
     var hint = 'If the board does not appear in the list, hold BOOT while pressing RESET, then try again. ';
     if (b.chip === 'esp32p4') {
       hint += 'The browser flasher knows the ESP32-P4 but is newer on it than on other chips. If it stops partway, the esptool steps below write the same file.';
     }
     $('fw-install-hint').textContent = hint;
+  }
+
+  function esptoolStep() {
+    return h('li', {}, 'Install esptool in a virtual environment and activate it, so the ', code('esptool'),
+      ' you run is the one you just installed. In each new terminal, activate it again before you run esptool.',
+      pre('# Windows\npython -m venv v\nv\\Scripts\\activate\npip install esptool\n\n' +
+          '# Linux and macOS\npython3 -m venv v\nsource v/bin/activate\npip install esptool'));
+  }
+
+  function installButton(manifest, label) {
+    var btn = document.createElement('esp-web-install-button');
+    btn.setAttribute('manifest', manifest);
+    btn.appendChild(h('button', { slot: 'activate', class: 'btn primary', type: 'button', text: label }));
+    btn.appendChild(h('span', { slot: 'unsupported', class: 'fw-muted',
+      text: 'This browser can not write to a board. Use Chrome or Edge on a computer, or the esptool steps below.' }));
+    btn.appendChild(h('span', { slot: 'not-allowed', class: 'fw-muted',
+      text: 'Browsers only allow this on https pages or on localhost. Use the esptool steps below.' }));
+    return btn;
   }
 
   function renderSteps(b) {
@@ -147,10 +167,7 @@
     $('fw-steps-title').textContent = canBrowser(b) ? 'Or with esptool, in any browser' : 'Steps';
 
     if (isEsp(b)) {
-      steps.push(h('li', {}, 'Install esptool in a virtual environment and activate it, so the ', code('esptool'),
-        ' you run is the one you just installed. In each new terminal, activate it again before you run esptool.',
-        pre('# Windows\npython -m venv v\nv\\Scripts\\activate\npip install esptool\n\n' +
-            '# Linux and macOS\npython3 -m venv v\nsource v/bin/activate\npip install esptool')));
+      steps.push(esptoolStep());
       steps.push(h('li', {}, link(local(f), 'Download ' + name), ' (' + mb(f.size) + '), then write it. ' +
         'The port is COM3 or similar on Windows, /dev/ttyACM0 or /dev/ttyUSB0 on Linux, /dev/cu.usbmodem... on macOS. ' +
         'On a board with two USB ports, use the one wired to the serial chip, usually marked UART. ',
@@ -211,6 +228,163 @@
     $('fw-verify').textContent = 'gh attestation verify ' + mainFile(b).name + ' --repo ' + REPO;
   }
 
+  // ---- install from a file -------------------------------------------------
+  // The chosen file never leaves the computer: it becomes a Blob URL, and so does an
+  // ESP Web Tools manifest whose one part names it. ESP Web Tools fetches both the way it
+  // fetches a manifest and part from this site.
+
+  var picked = null;   // { file, uf2, head }
+  var pickSeq = 0;
+  var blobs = [];
+
+  function readHead(file) {
+    return file.slice(0, 36).arrayBuffer().then(function (buf) {
+      var b = new Uint8Array(buf);
+      var image = b.length >= 14 && b[0] === 0xE9;
+      var id = image ? b[12] | (b[13] << 8) : null;
+      return {
+        image: image,
+        chip: image && CHIP_ID.hasOwnProperty(id) ? CHIP_ID[id] : '',
+        // An application image (micropython.bin) has its descriptor right after the headers.
+        app: image && b.length >= 36 && new DataView(buf).getUint32(32, true) === 0xABCD5432,
+        padded: b.length > 0 && b[0] === 0xFF
+      };
+    });
+  }
+
+  function fileOffset(chip, head) { return head.image ? BOOT_OFFSET[chip] : '0x0'; }
+  function shellName(n) { return /^[\w.+-]+$/.test(n) ? n : '"' + n.replace(/(["\\$`])/g, '\\$1') + '"'; }
+
+  function fileManifest(file, chip, offset) {
+    var part = URL.createObjectURL(file);
+    var m = {
+      name: file.name,
+      version: 'from a file',
+      new_install_prompt_erase: true,
+      new_install_improv_wait_time: 0,
+      builds: [{ chipFamily: CHIP_FAMILY[chip], parts: [{ path: part, offset: parseInt(offset, 16) }] }]
+    };
+    var url = URL.createObjectURL(new Blob([JSON.stringify(m)], { type: 'application/json' }));
+    blobs.push(part, url);
+    return url;
+  }
+
+  function fileNote(text) {
+    var n = $('fw-file-note');
+    n.textContent = text || '';
+    n.hidden = !text;
+  }
+
+  function fileCli(text, line) {
+    var box = clear($('fw-file-mpftp'));
+    box.appendChild(h('p', {}, text));
+    box.appendChild(pre(line));
+  }
+
+  function renderFile() {
+    blobs.forEach(function (u) { URL.revokeObjectURL(u); });
+    blobs = [];
+    clear($('fw-file-install-button'));
+    $('fw-file-out').hidden = true;
+    $('fw-file-chip-row').hidden = true;
+    fileNote('');
+    if (!picked) return;
+    var file = picked.file;
+    var name = file.name;
+    if (picked.uf2) {
+      renderFileUf2(name);
+      $('fw-file-out').hidden = false;
+      return;
+    }
+    var head = picked.head;
+    var chip = $('fw-file-chip').value;
+    if (head.app) {
+      fileNote(name + ' is an application image, not the merged firmware.bin. Written where the bootloader goes, ' +
+        'it leaves the board restarting over and over. Pick the firmware.bin from the same build.');
+      return;
+    }
+    if (head.image && !head.chip) {
+      fileNote(name + ' is for a chip this page does not list. mpftp and esptool can write it: both read the chip from the file.');
+      return;
+    }
+    if (!head.image && !head.padded) {
+      fileNote(name + ' does not look like ESP32 firmware. Pick the firmware.bin from your build.');
+      return;
+    }
+    $('fw-file-chip-row').hidden = false;
+    if (!chip) { fileNote('Choose the chip on your board.'); return; }
+    if (head.chip && head.chip !== chip) {
+      fileNote(name + ' was built for the ' + CHIP_FAMILY[head.chip] + ', not the ' + CHIP_FAMILY[chip] +
+        '. Choose the chip it was built for.');
+      return;
+    }
+    var offset = fileOffset(chip, head);
+    var arg = shellName(name);
+    fileNote((head.chip ? 'The file says it is for the ' + CHIP_FAMILY[chip] + '. ' : '') +
+      'It is written at ' + offset + '.');
+    $('fw-file-out').hidden = false;
+
+    var browser = BROWSER_INSTALL[chip] === true;
+    $('fw-file-install').hidden = !browser;
+    if (browser) {
+      $('fw-file-install-text').textContent = 'Chrome or Edge on a computer. Plug the board in, press Install, ' +
+        'pick its serial port and confirm. It asks whether to erase the board first: tick that when you come from another firmware. ' +
+        'Writing ' + mb(file.size) + ' takes a few minutes; leave the board plugged in until it says it is done.';
+      $('fw-file-install-button').appendChild(installButton(fileManifest(file, chip, offset), 'Install this file'));
+      $('fw-file-install-hint').textContent = 'If the board does not appear in the list, hold BOOT while pressing RESET, then try again.' +
+        (chip === 'esp32p4' ? ' If it stops partway on the ESP32-P4, the esptool steps below write the same file.' : '');
+    }
+
+    $('fw-file-steps-title').textContent = browser ? 'Or with esptool, in any browser' : 'Steps';
+    var ol = clear($('fw-file-steps'));
+    ol.appendChild(esptoolStep());
+    ol.appendChild(h('li', {}, 'Write it, from the folder that holds ' + name + '. ' +
+      'The port is COM3 or similar on Windows, /dev/ttyACM0 or /dev/ttyUSB0 on Linux, /dev/cu.usbmodem... on macOS. ' +
+      'If esptool can not reach the board, put it in download mode: hold BOOT, press and release RESET, then release BOOT.',
+      pre('esptool --chip ' + chip + ' --port COM3 write-flash ' + offset + ' ' + arg)));
+    ol.appendChild(h('li', {}, 'Coming from another firmware, or want a clean board? Erase the flash first, then write as above (this removes your files):',
+      pre('esptool --chip ' + chip + ' --port COM3 erase-flash')));
+    fileCli('mpftp writes the same file from a terminal, and reads the chip and the offset from the file itself:',
+      'mpftp firmware flash --port esp32 --artifact ' + arg + ' -d COM3');
+  }
+
+  function renderFileUf2(name) {
+    $('fw-file-install').hidden = true;
+    $('fw-file-steps-title').textContent = 'Steps';
+    var ol = clear($('fw-file-steps'));
+    ol.appendChild(h('li', {}, 'Put the board in its UF2 bootloader. On a Raspberry Pi Pico or another RP2040 or RP2350 board, ' +
+      'hold BOOTSEL while you plug it into USB; on most other boards, double-tap RESET. ' +
+      'A drive appears, named RPI-RP2, RP2350 or after the board.'));
+    ol.appendChild(h('li', {}, 'Copy ' + name + ' onto that drive. The board restarts by itself when the copy finishes.'));
+    fileCli('mpftp finds the bootloader drive and copies the file for you. Give your board\'s port: rp2, samd or esp32.',
+      'mpftp firmware flash --port rp2 --uf2 --artifact ' + shellName(name));
+  }
+
+  function setupFile() {
+    var sel = $('fw-file-chip');
+    sel.appendChild(h('option', { value: '', text: 'Choose the chip' }));
+    Object.keys(CHIP_FAMILY).forEach(function (c) { sel.appendChild(h('option', { value: c, text: CHIP_FAMILY[c] })); });
+    sel.addEventListener('change', renderFile);
+    $('fw-file-input').addEventListener('change', function (e) {
+      var file = e.target.files && e.target.files[0];
+      var seq = ++pickSeq;
+      picked = null;
+      if (!file) { renderFile(); return; }
+      if (/\.uf2$/i.test(file.name)) { picked = { file: file, uf2: true }; renderFile(); return; }
+      if (!/\.bin$/i.test(file.name)) { renderFile(); fileNote('Pick a .bin or a .uf2 file.'); return; }
+      renderFile();
+      readHead(file).then(function (head) {
+        if (seq !== pickSeq) return;
+        picked = { file: file, uf2: false, head: head };
+        // A file whose header names no chip gets no choice carried over from an earlier pick.
+        sel.value = head.chip || '';
+        renderFile();
+      }, function (err) {
+        if (seq === pickSeq) fileNote('Could not read ' + file.name + ' (' + err.message + ').');
+      });
+    });
+  }
+
   // ---- desktop interpreters ------------------------------------------------
 
   function renderInterp() {
@@ -244,6 +418,8 @@
       'for example python3 -m http.server from the site\'s root, instead of opening the file directly.';
     $('fw-board').innerHTML = '';
   }
+
+  setupFile();
 
   Promise.all([get('firmware.json'), get('interpreters.json', true)]).then(function (r) {
     doc = r[0];
