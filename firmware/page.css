@@ -21,9 +21,9 @@
 .fw-steps { margin: 0; padding-left: 22px; color: var(--ink-soft); }
 .fw-steps li { margin: 0 0 14px; }
 .fw-steps li:last-child { margin-bottom: 0; }
-.fw-steps pre { margin: 8px 0 0; padding: 12px 14px; overflow-x: auto; border: 1px solid var(--border-soft);
+.fw-steps pre, .fw-cli pre { margin: 8px 0 0; padding: 12px 14px; overflow-x: auto; border: 1px solid var(--border-soft);
   border-radius: var(--radius-sm); background: var(--bg-soft); }
-.fw-steps pre code, .fw-steps code { font-family: var(--mono); font-size: 0.88rem; }
+.fw-steps pre code, .fw-steps code, .fw-cli pre code { font-family: var(--mono); font-size: 0.88rem; }
 .fw-scroll { overflow-x: auto; }
 .fw-table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
 .fw-table th, .fw-table td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border-soft); vertical-align: top; }
@@ -35,3 +35,8 @@
 .fw-pins summary { cursor: pointer; font-weight: 600; }
 .fw-pins table { margin-top: 12px; }
 #fw-install-button .btn { font: inherit; }
+.fw h3 { margin: 22px 0 10px; font-size: 1rem; }
+.fw-file-input { display: block; max-width: 100%; font: inherit; color: var(--ink); }
+.fw-file-row { margin-top: 16px; }
+#fw-file-install-button .btn { font: inherit; }
+.fw-cli p { margin: 0; }

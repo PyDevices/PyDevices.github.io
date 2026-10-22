@@ -58,6 +58,36 @@
     </div>
 
     <div class="section-head" style="margin-top: 36px;">
+      <h2 id="fw-file-title">Install from a file</h2>
+      <span class="hint">A .bin or .uf2 you built yourself</span>
+    </div>
+    <div id="fw-file" class="spec-block">
+      <p class="prose">Built your own firmware? Pick the file and this page writes it to your board, the same way as the builds above. The file stays on your computer.</p>
+      <label for="fw-file-input" class="fw-label">Firmware file</label>
+      <input type="file" id="fw-file-input" class="fw-file-input" accept=".bin,.uf2">
+      <div id="fw-file-chip-row" class="fw-file-row" hidden>
+        <label for="fw-file-chip" class="fw-label">Chip</label>
+        <select id="fw-file-chip" class="fw-select"></select>
+      </div>
+      <p id="fw-file-note" class="fw-muted" hidden></p>
+
+      <div id="fw-file-out" hidden>
+        <p class="fw-muted"><strong>Copy your files off the board first, <code>secrets.py</code> above all.</strong>
+          A build with a different layout leaves the filesystem empty.</p>
+        <div id="fw-file-install" hidden>
+          <h3>Install from the browser</h3>
+          <p class="prose" id="fw-file-install-text"></p>
+          <div id="fw-file-install-button"></div>
+          <p class="fw-muted" id="fw-file-install-hint"></p>
+        </div>
+        <h3 id="fw-file-steps-title">Steps</h3>
+        <ol id="fw-file-steps" class="fw-steps"></ol>
+        <h3>Or with mpftp</h3>
+        <div id="fw-file-mpftp" class="fw-cli prose"></div>
+      </div>
+    </div>
+
+    <div class="section-head" style="margin-top: 36px;">
       <h2>Desktop interpreters</h2>
       <span class="hint">Linux, Windows and the browser, with every PyDevices module</span>
     </div>
