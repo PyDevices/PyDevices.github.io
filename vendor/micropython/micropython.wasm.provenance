@@ -1,9 +1,9 @@
 {
   "binary": {
-    "mtime": "2026-10-19T20:21:15-05:00",
+    "mtime": "2026-10-22T02:22:22-05:00",
     "name": "micropython.wasm",
-    "sha256": "d69591fb0e03afadb18d7cbd9b56e6d038707ecc95373ba5d827504e53eb5657",
-    "size": 7122075
+    "sha256": "7643c63c4f433c03c23893697fdf34c2a4c2ac9e2fcc05b2d2a7031f94133d2b",
+    "size": 7227997
   },
   "format": 1,
   "install_only": false,
@@ -46,21 +46,16 @@
     "0037-micropython-shared-tinyusb-ring-c-api.patch",
     "0038-micropython-lib-oofatfs-utf-8-filenames.patch",
     "0039-micropython-esp32-otg-phy-handoff-for-host-mode.patch",
-    "0040-micropython-py-mk-search-each-user-c-module-in-its-own-directory-first.patch"
+    "0040-micropython-py-mk-search-each-user-c-module-in-its-own-directory-first.patch",
+    "0041-micropython-shared-tinyusb-a-streams-first-arm-is-not-a-drop.patch",
+    "0042-micropython-shared-tinyusb-a-streams-buffer-outlives-the-stream.patch"
   ],
   "sources": {
-    "audiocomponents": {
-      "committed": "2026-10-19T17:51:14-05:00",
-      "describe": "v0.0.3-549-g157c2e3",
-      "dirty": false,
-      "head": "157c2e39a69ec2fcd2c6bad934ce1510bfc805bd",
-      "path": "audiocomponents"
-    },
     "audiodsp": {
-      "committed": "2026-10-19T17:54:31-05:00",
-      "describe": "v0.0.3-436-gf035ccc",
+      "committed": "2026-10-22T00:37:33-05:00",
+      "describe": "v0.0.3-489-gd2c502b",
       "dirty": false,
-      "head": "f035cccbb7ec8e9f16c38a353842ab039e12d3d4",
+      "head": "d2c502bdd1a87f12c56aabaf1266305c13201cb0",
       "path": "audiodsp"
     },
     "lvgl-bindings": {
@@ -71,10 +66,10 @@
       "path": "lvgl-bindings"
     },
     "lvgl-circuitpython": {
-      "committed": "2026-10-12T22:09:21-05:00",
-      "describe": "f2b0c35",
+      "committed": "2026-10-19T20:17:00-05:00",
+      "describe": "7fb257a",
       "dirty": false,
-      "head": "f2b0c359494a7c151ef01ba7a7b3cb02e0e06fa2",
+      "head": "7fb257a5f3d0d5c2f28c27c235e6239714e740c4",
       "path": "lvgl-circuitpython"
     },
     "lvgl-micropython": {
@@ -85,45 +80,31 @@
       "path": "lvgl-micropython"
     },
     "micropython": {
-      "committed": "2026-10-19T14:20:06-05:00",
-      "describe": "v1.29.0-162-g69e89c7-dirty",
+      "committed": "2026-10-20T15:50:18-05:00",
+      "describe": "v1.29.0-162-g2d70033-dirty",
       "dirty": false,
-      "head": "69e89c72733bd8177aa2653a8c00f43291ab0234",
+      "head": "2d7003333bfc75e0cd13aec4717f0f7ea53b55c4",
       "path": "micropython"
     },
     "micropython-pydevices": {
-      "committed": "2026-10-19T20:22:55-05:00",
-      "describe": "077dbbc",
+      "committed": "2026-10-22T00:59:56-05:00",
+      "describe": "348da7a",
       "dirty": false,
-      "head": "077dbbc31c1e041ad50e4509cc808d009228d0f2",
+      "head": "348da7a435876d2c74371ac5c2744cfa148497cb",
       "path": "micropython-pydevices"
     },
-    "palettes": {
-      "committed": "2026-10-07T17:14:41-05:00",
-      "describe": "v0.0.8-71-gf3dfad0",
-      "dirty": false,
-      "head": "f3dfad0bac281f1e8816b30861445498b4137de6",
-      "path": "palettes"
-    },
-    "pdwidgets": {
-      "committed": "2026-10-07T17:14:49-05:00",
-      "describe": "v0.0.16-77-ge92267f",
-      "dirty": false,
-      "head": "e92267f2ef938b60ba3b97177ceb2bd0e0d402d3",
-      "path": "pdwidgets"
-    },
     "pydevices": {
-      "committed": "2026-10-19T17:16:41-05:00",
-      "describe": "v0.4.0-279-g413d54c",
+      "committed": "2026-10-22T01:58:57-05:00",
+      "describe": "v0.4.0-348-g80a1fcb",
       "dirty": false,
-      "head": "413d54ce32192992807f53ee2ec5feaa6409df37",
+      "head": "80a1fcbcf9ed970746ae9c178cadf1ab92d5d75b",
       "path": "pydevices"
     },
     "pygraphics": {
-      "committed": "2026-10-08T12:30:47-05:00",
-      "describe": "v0.0.32-95-g2d7ca35",
+      "committed": "2026-10-21T23:31:05-05:00",
+      "describe": "v0.0.32-97-g1c193cf",
       "dirty": false,
-      "head": "2d7ca35847db78d450428cdc0cb5aa69ab81c809",
+      "head": "1c193cfef534a3bdb85d4b112a66e0d4e76692ca",
       "path": "pygraphics"
     },
     "ulab": {
@@ -134,6 +115,6 @@
       "path": "ulab"
     }
   },
-  "stamped": "2026-10-19T20:23:00-05:00",
+  "stamped": "2026-10-22T02:22:23-05:00",
   "target": "mp-wasm"
 }
