@@ -101,7 +101,7 @@ port_pkgs() {  # port
     case "$1" in
         unix) echo "pkg-config libsdl2-dev libffi-dev" ;;
         esp32) echo "ninja-build python3-venv libusb-1.0-0" ;;
-        rp2) echo "" ;;
+        rp2) echo "gcc-arm-none-eabi libnewlib-arm-none-eabi" ;;
         windows) echo "gcc-mingw-w64-x86-64 binutils-mingw-w64-x86-64 libtool libltdl-dev autoconf automake" ;;
         webassembly) echo "nodejs" ;;
         *) return 1 ;;
