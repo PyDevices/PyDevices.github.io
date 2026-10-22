@@ -3,6 +3,7 @@
 #
 #   curl -fsSL https://pydevices.github.io/install.sh | sh
 #   curl -fsSL https://pydevices.github.io/install.sh | sh -s -- --port unix --variant pydevices --modules all
+#   curl -fsSL https://pydevices.github.io/install.sh | sh -s -- --deps rp2
 #
 # Clones micropython-pydevices into ./micropython-pydevices, in the current
 # directory (or updates the clone already there), checks the tools every build needs, and says what to
@@ -11,6 +12,11 @@
 #
 # On Windows, run it from Git Bash. There it clones first, then checks for
 # Python and the MSYS2 toolchain that builds the windows port natively.
+#
+# --deps <port>... installs, with apt-get, the Debian packages every port needs
+# and those of the ports named (unix, esp32, rp2, windows, webassembly, or
+# all), then stops: no clone, no build. A dev container's image is made this
+# way. It uses sudo unless it runs as root.
 #
 # Environment:
 #   PYDEVICES_DIR     where to clone (default ./micropython-pydevices)
@@ -86,24 +92,121 @@ windows_tools() {
     return 1
 }
 
-check_tools() {
-    missing=
-    for t in git python3 make cmake gcc g++; do
-        have "$t" || missing="$missing $t"
+# The Debian packages: the ones every port needs, then each port's. This one
+# list is what the advice below prints and what --deps installs.
+BASE_PKGS="git make cmake python3 gcc g++"
+PORTS="unix esp32 rp2 windows webassembly"
+
+port_pkgs() {  # port
+    case "$1" in
+        unix) echo "pkg-config libsdl2-dev libffi-dev" ;;
+        esp32) echo "ninja-build python3-venv" ;;
+        rp2) echo "gcc-arm-none-eabi libnewlib-arm-none-eabi" ;;
+        windows) echo "gcc-mingw-w64-x86-64 binutils-mingw-w64-x86-64 libtool libltdl-dev autoconf automake" ;;
+        webassembly) echo "nodejs" ;;
+        *) return 1 ;;
+    esac
+}
+
+port_aside() {  # port
+    case "$1" in
+        unix) echo "the desktop display" ;;
+        esp32) echo "ESP-IDF itself is fetched" ;;
+        rp2) echo "the pico-sdk is fetched" ;;
+        windows) echo "SDL2 for MinGW is fetched" ;;
+        webassembly) echo "emsdk itself is fetched" ;;
+    esac
+}
+
+# Whether what a package provides is here, by the command or file a build uses.
+pkg_present() {  # package
+    case "$1" in
+        python3) have python3 && python3 -c 'import sys; sys.exit(sys.version_info < (3, 9))' 2>/dev/null ;;
+        libsdl2-dev) have pkg-config && pkg-config --exists sdl2 2>/dev/null ;;
+        libffi-dev) have pkg-config && pkg-config --exists libffi 2>/dev/null ;;
+        ninja-build) have ninja ;;
+        python3-venv) have python3 && python3 -c 'import venv' 2>/dev/null ;;
+        gcc-arm-none-eabi) have arm-none-eabi-gcc ;;
+        libnewlib-arm-none-eabi)
+            # A toolchain from Arm carries its own newlib; Debian's comes apart.
+            have arm-none-eabi-gcc || return 1
+            libc=$(arm-none-eabi-gcc -print-file-name=libc.a 2>/dev/null)
+            case "$libc" in /*) [ -f "$libc" ] ;; *) return 1 ;; esac ;;
+        gcc-mingw-w64-x86-64) have x86_64-w64-mingw32-gcc ;;
+        binutils-mingw-w64-x86-64) have x86_64-w64-mingw32-windres ;;
+        libtool) have libtoolize ;;
+        # libffi's autoreconf needs libltdl's macros (LT_SYS_SYMBOL_USCORE), which
+        # come apart from libtoolize: libltdl-dev on Debian.
+        libltdl-dev) [ -f "$(aclocal --print-ac-dir 2>/dev/null || echo /usr/share/aclocal)/ltdl.m4" ] ;;
+        autoconf) have autoreconf ;;
+        nodejs) have node ;;
+        *) have "$1" ;;
+    esac
+}
+
+# The packages in "a b c" that aren't here yet.
+missing_pkgs() {
+    out=
+    for pkg in $1; do
+        pkg_present "$pkg" || out="$out $pkg"
     done
-    if have python3 && ! python3 -c 'import sys; sys.exit(sys.version_info < (3, 9))'; then
-        missing="$missing python3>=3.9"
+    echo "$out" | sed 's/^ *//'
+}
+
+# Every package, base and ports, as the one apt-get line, wrapped.
+all_pkgs_line() {
+    pkgs=$BASE_PKGS
+    for port in $PORTS; do pkgs="$pkgs $(port_pkgs "$port")"; done
+    line="  sudo apt-get update && sudo apt-get install -y"
+    for pkg in $pkgs; do
+        if [ $(( ${#line} + ${#pkg} )) -gt 76 ]; then
+            say "$line \\"
+            line="   "
+        fi
+        line="$line $pkg"
+    done
+    say "$line"
+}
+
+# --deps: apt-get install the base and the named ports' packages.
+install_deps() {  # port...
+    [ $# -gt 0 ] || fail "--deps takes the ports to install for: $(list "$PORTS"), or all"
+    pkgs=$BASE_PKGS
+    which="$(list "$*")"
+    for port in "$@"; do
+        if [ "$port" = all ]; then
+            for p in $PORTS; do pkgs="$pkgs $(port_pkgs "$p")"; done
+            which="every port"
+        else
+            p=$(port_pkgs "$port") || fail "there is no port called $port; the ports are $(list "$PORTS")"
+            pkgs="$pkgs $p"
+        fi
+    done
+    have apt-get || fail "--deps installs with apt-get (Debian, Ubuntu, WSL). Elsewhere, install these under your system's names: $pkgs"
+    sudo=
+    if [ "$(id -u)" -ne 0 ]; then
+        have sudo || fail "--deps needs root or sudo to run apt-get"
+        sudo=sudo
     fi
+    say "Installing the packages for $which:"
+    say "  $pkgs"
+    # shellcheck disable=SC2086 # $sudo and $pkgs split on purpose
+    $sudo env DEBIAN_FRONTEND=noninteractive apt-get update < /dev/null || fail "apt-get update failed"
+    # shellcheck disable=SC2086
+    $sudo env DEBIAN_FRONTEND=noninteractive apt-get install -y $pkgs < /dev/null || fail "apt-get install failed"
+    say ""
+    say "Installed: $which can build once micropython-pydevices is cloned:"
+    say "  curl -fsSL https://pydevices.github.io/install.sh | sh"
+}
+
+check_tools() {
+    missing=$(missing_pkgs "$BASE_PKGS")
     if [ -n "$missing" ]; then
-        say "Missing:$missing"
+        say "Missing: $missing"
         say ""
         say "On Debian or Ubuntu (WSL included), this installs what every port needs:"
         say ""
-        say "  sudo apt-get update && sudo apt-get install -y git make cmake ninja-build \\"
-        say "    python3 python3-venv python3-pip gcc g++ pkg-config libffi-dev libsdl2-dev \\"
-        say "    gcc-mingw-w64-x86-64 binutils-mingw-w64-x86-64 libtool libltdl-dev \\"
-        say "    autoconf automake \\"
-        say "    gcc-arm-none-eabi libnewlib-arm-none-eabi nodejs"
+        all_pkgs_line
         say ""
         fail "install those, then run this again"
     fi
@@ -130,29 +233,9 @@ list() {
 # its packages).
 port_notes() {
     READY='' WAITING='' NOTES='' PKGS=''
-    unix='' windows='' rp2='' wasm='' esp32=''
-    if ! have pkg-config; then unix="pkg-config libsdl2-dev libffi-dev"
-    else
-        pkg-config --exists sdl2 2>/dev/null || unix="libsdl2-dev"
-        pkg-config --exists libffi 2>/dev/null || unix="$unix libffi-dev"
-    fi
-    have x86_64-w64-mingw32-gcc || windows="gcc-mingw-w64-x86-64"
-    have x86_64-w64-mingw32-windres || windows="$windows binutils-mingw-w64-x86-64"
-    have libtoolize || windows="$windows libtool"
-    # libffi's autoreconf needs libltdl's macros (LT_SYS_SYMBOL_USCORE), which
-    # come apart from libtoolize: libltdl-dev on Debian.
-    [ -f "$(aclocal --print-ac-dir 2>/dev/null || echo /usr/share/aclocal)/ltdl.m4" ] ||
-        windows="$windows libltdl-dev"
-    have autoreconf || windows="$windows autoconf automake"
-    have arm-none-eabi-gcc || rp2="gcc-arm-none-eabi libnewlib-arm-none-eabi"
-    have node || wasm="nodejs"
-    have ninja || esp32="ninja-build"
-    python3 -c 'import venv' 2>/dev/null || esp32="$esp32 python3-venv"
-    port_note unix "$unix" "the desktop display"
-    port_note esp32 "$esp32" "ESP-IDF itself is fetched"
-    port_note rp2 "$rp2" "the pico-sdk is fetched"
-    port_note windows "$windows" "SDL2 for MinGW is fetched"
-    port_note webassembly "$wasm" "emsdk itself is fetched"
+    for port in $PORTS; do
+        port_note "$port" "$(missing_pkgs "$(port_pkgs "$port")")" "$(port_aside "$port")"
+    done
     [ -n "$WAITING" ] || return 0
     say ""
     say "Not installed yet, needed only for these ports:$NOTES"
@@ -168,6 +251,9 @@ port_notes() {
     say ""
     say "Other distributions carry the same tools under their own names. A build"
     say "for a port that's still missing something stops and says so."
+    say ""
+    say "This script can install them too, a port at a time or all of them:"
+    say "  curl -fsSL https://pydevices.github.io/install.sh | sh -s -- --deps rp2"
 }
 
 port_note() {  # port "missing packages" aside
@@ -239,6 +325,11 @@ main_windows() {  # dir branch [build_mp.py arguments]
 }
 
 main() {
+    if [ "${1:-}" = --deps ]; then
+        shift
+        install_deps "$@"
+        return
+    fi
     dir=${PYDEVICES_DIR:-micropython-pydevices}
     branch=${PYDEVICES_BRANCH:-main}
     if windows_host; then
