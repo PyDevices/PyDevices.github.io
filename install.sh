@@ -100,7 +100,7 @@ PORTS="unix esp32 rp2 windows webassembly"
 port_pkgs() {  # port
     case "$1" in
         unix) echo "pkg-config libsdl2-dev libffi-dev" ;;
-        esp32) echo "ninja-build python3-venv" ;;
+        esp32) echo "ninja-build python3-venv libusb-1.0-0" ;;
         rp2) echo "gcc-arm-none-eabi libnewlib-arm-none-eabi" ;;
         windows) echo "gcc-mingw-w64-x86-64 binutils-mingw-w64-x86-64 libtool libltdl-dev autoconf automake" ;;
         webassembly) echo "nodejs" ;;
@@ -126,6 +126,12 @@ pkg_present() {  # package
         libffi-dev) have pkg-config && pkg-config --exists libffi 2>/dev/null ;;
         ninja-build) have ninja ;;
         python3-venv) have python3 && python3 -c 'import venv' 2>/dev/null ;;
+        # ESP-IDF's installer checks the openocd it fetches, which needs libusb.
+        libusb-1.0-0)
+            for d in /usr/lib/*-linux-gnu /lib/*-linux-gnu /usr/lib64 /usr/lib; do
+                [ -e "$d/libusb-1.0.so.0" ] && return 0
+            done
+            return 1 ;;
         gcc-arm-none-eabi) have arm-none-eabi-gcc ;;
         libnewlib-arm-none-eabi)
             # A toolchain from Arm carries its own newlib; Debian's comes apart.
