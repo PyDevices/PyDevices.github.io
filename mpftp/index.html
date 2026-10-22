@@ -3,7 +3,7 @@
 <head>
   <!-- PYDEVICES-HEAD-TAGS: START -->
   <title>PyDevices - mpftp</title>
-  <meta name="description" content="Connect MicroPython and CircuitPython boards from VS Code, Cursor, or the CLI, over USB or Wi-Fi: dual-pane file transfer, in-editor REPL, firmware builds and flashing, mip/circup, plus RPC, MCP, and an optional browser PWA.">
+  <meta name="description" content="Connect MicroPython and CircuitPython boards from VS Code, Cursor, or the CLI, over USB or Wi-Fi: dual-pane file transfer, in-editor REPL, firmware builds and flashing, mip/circup, plus RPC and an optional browser PWA.">
   <link rel="icon" type="image/svg+xml" href="/assets/img/logo.svg">
   <!-- PYDEVICES-HEAD-TAGS: END -->
   <meta charset="utf-8">
@@ -29,7 +29,7 @@
         <span class="eyebrow" style="color: var(--tier-5-steel);">mpftp</span>
       </div>
       <h1>mpftp — board tools for the editor, CLI, and agents.</h1>
-      <p><code>mpftp</code> Connect MicroPython and CircuitPython boards from VS Code, Cursor, or the CLI, over USB or Wi-Fi: dual-pane file transfer, in-editor REPL, firmware builds and flashing, mip/circup, plus RPC, MCP, and an optional browser PWA.</p>
+      <p><code>mpftp</code> Connect MicroPython and CircuitPython boards from VS Code, Cursor, or the CLI, over USB or Wi-Fi: dual-pane file transfer, in-editor REPL, firmware builds and flashing, mip/circup, plus RPC and an optional browser PWA.</p>
       <div class="cta">
       <a class="btn primary" style="background: var(--github-ink); color: var(--on-accent); border-color: var(--github-ink);" href="https://github.com/PyDevices/mpftp">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.9a3.4 3.4 0 0 0-1-2.6c3-.3 6-1.5 6-6.5a5 5 0 0 0-1.4-3.5 4.6 4.6 0 0 0-.1-3.5s-1.1-.3-3.5 1.3a12 12 0 0 0-6 0C6.6 1.7 5.5 2 5.5 2a4.6 4.6 0 0 0-.1 3.5A5 5 0 0 0 4 9c0 5 3 6.2 6 6.5a3.4 3.4 0 0 0-1 2.6V22"/></svg>
@@ -55,7 +55,7 @@
   <main class="wrap" style="padding-bottom: 60px;">
     <div class="section-head">
       <h2>Editor session</h2>
-      <span class="hint">Dual-pane file transfer beside a live serial REPL — same board session as the CLI and MCP tools.</span>
+      <span class="hint">Dual-pane file transfer beside a live serial REPL — same board session as the CLI.</span>
     </div>
 
     <div class="workbench-panel">
@@ -105,8 +105,8 @@ $ mpftp firmware flash
           <p><code>python -m mpftp</code> shares the active editor session. Agents use the CLI or a local TCP RPC; see the agent guide.</p>
         </div>
         <div class="spec-item tier-5">
-          <h4>MCP &amp; integrations</h4>
-          <p>Typed board tools for Claude Code and Codex, plus a Claude Desktop extension — same port, files, and REPL as the UI.</p>
+          <h4>Integrations</h4>
+          <p>A Claude Code plugin installs a skill that teaches the CLI, and <code>mpftp hold</code> keeps one REPL open across calls.</p>
         </div>
         <div class="spec-item tier-5">
           <h4>Optional browser PWA</h4>
@@ -144,7 +144,7 @@ $ mpftp firmware flash
         </div>
         <div class="spec-item tier-5">
           <h4><a href="https://github.com/PyDevices/mpftp/tree/main/integrations">Integrations</a></h4>
-          <p>The MCP server, a Claude Code plugin and a Codex CLI snippet.</p>
+          <p>The Claude Code plugin, whose skill teaches the CLI.</p>
         </div>
       </div>
     </div>

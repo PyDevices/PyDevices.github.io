@@ -6,7 +6,7 @@
   <script>try{if(localStorage.getItem('pydevices-theme')==='light'){document.documentElement.setAttribute('data-theme','light');}}catch(e){}</script>
   <!-- PYDEVICES-HEAD-TAGS: START -->
   <title>PyDevices - PyDevices.github.io</title>
-  <meta name="description" content="The same driver, event, and display code runs unmodified on bare-metal MicroPython and CircuitPython boards, as native CPython wheels on desktop and Android, and directly in a browser tab — no rewrites, no plugins.">
+  <meta name="description" content="The same driver, event, and display code runs unchanged on bare-metal MicroPython and CircuitPython boards, as native CPython wheels on desktop and Android, and directly in a browser tab, once the board or host has its board_config — no rewrites, no plugins.">
   <link rel="icon" type="image/svg+xml" href="/assets/img/logo.svg">
   <!-- PYDEVICES-HEAD-TAGS: END -->
   <meta property="og:title" content="PyDevices">
@@ -30,7 +30,7 @@
         <span class="eyebrow" style="color: var(--accent);">PyDevices Portal</span>
       </div>
       <h1>One display & hardware contract for MicroPython, CircuitPython, and CPython — from bare metal to the browser.</h1>
-      <p>The same driver, event, and display code runs unmodified on bare-metal MicroPython and CircuitPython boards, as native CPython wheels on desktop and Android, and directly in a browser tab — no rewrites, no plugins.</p>
+      <p>The same driver, event, and display code runs unchanged on bare-metal MicroPython and CircuitPython boards, as native CPython wheels on desktop and Android, and directly in a browser tab, once the board or host has its board_config — no rewrites, no plugins.</p>
       <p>Get Started installs the Python packages, with pip on a desktop or mip on a board. To build MicroPython firmware with the modules compiled in, run <code>curl -fsSL https://pydevices.github.io/install.sh | sh</code> and follow the guide on the <a href="https://pydevices.github.io/micropython-pydevices/">micropython-pydevices page</a>.</p>
       <div class="cta">
       <a class="btn primary" style="background: var(--github-ink); color: var(--on-accent); border-color: var(--github-ink);" href="https://github.com/PyDevices">
@@ -88,7 +88,7 @@
           <span class="tag tag-tier-1">Pure-Python Audio</span>
         </div>
         <h3>audiocomponents</h3>
-        <p>The instrument and effect libraries for audiodsp: audioinstruments (55 modelled classics, from the TR-808 to the DX7) and audioeffects (45 effect classes and racks), pure Python on MicroPython and CPython. Ships as pydevices-audioinstruments and pydevices-audioeffects, each a standalone distribution and a MIP package.</p>
+        <p>The instrument and effect libraries for audiodsp: audioinstruments (55 modelled classics, from the TR-808 to the DX7) and audioeffects (45 effect classes and racks), pure Python on MicroPython and CPython. Ships as pydevices-audioinstruments and pydevices-audioeffects, each a standalone distribution on TestPyPI and a MIP package.</p>
         <span class="go">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
 
@@ -106,7 +106,7 @@
     <!-- Tier 2 Section -->
     <div class="section-head" style="margin-top: 40px;">
       <h2>2: Python Framebuffers & GUI Toolkits</h2>
-      <span class="hint">Zero external native dependencies — runs on any Python 3 host.</span>
+      <span class="hint">Pure Python on any Python 3 host; pygraphics adds native wheels for Linux x86_64, Windows, Android and Pyodide.</span>
     </div>
     <div class="grid">
       <a class="card card-tier-2" href="/pygraphics/">
@@ -162,7 +162,7 @@
           <span class="tag tag-tier-3">MicroPython C</span>
         </div>
         <h3>lvgl-micropython</h3>
-        <p>Native MicroPython C module integrating LVGL v9 graphics engine with displayif bus drivers across ESP32, RP2040, and i.MX RT targets.</p>
+        <p>Native MicroPython C module integrating LVGL v9 graphics engine with displayif bus drivers on ESP32 targets.</p>
         <span class="go">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
 
@@ -182,7 +182,7 @@
           <span class="tag tag-tier-3">CircuitPython C</span>
         </div>
         <h3>lvgl-circuitpython</h3>
-        <p>CircuitPython native C module providing LVGL v9 bindings and displayif integration for Adafruit Feather and SAMD51 / RP2040 boards.</p>
+        <p>CircuitPython native C module providing LVGL v9 bindings and displayif integration for the Adafruit Feather RP2040 and ESP32 boards.</p>
         <span class="go">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
     </div>
@@ -226,7 +226,7 @@
           <span class="tag tag-tier-5">IDE Extension</span>
         </div>
         <h3>mpftp</h3>
-        <p>Connect MicroPython and CircuitPython boards from VS Code, Cursor, or the CLI, over USB or Wi-Fi: dual-pane file transfer, in-editor REPL, firmware builds and flashing, mip/circup, plus RPC, MCP, and an optional browser PWA.</p>
+        <p>Connect MicroPython and CircuitPython boards from VS Code, Cursor, or the CLI, over USB or Wi-Fi: dual-pane file transfer, in-editor REPL, firmware builds and flashing, mip/circup, plus RPC and an optional browser PWA.</p>
         <span class="go">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
 
