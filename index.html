@@ -272,172 +272,75 @@
     </div>
   <!-- PYDEVICES-PORTAL-GRIDS: END -->
 
-  <!-- Hand-authored diagram: outside any generator marker pair on purpose,
+  <!-- Hand-authored drawing: outside any generator marker pair on purpose,
        so `generate_sites.py` (which only ever rewrites between START/END)
-       never clobbers it. -->
+       never clobbers it. Plain HTML on the site's own tokens, so a palette
+       or theme change reaches it with no script. -->
+  <style>
+    .arch{display:grid;grid-template-columns:1fr 250px;gap:18px;align-items:start}
+    .arch .stack{display:flex;flex-direction:column}
+    .arch .row{border:1px solid var(--border);background:var(--bg-soft);border-radius:12px;padding:12px 16px}
+    .arch .row.program{border-style:dashed;text-align:center}
+    .arch .row.omni{border:2px solid var(--accent);background:var(--panel)}
+    .arch .row h3{margin:0 0 8px 0;font-size:15px;font-weight:600;color:var(--accent);letter-spacing:.2px}
+    .arch .row.py h3,.arch .row.host h3{color:var(--ink-soft)}
+    .arch .sub{color:var(--muted);font-size:13px;margin-left:8px;font-weight:400}
+    .arch .groups{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+    .arch .group{background:var(--bg-soft);border:1px solid var(--border);border-radius:9px;padding:9px 10px}
+    .arch .group h4{margin:0 0 6px 0;font-size:12.5px;font-weight:600;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.4px}
+    .arch .chips{display:flex;flex-wrap:wrap;gap:5px}
+    .arch .chip{font-size:12.5px;padding:3px 8px;border:1px solid var(--border);border-radius:6px;background:var(--panel);white-space:nowrap}
+    .arch .arrow{text-align:center;color:var(--muted);font-size:20px;line-height:22px;margin:2px 0}
+    .arch .cells{display:grid;gap:10px}.arch .cells.three{grid-template-columns:repeat(3,1fr)}.arch .cells.four{grid-template-columns:repeat(4,1fr)}
+    .arch .cell{border:1px solid var(--border);border-radius:9px;padding:9px 10px;background:var(--panel);text-align:center}
+    .arch .cell b{display:block;font-weight:600;font-size:14px}.arch .cell span{color:var(--ink-soft);font-size:12px}
+    .arch .tools{border:1px solid var(--border);border-radius:12px;background:var(--bg-soft);padding:12px 14px}
+    .arch .tools h3{margin:0 0 4px 0;font-size:15px;color:var(--indigo)}.arch .tools .sub{margin:0 0 10px 0;display:block}
+    .arch .tool{border:1px solid var(--border);background:var(--panel);border-radius:9px;padding:8px 10px;margin-bottom:8px}
+    .arch .tool b{display:block;font-size:13.5px;font-weight:600}.arch .tool span{font-size:12px;color:var(--ink-soft)}
+    @media (max-width: 900px){.arch{grid-template-columns:1fr}.arch .groups{grid-template-columns:1fr 1fr}.arch .cells.four{grid-template-columns:1fr 1fr}}
+    @media (max-width: 560px){.arch .groups,.arch .cells.three,.arch .cells.four{grid-template-columns:1fr}}
+  </style>
   <section class="wrap" style="margin: 60px auto 20px auto; max-width: 1200px; padding: 0 20px;">
     <div class="section-head" style="text-align: center; margin-bottom: 30px;">
-      <h2>Architecture & Layers</h2>
-      <span class="hint">How PyDevices abstractions stack from the application down to the hardware — the amber-outlined <strong>Core Stack</strong> below is the <code>pydevices</code> package itself, the product this org ships; everything above it is optional tooling and everything below it is platform glue.</span>
+      <h2>Architecture &amp; Layers</h2>
+      <span class="hint">How a program reaches the hardware: the OmniPython libraries it imports, the Python it runs on, and the host underneath. The tools stand beside the stack.</span>
     </div>
-    <div class="mermaid" style="text-align: center; background: var(--bg-soft); padding: 30px; border-radius: 12px; border: 1px solid var(--border); box-shadow: var(--shadow-soft); overflow-x: auto;">
-      graph TD
-        %% App Layer
-        subgraph AppLayer ["Application Layer"]
-            direction LR
-            LVGL["LVGL App"]
-            PDW["pdwidgets App"]
-            PYG_APP["pygraphics App"]
-            DIR["Direct App"]
-        end
-
-        %% Frameworks Layer
-        subgraph Frameworks ["Graphics Frameworks"]
-            PYG["pygraphics Core"]
-        end
-
-        %% Core Stack — this boundary IS the pydevices package, the product PyDevices ships
-        subgraph CoreStack ["🐍 pydevices — the Core Stack"]
-            %% Routing / Event Layer
-            subgraph EventLayer ["Event & Routing Layer"]
-                APPDEV["appdev<br/>(Traffic Controller & Host Loop)"]
-            end
-
-            %% Device Abstraction Layer
-            subgraph DeviceLayer ["Core Device Contract"]
-                direction LR
-                DISP["displaydev<br/>(fbdisplay, psdisplay, wasmdisplay, etc.)"]
-                AUDIO["audiodev<br/>(Tone & PCM)"]
-                TIMER["multimer<br/>(Async & Sync Timers)"]
-            end
-        end
-
-        %% Hardware / Interpreter Layer
-        subgraph HardwareLayer ["Interpreters & Platforms"]
-            direction LR
-            MP["MicroPython (MCU)"]
-            CP["CircuitPython (MCU)"]
-            UNIX["Unix Desktop<br/>(CPython, MicroPython, CircuitPython)"]
-            WIN["Windows Desktop<br/>(CPython, MicroPython)"]
-            WASM["WebAssembly (Browser)"]
-            AND["Android"]
-        end
-
-        %% Lowest Level Bindings Layer
-        subgraph BindingsLayer ["Lowest Level (Native/OS Bindings)"]
-            direction LR
-            DIF["displayif<br/>(C-usermod Bus Engine)"]
-            DIO["displayio<br/>(CircuitPython Built-in)"]
-            SDL["sdl2<br/>(via usdl2.py or displayif/usdl2)"]
-            W32["win32<br/>(via uwin32.py)"]
-            DOM["DOM / HTML5 Canvas"]
-        end
-
-        %% Connections
-        LVGL --> APPDEV
-        PDW --> PYG
-        PYG_APP --> PYG
-        PYG --> APPDEV
-
-        DIR -.-> APPDEV
-        DIR --> DISP
-
-        APPDEV --> DISP
-        APPDEV --> AUDIO
-        APPDEV --> TIMER
-
-        %% Connect Subgraphs cleanly to avoid spaghetti lines
-        DeviceLayer --> HardwareLayer
-
-        %% Map Platforms down to Native Bindings
-        MP --> DIF
-        CP --> DIO
-        UNIX --> SDL
-        WIN --> W32
-        WASM --> DOM
-        AND --> SDL
-
-        class APPDEV,DISP,AUDIO,TIMER core;
-        class LVGL,PDW,PYG_APP,DIR,PYG layer;
-        class MP,CP,UNIX,WIN,WASM,AND hardware;
-        class DIF,DIO,SDL,W32,DOM binding;
+<div class="arch">
+    <div class="stack">
+     <div class="row program"><b>Your program</b> <span class="sub">one codebase, unchanged on every Python below</span></div>
+     <div class="arrow">&#8595;</div>
+     <div class="row omni"><h3>OmniPython <span class="sub">the same libraries and modules on every Python</span></h3>
+      <div class="groups">
+       <div class="group"><h4>The board contract</h4><div class="chips"><span class="chip">board_config</span><span class="chip">board_peripherals</span><span class="chip">displaydev</span><span class="chip">audiodev</span><span class="chip">appdev</span><span class="chip">multimer</span><span class="chip">events</span><span class="chip">keys</span></div></div>
+       <div class="group"><h4>Apps and UI</h4><div class="chips"><span class="chip">appkit</span><span class="chip">pdwidgets</span><span class="chip">pygraphics</span><span class="chip">palettes</span><span class="chip">lvgl</span></div></div>
+       <div class="group"><h4>Audio</h4><div class="chips"><span class="chip">audiodsp</span><span class="chip">audioinstruments</span><span class="chip">audioeffects</span></div></div>
+       <div class="group"><h4>Connections</h4><div class="chips"><span class="chip">midiports</span><span class="chip">usb packages</span><span class="chip">bledev</span><span class="chip">wifi</span><span class="chip">mdns</span><span class="chip">hmilink</span></div></div>
+       <div class="group"><h4>Silicon modules (C)</h4><div class="chips"><span class="chip c">displayif</span><span class="chip c">audioif</span><span class="chip c">cameraif</span><span class="chip c">usbhost</span><span class="chip c">castif</span><span class="chip c">jpegio</span><span class="chip c">pngio</span><span class="chip c">h264enc</span><span class="chip c">tsmux</span><span class="chip c">ppa</span><span class="chip c">tflite</span><span class="chip c">vision</span></div></div>
+      </div>
+     </div>
+     <div class="arrow">&#8595;</div>
+     <div class="row py"><h3>Any Python</h3><div class="cells three">
+      <div class="cell"><b>MicroPython</b><span>boards, desktop, browser</span></div>
+      <div class="cell"><b>CircuitPython</b><span>boards, desktop</span></div>
+      <div class="cell"><b>CPython</b><span>desktop, Android, browser</span></div></div></div>
+     <div class="arrow">&#8595;</div>
+     <div class="row host"><h3>Any host</h3><div class="cells four">
+      <div class="cell"><b>Boards</b><span>ESP32-S3, ESP32-P4, RP2350, ...</span></div>
+      <div class="cell"><b>Desktop</b><span>Windows, Linux, macOS</span></div>
+      <div class="cell"><b>Browser</b><span>WebAssembly, Pyodide</span></div>
+      <div class="cell"><b>Android</b><span>phones and tablets</span></div></div></div>
     </div>
+    <div class="tools"><h3>PyDevices tools</h3><span class="sub">for building, flashing and running</span>
+     <div class="tool"><b>MCU Control</b><span>CLI, VS Code, Desktop: files, REPL, held sessions, flashing</span></div>
+     <div class="tool"><b>Workbench</b><span>a zero-install link, with a simulator</span></div>
+     <div class="tool"><b>mpvst</b><span>the stack inside a DAW</span></div>
+     <div class="tool"><b>Firmware and interpreters</b><span>MicroPython and CircuitPython with OmniPython built in; the desktop builds</span></div>
+     <div class="tool"><b>Examples and the gallery</b><span>apps you can copy, run in a tab</span></div>
+    </div>
+</div>
+    <p style="margin:14px 0 0 0;color:var(--muted);font-size:13px">OmniPython is made by PyDevices.</p>
   </section>
-  <script type="module">
-    /*
-     * The architecture diagram is hand-authored here, outside the generator's
-     * <!-- PYDEVICES-*: START/END --> markers, which is why regenerating the
-     * page leaves it alone. Its colours are not hand-picked: they are read
-     * from the same site.css tokens everything else uses, so a palette change
-     * reaches the diagram too, and it is re-rendered when the theme toggles.
-     * The Core Stack keeps the tier-1 outline on purpose -- pydevices is a
-     * tier-1 repo, and that is the colour the tier system gives it.
-     */
-    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
-
-    const host = document.querySelector('.mermaid');
-    /* innerHTML, not textContent: node labels carry <br/>, which the HTML
-     * parser has already turned into elements -- reading as text would drop
-     * every line break in the diagram. */
-    const source = host ? host.innerHTML : '';
-
-    const raw = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-
-    /* Mermaid's classDef parser takes plain colour literals, not CSS colour
-     * functions -- and tokens built with rgb(var(--x)) resolve to
-     * "rgb(34 199 226)". Normalise everything to hex before it goes near the
-     * graph source. */
-    const tok = (name) => {
-      const v = raw(name);
-      const m = v.match(/^rgba?\(([^)]+)\)$/);
-      if (!m) return v;
-      const parts = m[1].split(/[\s,\/]+/).filter(Boolean).slice(0, 3).map(Number);
-      if (parts.length !== 3 || parts.some(Number.isNaN)) return v;
-      return '#' + parts.map((c) => Math.round(c).toString(16).padStart(2, '0')).join('');
-    };
-
-    function paletteDefs() {
-      const panel = tok('--panel'), panel2 = tok('--panel-2'), bgSoft = tok('--bg-soft');
-      const ink = tok('--ink'), inkSoft = tok('--ink-soft'), muted = tok('--muted');
-      const border = tok('--border'), accent = tok('--accent'), tier1 = tok('--tier-1-amber');
-      return [
-        `classDef core fill:${panel2},stroke:${accent},stroke-width:2px,color:${ink};`,
-        `classDef layer fill:${panel},stroke:${border},stroke-width:1px,color:${inkSoft};`,
-        `classDef hardware fill:${bgSoft},stroke:${border},stroke-width:1px,color:${inkSoft};`,
-        `classDef binding fill:${bgSoft},stroke:${muted},stroke-width:1px,color:${inkSoft},stroke-dasharray: 4 4;`,
-        `style CoreStack fill:${panel},stroke:${tier1},stroke-width:3px`,
-      ].join('\n        ');
-    }
-
-    async function draw() {
-      if (!host) return;
-      mermaid.initialize({
-        startOnLoad: false,
-        theme: 'base',
-        themeVariables: {
-          background: tok('--bg-soft'),
-          mainBkg: tok('--panel'),
-          nodeBorder: tok('--border'),
-          textColor: tok('--ink-soft'),
-          lineColor: tok('--muted'),
-          titleColor: tok('--ink'),
-          clusterBkg: tok('--bg-soft'),
-          clusterBorder: tok('--border-soft'),
-          edgeLabelBackground: tok('--panel'),
-          fontFamily: raw('--font') || 'system-ui, sans-serif',
-        },
-      });
-      host.removeAttribute('data-processed');
-      host.innerHTML = source + '\n        ' + paletteDefs() + '\n';
-      await mermaid.run({ nodes: [host] });
-    }
-
-    draw();
-    // The toggle flips data-theme on <html>; redraw so the diagram follows.
-    new MutationObserver(draw).observe(document.documentElement, {
-      attributes: true, attributeFilter: ['data-theme'],
-    });
-  </script>
 
   </main>
 
