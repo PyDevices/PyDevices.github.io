@@ -2,8 +2,9 @@
   <!--
     The PyDevices mark: a square stone, cut and lit from the top left, with a
     2x4 pin header in its table. Every shape is a filled polygon, so the same
-    list draws it on a board with pygraphics. The table is the deep blue
-    ground, so the mark is opaque and reads on either theme.
+    list draws it on a board with pygraphics. The table is left open, so the
+    page's own ground shows through it. The favicon (assets/img/favicon.ico)
+    is drawn separately, pixel by pixel, with the table filled.
   -->
 <polygon points="62.72,62.72 1.28,62.72 8.71,55.29 55.29,55.29" fill="#7293b1"/>
 <polygon points="1.28,62.72 1.28,1.28 8.71,8.71 8.71,55.29" fill="#e7edf2"/>
