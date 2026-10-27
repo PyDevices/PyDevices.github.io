@@ -21,7 +21,7 @@
  * Token contract — read this before changing a colour anywhere in the file.
  *
  * 1. Colours that need alpha variants are stored as *channel* tokens:
- *      --accent-rgb: 34 199 226;        (space-separated R G B, no rgb())
+ *      --accent-rgb: 196 220 76;        (space-separated R G B, no rgb())
  *      --accent: rgb(var(--accent-rgb));
  *    Every translucent use then composes from the same source of truth:
  *      rgb(var(--accent-rgb) / 0.32)
@@ -40,17 +40,17 @@
 
 :root {
   /* Always-dark anchors — never overridden by the light theme. */
-  --dark-panel: #121a22;
-  --dark-panel-deep: #0c1218;
-  --dark-ink: #dfeaf2;
+  --dark-panel: #12355a;
+  --dark-panel-deep: #0a2440;
+  --dark-ink: #e8f0f8;
   --dark-good-rgb: 62 207 149;
   --dark-warn-rgb: 232 179 78;
   --dark-bad-rgb: 239 92 78;
 
   /* Channel tokens (R G B) for every colour that needs alpha variants. */
-  --bg-rgb: 8 12 16;
-  --accent-rgb: 34 199 226;
-  --indigo-rgb: 124 152 255;
+  --bg-rgb: 11 42 74;
+  --accent-rgb: 196 220 76;
+  --indigo-rgb: 169 196 222;
   --good-rgb: var(--dark-good-rgb);
   --warn-rgb: var(--dark-warn-rgb);
 
@@ -62,18 +62,18 @@
   --nav-active-tint: 0.08;
 
   --bg: rgb(var(--bg-rgb));
-  --bg-soft: #0d131a;
+  --bg-soft: #0e3052;
   --panel: var(--dark-panel);
   --panel-2: #17222c;
-  --border: #23323f;
-  --border-soft: #1d2935;
+  --border: #2a4f76;
+  --border-soft: #1f4267;
   --ink: var(--dark-ink);
-  --ink-soft: #a7bccc;
-  --muted: #6f8598;
+  --ink-soft: #b4c8dc;
+  --muted: #86a0bb;
   --accent: rgb(var(--accent-rgb));
-  --accent-soft: #5edcf0;
-  --accent-strong: #7de8f7;
-  --accent-ink: #04161c;
+  --accent-soft: #dbe9a0;
+  --accent-strong: #d8f06a;
+  --accent-ink: #0b2a4a;
   --indigo: rgb(var(--indigo-rgb));
   --good: rgb(var(--good-rgb));
   --warn: rgb(var(--warn-rgb));
@@ -83,13 +83,13 @@
   /* GitHub's own chrome black, for the "View on GitHub" primary button. */
   --github-ink: #24292e;
   /* The unlit device screen behind a hero canvas demo (cool, not warm). */
-  --device-glass: #1c2229;
-  --device-glass-deep: #0c0f12;
+  --device-glass: #16304c;
+  --device-glass-deep: #0a1d33;
   --radius: 16px;
   --radius-sm: 10px;
   --shadow: 0 18px 44px rgba(0, 0, 0, 0.45);
   --shadow-soft: 0 6px 18px rgba(0, 0, 0, 0.3);
-  --hover-border: #2f4354;
+  --hover-border: #3b6390;
   --font-display: "Space Grotesk", ui-sans-serif, system-ui, "Segoe UI", Roboto, sans-serif;
   --font: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --mono: "SF Mono", "JetBrains Mono", "Fira Code", ui-monospace, Menlo, Consolas, monospace;
@@ -130,9 +130,9 @@
 }
 
 :root[data-theme="light"] {
-  --bg-rgb: 245 249 251;
-  --accent-rgb: 11 127 150;
-  --indigo-rgb: 67 92 199;
+  --bg-rgb: 238 243 248;
+  --accent-rgb: 29 79 128;
+  --indigo-rgb: 124 150 0;
   --good-rgb: 31 143 107;
   --warn-rgb: 181 121 10;
 
@@ -142,21 +142,21 @@
   --tier-tint: 0.1;
   --nav-active-tint: 0.06;
 
-  --bg-soft: #e9f1f5;
+  --bg-soft: #e3ebf3;
   --panel: #ffffff;
-  --panel-2: #eff6f9;
-  --border: #d5e3ea;
-  --border-soft: #e2edf2;
-  --ink: #0c161d;
-  --ink-soft: #47606f;
-  --muted: #6f8695;
-  --accent-soft: #3fa2b8;
-  --accent-strong: #08657a;
-  --accent-ink: #f0fdff;
+  --panel-2: #f3f7fb;
+  --border: #cbd9e7;
+  --border-soft: #dce6f0;
+  --ink: #0b2238;
+  --ink-soft: #3e5a76;
+  --muted: #6a819a;
+  --accent-soft: #4a74a0;
+  --accent-strong: #163f68;
+  --accent-ink: #f2f7fc;
   --bad: #d1382b;
   --shadow: 0 18px 44px rgba(8, 22, 32, 0.1);
   --shadow-soft: 0 6px 18px rgba(8, 22, 32, 0.06);
-  --hover-border: #bcd0da;
+  --hover-border: #adc3d9;
 }
 
 * {
