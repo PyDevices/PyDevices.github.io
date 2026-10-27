@@ -6,9 +6,9 @@ PyDevices Hybrid Smartwatch — 240x240 LVGL v9 watch face for hero canvas.
 
 Features:
 - Self-rendered circular metallic bezel and casing
-- Dark sunray/carbon watch dial with Roman hour numerals and 60-minute tick ring
+- Deep-blue watch dial with Roman hour numerals and 60-minute tick ring
 - High-precision dauphine analog hour & minute hands
-- Continuous sweeping brand amber/orange seconds hand (~30 FPS)
+- Continuous sweeping brand chartreuse seconds hand (~30 FPS)
 - Central/lower digital time readout (HH:MM:SS) and date badge (Day, Mon DD)
 """
 
@@ -171,7 +171,7 @@ class PyDevicesWatch:
         r = dial_size // 2
 
         # 1. Base Screen Layer
-        self.parent.set_style_bg_color(_color(0x0A0D10), 0)
+        self.parent.set_style_bg_color(_color(0x0B2A4A), 0)
         self.parent.set_style_bg_opa(lv.OPA.COVER, 0)
         self.parent.set_style_pad_all(0, 0)
         try:
@@ -192,11 +192,11 @@ class PyDevicesWatch:
         self.bezel.set_size(size, size)
         self.bezel.center()
         self.bezel.set_style_radius(lv.RADIUS_CIRCLE, 0)
-        self.bezel.set_style_bg_color(_color(0x1E242B), 0)
-        self.bezel.set_style_bg_grad_color(_color(0x101418), 0)
+        self.bezel.set_style_bg_color(_color(0x1D4166), 0)
+        self.bezel.set_style_bg_grad_color(_color(0x0A2440), 0)
         self.bezel.set_style_bg_grad_dir(lv.GRAD_DIR.VER, 0)
         self.bezel.set_style_bg_opa(lv.OPA.COVER, 0)
-        self.bezel.set_style_border_color(_color(0x3B444E), 0)
+        self.bezel.set_style_border_color(_color(0x3B6390), 0)
         self.bezel.set_style_border_width(max(2, int(size * 0.017)), 0)
         try:
             self.bezel.update_layout()
@@ -209,9 +209,9 @@ class PyDevicesWatch:
         self.bezel_ring.set_size(inner_bezel_size, inner_bezel_size)
         self.bezel_ring.center()
         self.bezel_ring.set_style_radius(lv.RADIUS_CIRCLE, 0)
-        self.bezel_ring.set_style_bg_color(_color(0x151A20), 0)
+        self.bezel_ring.set_style_bg_color(_color(0x12355A), 0)
         self.bezel_ring.set_style_bg_opa(lv.OPA.COVER, 0)
-        self.bezel_ring.set_style_border_color(_color(0x22C7E2), 0)
+        self.bezel_ring.set_style_border_color(_color(0xC4DC4C), 0)
         self.bezel_ring.set_style_border_width(1, 0)
         self.bezel_ring.set_style_border_opa(lv.OPA._60, 0)
         try:
@@ -224,11 +224,11 @@ class PyDevicesWatch:
         self.face.set_size(dial_size, dial_size)
         self.face.center()
         self.face.set_style_radius(lv.RADIUS_CIRCLE, 0)
-        self.face.set_style_bg_color(_color(0x0E1115), 0)
-        self.face.set_style_bg_grad_color(_color(0x181F26), 0)
+        self.face.set_style_bg_color(_color(0x0A2440), 0)
+        self.face.set_style_bg_grad_color(_color(0x12355A), 0)
         self.face.set_style_bg_grad_dir(lv.GRAD_DIR.VER, 0)
         self.face.set_style_bg_opa(lv.OPA.COVER, 0)
-        self.face.set_style_border_color(_color(0x28323D), 0)
+        self.face.set_style_border_color(_color(0x2A4F76), 0)
         self.face.set_style_border_width(1, 0)
         try:
             self.face.update_layout()
@@ -240,28 +240,28 @@ class PyDevicesWatch:
         # IX & III: vertical center aligned to parent (y_offset = 0), calculated x_offset
         num_inset = int(dial_size * 0.08)
 
-        self.lbl_xii = _clean_label(self.face, "XII", 0xE2E8F0, 14)
+        self.lbl_xii = _clean_label(self.face, "XII", 0xE8F0F8, 14)
         self.lbl_xii.align(lv.ALIGN.TOP_MID, 0, num_inset)
         try:
             self.lbl_xii.update_layout()
         except AttributeError:
             pass
 
-        self.lbl_vi = _clean_label(self.face, "VI", 0xE2E8F0, 14)
+        self.lbl_vi = _clean_label(self.face, "VI", 0xE8F0F8, 14)
         self.lbl_vi.align(lv.ALIGN.BOTTOM_MID, 0, -num_inset)
         try:
             self.lbl_vi.update_layout()
         except AttributeError:
             pass
 
-        self.lbl_ix = _clean_label(self.face, "IX", 0xE2E8F0, 14)
+        self.lbl_ix = _clean_label(self.face, "IX", 0xE8F0F8, 14)
         self.lbl_ix.align(lv.ALIGN.LEFT_MID, num_inset, 0)
         try:
             self.lbl_ix.update_layout()
         except AttributeError:
             pass
 
-        self.lbl_iii = _clean_label(self.face, "III", 0xE2E8F0, 14)
+        self.lbl_iii = _clean_label(self.face, "III", 0xE8F0F8, 14)
         self.lbl_iii.align(lv.ALIGN.RIGHT_MID, -num_inset, 0)
         try:
             self.lbl_iii.update_layout()
@@ -271,7 +271,7 @@ class PyDevicesWatch:
         # 6. Brand Label (Upper Dial Quadrant)
         # Horizontal center aligned to parent (x_offset = 0), calculated y_offset
         brand_top_offset = int(dial_size * 0.25)
-        self.brand_lbl = _clean_label(self.face, "PYDEVICES", 0x22C7E2, 11)
+        self.brand_lbl = _clean_label(self.face, "PYDEVICES", 0xC4DC4C, 11)
         self.brand_lbl.align(lv.ALIGN.TOP_MID, 0, brand_top_offset)
         try:
             self.brand_lbl.update_layout()
@@ -288,9 +288,9 @@ class PyDevicesWatch:
         self.pill.set_size(pill_w, pill_h)
         self.pill.align(lv.ALIGN.BOTTOM_MID, 0, -pill_bottom_offset)
         self.pill.set_style_radius(max(4, int(pill_h * 0.18)), 0)
-        self.pill.set_style_bg_color(_color(0x080B0E), 0)
+        self.pill.set_style_bg_color(_color(0x082039), 0)
         self.pill.set_style_bg_opa(lv.OPA._90, 0)
-        self.pill.set_style_border_color(_color(0x28333E), 0)
+        self.pill.set_style_border_color(_color(0x2A4F76), 0)
         self.pill.set_style_border_width(1, 0)
         try:
             self.pill.update_layout()
@@ -306,7 +306,7 @@ class PyDevicesWatch:
         except AttributeError:
             pass
 
-        self.digital_date = _clean_label(self.pill, "FRI  OCT 24", 0x94A3B8, 10)
+        self.digital_date = _clean_label(self.pill, "FRI  OCT 24", 0xB4C8DC, 10)
         self.digital_date.align(lv.ALIGN.BOTTOM_MID, 0, -4)
         try:
             self.digital_date.update_layout()
@@ -331,7 +331,7 @@ class PyDevicesWatch:
         # Minor ticks (minutes)
         minor_style = lv.style_t()
         minor_style.init()
-        minor_style.set_line_color(_color(0x64748B))
+        minor_style.set_line_color(_color(0x86A0BB))
         minor_style.set_line_width(1)
         minor_style.set_length(max(3, int(r * 0.05)))
         self.scale.add_style(minor_style, lv.PART.ITEMS)
@@ -339,7 +339,7 @@ class PyDevicesWatch:
         # Major ticks (hours)
         major_style = lv.style_t()
         major_style.init()
-        major_style.set_line_color(_color(0x22C7E2))
+        major_style.set_line_color(_color(0xC4DC4C))
         major_style.set_line_width(max(2, int(dial_size * 0.009)))
         major_style.set_length(max(6, int(r * 0.09)))
         major_style.set_line_rounded(True)
@@ -363,20 +363,20 @@ class PyDevicesWatch:
 
         # Hour hand layers (dark border + bright silver core + gold ridge)
         hour_len = int(r * 0.58)
-        self.hands["hour"].append((self._line(self.needle_scale, 0x050709, max(4, int(dial_size * 0.025))), hour_len + 1))
-        self.hands["hour"].append((self._line(self.needle_scale, 0xE2E8F0, max(3, int(dial_size * 0.018))), int(hour_len * 0.85)))
-        self.hands["hour"].append((self._line(self.needle_scale, 0x22C7E2, 1), hour_len))
+        self.hands["hour"].append((self._line(self.needle_scale, 0x061A30, max(4, int(dial_size * 0.025))), hour_len + 1))
+        self.hands["hour"].append((self._line(self.needle_scale, 0xE8F0F8, max(3, int(dial_size * 0.018))), int(hour_len * 0.85)))
+        self.hands["hour"].append((self._line(self.needle_scale, 0xC4DC4C, 1), hour_len))
 
         # Minute hand layers
         min_len = int(r * 0.82)
-        self.hands["minute"].append((self._line(self.needle_scale, 0x050709, max(3, int(dial_size * 0.018))), min_len + 1))
+        self.hands["minute"].append((self._line(self.needle_scale, 0x061A30, max(3, int(dial_size * 0.018))), min_len + 1))
         self.hands["minute"].append((self._line(self.needle_scale, 0xF8FAFC, max(2, int(dial_size * 0.010))), int(min_len * 0.88)))
-        self.hands["minute"].append((self._line(self.needle_scale, 0x22C7E2, 1), min_len))
+        self.hands["minute"].append((self._line(self.needle_scale, 0xC4DC4C, 1), min_len))
 
-        # Second hand (sweeping brand orange/amber needle + dark outline)
+        # Second hand (sweeping brand chartreuse needle + dark outline)
         sec_len = int(r * 0.90)
-        self.hands["second"].append((self._line(self.needle_scale, 0x1A0802, max(2, int(dial_size * 0.012))), sec_len + 1))
-        self.hands["second"].append((self._line(self.needle_scale, 0x22C7E2, 1), sec_len))
+        self.hands["second"].append((self._line(self.needle_scale, 0x061A30, max(2, int(dial_size * 0.012))), sec_len + 1))
+        self.hands["second"].append((self._line(self.needle_scale, 0xC4DC4C, 1), sec_len))
 
         # 10. Center Hub Cap - Created on top of the hands
         hub_size = max(10, int(dial_size * 0.065))
@@ -384,11 +384,11 @@ class PyDevicesWatch:
         self.hub.set_size(hub_size, hub_size)
         self.hub.center()
         self.hub.set_style_radius(lv.RADIUS_CIRCLE, 0)
-        self.hub.set_style_bg_color(_color(0x22C7E2), 0)
-        self.hub.set_style_bg_grad_color(_color(0x9A3412), 0)
+        self.hub.set_style_bg_color(_color(0xC4DC4C), 0)
+        self.hub.set_style_bg_grad_color(_color(0x5E7012), 0)
         self.hub.set_style_bg_grad_dir(lv.GRAD_DIR.VER, 0)
         self.hub.set_style_bg_opa(lv.OPA.COVER, 0)
-        self.hub.set_style_border_color(_color(0xFFF7ED), 0)
+        self.hub.set_style_border_color(_color(0xF4F9E0), 0)
         self.hub.set_style_border_width(1, 0)
 
         # First update and timer (~30 FPS: 33ms)

@@ -291,7 +291,7 @@ class SignalGenHero:
     # -- construction ------------------------------------------------
 
     def _build_background(self, scr):
-        scr.set_style_bg_color(_color(0x0A0D10), 0)
+        scr.set_style_bg_color(_color(0x0B2A4A), 0)
         scr.set_style_bg_opa(lv.OPA.COVER, 0)
         scr.set_style_pad_all(0, 0)
         try:
@@ -312,26 +312,26 @@ class SignalGenHero:
         bezel.set_size(bezel_d, bezel_d)
         bezel.set_pos(cx - bezel_d // 2, cy - bezel_d // 2)
         bezel.set_style_radius(lv.RADIUS_CIRCLE, 0)
-        bezel.set_style_bg_color(_color(0x1B2129), 0)
-        bezel.set_style_bg_grad_color(_color(0x07090B), 0)
+        bezel.set_style_bg_color(_color(0x1D4166), 0)
+        bezel.set_style_bg_grad_color(_color(0x082039), 0)
         bezel.set_style_bg_grad_dir(lv.GRAD_DIR.VER, 0)
         bezel.set_style_bg_opa(lv.OPA.COVER, 0)
-        bezel.set_style_border_color(_color(0x2A3441), 0)
+        bezel.set_style_border_color(_color(0x2A4F76), 0)
         bezel.set_style_border_width(max(1, int(size * 0.006)), 0)
 
         # The rotating knob body -- a radial-gradient dome with a bright
-        # brand-amber pointer bar and a knurled ring of grip dots, all as
+        # brand-chartreuse pointer bar and a knurled ring of grip dots, all as
         # children so they rotate together with the container.
         kd = knob_r * 2
         self.knob = _clean_obj(scr)
         self.knob.set_size(kd, kd)
         self.knob.set_pos(cx - knob_r, cy - knob_r)
         self.knob.set_style_radius(lv.RADIUS_CIRCLE, 0)
-        self.knob.set_style_bg_color(_color(0x475467), 0)
-        self.knob.set_style_bg_grad_color(_color(0x161B22), 0)
+        self.knob.set_style_bg_color(_color(0x4A74A0), 0)
+        self.knob.set_style_bg_grad_color(_color(0x0E3052), 0)
         self.knob.set_style_bg_grad_dir(lv.GRAD_DIR.RADIAL, 0)
         self.knob.set_style_bg_opa(lv.OPA.COVER, 0)
-        self.knob.set_style_border_color(_color(0x64748B), 0)
+        self.knob.set_style_border_color(_color(0x86A0BB), 0)
         self.knob.set_style_border_width(max(1, int(size * 0.008)), 0)
         self.knob.set_style_transform_pivot_x(knob_r, 0)
         self.knob.set_style_transform_pivot_y(knob_r, 0)
@@ -346,7 +346,7 @@ class SignalGenHero:
             dot = _clean_obj(self.knob)
             dot.set_size(dot_r * 2, dot_r * 2)
             dot.set_style_radius(lv.RADIUS_CIRCLE, 0)
-            dot.set_style_bg_color(_color(0x8291A3 if i % 2 == 0 else 0x222A34), 0)
+            dot.set_style_bg_color(_color(0xA9C4DE if i % 2 == 0 else 0x1F4267), 0)
             dot.set_style_bg_opa(lv.OPA.COVER, 0)
             dot.align(lv.ALIGN.CENTER, dx, dy)
 
@@ -355,7 +355,7 @@ class SignalGenHero:
         self.pointer = _clean_obj(self.knob)
         self.pointer.set_size(pw, ph)
         self.pointer.set_style_radius(pw // 2, 0)
-        self.pointer.set_style_bg_color(_color(0x22C7E2), 0)
+        self.pointer.set_style_bg_color(_color(0xC4DC4C), 0)
         self.pointer.set_style_bg_opa(lv.OPA.COVER, 0)
         self.pointer.align(lv.ALIGN.TOP_MID, 0, int(knob_r * 0.14))
 
@@ -366,9 +366,9 @@ class SignalGenHero:
         self.hub.set_size(hd, hd)
         self.hub.set_pos(self.cx - hub_r, self.cy - hub_r)
         self.hub.set_style_radius(lv.RADIUS_CIRCLE, 0)
-        self.hub.set_style_bg_color(_color(0x11161D), 0)
+        self.hub.set_style_bg_color(_color(0x0A2440), 0)
         self.hub.set_style_bg_opa(lv.OPA.COVER, 0)
-        self.hub.set_style_border_color(_color(0x475569), 0)
+        self.hub.set_style_border_color(_color(0x3B6390), 0)
         self.hub.set_style_border_width(max(1, int(self.size * 0.008)), 0)
         try:
             self.hub.add_flag(lv.obj.FLAG.CLICKABLE)
@@ -376,7 +376,7 @@ class SignalGenHero:
             pass
         self.hub.add_event_cb(self._on_hub_click, lv.EVENT.CLICKED, None)
 
-        self.hub_icon = _clean_label(self.hub, lv.SYMBOL.MUTE, 0x64748B, int(hub_r * 0.9))
+        self.hub_icon = _clean_label(self.hub, lv.SYMBOL.MUTE, 0x86A0BB, int(hub_r * 0.9))
         self.hub_icon.center()
 
     def _build_readout(self, scr):
@@ -388,7 +388,7 @@ class SignalGenHero:
         self.freq_label.set_pos(0, top)
         self.freq_label.set_width(self.size)
         note_y = min(top + int(freq_font * 1.05), bezel_top - note_font)
-        self.note_label = _clean_label(scr, "A4 - SIN", 0x94A3B8, note_font)
+        self.note_label = _clean_label(scr, "A4 - SIN", 0xB4C8DC, note_font)
         self.note_label.set_pos(0, note_y)
         self.note_label.set_width(self.size)
 
@@ -411,7 +411,7 @@ class SignalGenHero:
                 btn.add_flag(lv.obj.FLAG.CLICKABLE)
             except AttributeError:
                 pass
-            lbl = _clean_label(btn, label, 0x94A3B8, int(bh * 0.55))
+            lbl = _clean_label(btn, label, 0xB4C8DC, int(bh * 0.55))
             lbl.center()
             btn.add_event_cb(lambda _e, idx=i: self._select_wave(idx), lv.EVENT.CLICKED, None)
             self.wave_btns.append((btn, lbl))
@@ -460,12 +460,12 @@ class SignalGenHero:
     def _refresh_hub(self):
         if self.playing:
             self.hub_icon.set_text(lv.SYMBOL.VOLUME_MAX)
-            self.hub_icon.set_style_text_color(_color(0x22C7E2), 0)
-            self.hub.set_style_border_color(_color(0x22C7E2), 0)
+            self.hub_icon.set_style_text_color(_color(0xC4DC4C), 0)
+            self.hub.set_style_border_color(_color(0xC4DC4C), 0)
         else:
             self.hub_icon.set_text(lv.SYMBOL.MUTE)
-            self.hub_icon.set_style_text_color(_color(0x64748B), 0)
-            self.hub.set_style_border_color(_color(0x475569), 0)
+            self.hub_icon.set_style_text_color(_color(0x86A0BB), 0)
+            self.hub.set_style_border_color(_color(0x3B6390), 0)
 
     def _select_wave(self, idx, initial=False):
         self.wave_idx = idx
@@ -473,10 +473,10 @@ class SignalGenHero:
         self.osc.wave = name
         for i, (btn, lbl) in enumerate(self.wave_btns):
             active = i == idx
-            btn.set_style_bg_color(_color(0x22C7E2 if active else 0x151A20), 0)
+            btn.set_style_bg_color(_color(0xC4DC4C if active else 0x12355A), 0)
             btn.set_style_bg_opa(lv.OPA.COVER, 0)
-            btn.set_style_border_color(_color(0x22C7E2 if active else 0x2A3441), 0)
-            lbl.set_style_text_color(_color(0x0A0D10 if active else 0x94A3B8), 0)
+            btn.set_style_border_color(_color(0xC4DC4C if active else 0x2A4F76), 0)
+            lbl.set_style_text_color(_color(0x0B2A4A if active else 0xB4C8DC), 0)
         if not initial:
             self.last_interaction = time.time()
             self._update_readout()
