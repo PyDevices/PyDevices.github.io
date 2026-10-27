@@ -327,7 +327,7 @@ main_windows() {  # dir branch [build_mp.py arguments]
     say "  ${PYTHON:-python} build_mp.py --port windows --variant pydevices --modules all"
     say ""
     say "Every other port (esp32, rp2, webassembly, unix) builds from WSL, as on Linux."
-    say "The guide: https://github.com/PyDevices/micropython-pydevices/blob/main/docs/newcomers.md#on-windows"
+    say "The guide: https://github.com/PyDevices/micropython-pydevices/blob/main/docs/guides/build-on-windows.md"
 }
 
 main() {
@@ -375,7 +375,7 @@ main() {
     say "  ./build_mp.py --port unix --variant pydevices --modules all"
     say "  ./build_mp.py --port esp32 --board ESP32_GENERIC_S3 --variant SPIRAM_OCT --flash 8MB --modules all"
     say ""
-    say "The guide: https://github.com/PyDevices/micropython-pydevices/blob/main/docs/newcomers.md"
+    say "The guide: https://github.com/PyDevices/micropython-pydevices/blob/main/docs/get-started/install.md"
 }
 
 main "$@"
