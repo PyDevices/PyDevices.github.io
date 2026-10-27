@@ -22,7 +22,7 @@ itself lives in the [org profile](https://github.com/PyDevices) and
 | `assets/img/` | Brand marks, synced from `dotgithub/assets/img/`: `logo.svg`, `logo-512.png`, `logo-avatar.png`. |
 | `assets/chrome/` | Shared first-party chrome, synced from `dotgithub/assets/`: `site.css`, `site-chrome.js`, `theme-toggle.js`, `hero-runtime.js`. |
 | `assets/apps/` | Interactive pure-Python apps, synced from `dotgithub/assets/apps/`. |
-| `pyscript-template/pwa/` | The `pyscript-template` repo's offline PWA demo, mirrored in whole by the generator's `sync_assets()` step so it publishes from this Pages root. Re-vendor it by re-running the generator after `pyscript-template` bumps its PyScript pin — don't hand-edit the copy here. |
+| `pyscript-template/pwa/` | The `pyscript-template` repo's offline PWA app, mirrored in whole from that repo's root by the generator's `sync_assets()` step so it publishes from this Pages root. To refresh it, run `scripts/vendor_pyscript.sh` in `pyscript-template`, then the generator — don't hand-edit the copy here. |
 | `vendor/micropython/` | Centralized WebAssembly MicroPython runtime, rebuilt separately from this generator, from the `micropython-pydevices` overlay (`build_mp.py --port webassembly`); `micropython.wasm.provenance` beside it says what went in. |
 | `404.html` | Custom GitHub Pages 404. |
 | `.nojekyll` | Bypasses Jekyll on GitHub Pages. |
