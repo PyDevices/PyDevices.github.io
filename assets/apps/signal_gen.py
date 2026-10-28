@@ -49,7 +49,7 @@ def _note_name(freq):
 
 # ---------------------------------------------------------------------------
 # Signal synthesis -- a single live synthio.Note, played through the same
-# audiodev.sample_out.AudioOut contract as pydevices-examples' piano.py
+# audiodev.sample_out.AudioOut contract as gallery's piano.py
 # (out = board_config.audio_out(); out.play(synth); out.attach(app) -- the
 # role is a factory, and calling it is what opens the device). Toggling the note
 # on/off goes through synthio's own envelope (short attack/release) rather

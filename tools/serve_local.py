@@ -7,7 +7,7 @@ mounted request first checks the repository's editable ``.site`` tree, then
 falls back to the complete static tree stored on ``origin/gh-pages``.
 
 It is the organization's one portal server (dotgithub's serve_portal.py was
-folded into it, 2026-10-05). pydevices-examples keeps its own
+folded into it, 2026-10-05). gallery keeps its own
 ``tools/serve.py`` for anyone who clones just that repository.
 """
 
@@ -27,7 +27,7 @@ PORTAL_ROOT = Path(__file__).resolve().parent.parent
 WORKSPACE_ROOT = PORTAL_ROOT.parent
 MOUNTS = {
     "mip": WORKSPACE_ROOT / "mip",
-    "pydevices-examples": WORKSPACE_ROOT / "pydevices-examples",
+    "gallery": WORKSPACE_ROOT / "gallery",
 }
 
 
@@ -103,7 +103,7 @@ def main() -> None:
     print(f"Serving the sibling checkouts at http://{args.bind}:{server.server_port}/")
     print("  /                    -> PyDevices.github.io")
     print("  /mip/                -> mip/.site + origin/gh-pages")
-    print("  /pydevices-examples/ -> pydevices-examples/.site + origin/gh-pages")
+    print("  /gallery/            -> gallery/.site + origin/gh-pages")
     try:
         server.serve_forever()
     except KeyboardInterrupt:

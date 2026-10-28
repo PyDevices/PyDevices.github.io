@@ -1,5 +1,5 @@
 """
-PyDevices Multi-Interpreter Benchmark (Hero Canvas App for pydevices-examples)
+PyDevices Multi-Interpreter Benchmark (Hero Canvas App for gallery)
 =============================================================================
 Interactive multi-interpreter execution matrix and benchmark meter:
 - 5-target performance comparator (MicroPython, CircuitPython, CPython, WASM, Android)
