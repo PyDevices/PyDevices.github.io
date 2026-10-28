@@ -48,7 +48,7 @@
     '/workbench/">Workbench</a>' +
     '<a href="' +
     ROOT +
-    '/pydevices-examples/gallery/" class="nav-gallery-link">Gallery</a>' +
+    '/gallery/gallery/" class="nav-gallery-link">Gallery</a>' +
     "</nav>" +
     '<button type="button" class="theme-toggle" id="theme-toggle" aria-label="Toggle color theme" title="Toggle color theme">' +
     '<svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>' +
@@ -120,10 +120,10 @@
           icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></svg>'
         },
         {
-          id: "pydevices-examples",
-          name: "examples",
-          path: "/pydevices-examples/",
-          url: ROOT + "/pydevices-examples/",
+          id: "gallery",
+          name: "gallery",
+          path: "/gallery/",
+          url: ROOT + "/gallery/",
           tag: "Showcase",
           desc: "Multi-interpreter demos, benchmarks & PyScript runner",
           icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6M9 12h6M9 15h4"/><circle cx="17" cy="15" r="1.5"/></svg>'
@@ -358,7 +358,7 @@
 
     // Footer Links
     html += '  <div class="pydevices-nav-footer">';
-    html += '    <a href="' + ROOT + '/pydevices-examples/gallery/" class="nav-foot-link">Interactive Gallery</a> &middot; ';
+    html += '    <a href="' + ROOT + '/gallery/gallery/" class="nav-foot-link">Interactive Gallery</a> &middot; ';
     html += '    <a href="https://PyDevices.github.io/mip" class="nav-foot-link">MIP Index</a> &middot; ';
     html += '    <a href="https://github.com/PyDevices" class="nav-foot-link">GitHub</a>';
     html += '  </div>';

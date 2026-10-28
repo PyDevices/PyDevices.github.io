@@ -2,7 +2,7 @@
  * PyDevices — shared org site chrome
  *
  * Design tokens + layout primitives shared by every PyDevices GitHub Pages
- * site (org root, lvgl-bindings, pydevices-examples, and the second-wave module
+ * site (org root, lvgl-bindings, gallery, and the second-wave module
  * pages). Keep this file focused on *chrome*: header/nav, hero, buttons,
  * cards, footer, typography. Project-specific / demo-interpreter styles belong
  * in a local stylesheet loaded after this one.
@@ -931,7 +931,7 @@ pre code {
 }
 
 /* NOT a colour override -- an unmerged twin kept for its selector weight.
- * pydevices-examples' gallery.css loads after this file and restyles
+ * gallery's gallery.css loads after this file and restyles
  * .tag.featured with the same (0,2,0) specificity, so today it wins in the
  * dark theme and loses to this heavier light-theme selector. Folding these
  * declarations into the rule above would hand the light theme to gallery.css
