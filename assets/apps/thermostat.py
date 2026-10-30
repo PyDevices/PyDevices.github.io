@@ -1,5 +1,5 @@
 """
-PyDevices LVGL Smart Thermostat (Hero Canvas App for lvgl-python)
+PyDevices LVGL Smart Thermostat (Hero Canvas App for omnipython-lvgl)
 =================================================================
 Modern LVGL v9 circular climate dial featuring an interactive target temperature arc,
 touch-draggable knob, ambient status readout, and multi-state ECO leaf badge.
