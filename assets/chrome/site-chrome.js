@@ -170,40 +170,13 @@
       color: "var(--tier-3-blue, #3b82f6)",
       repos: [
         {
-          id: "lvgl-bindings",
-          name: "lvgl-bindings",
-          path: "/lvgl-bindings/",
-          url: ROOT + "/lvgl-bindings/",
-          tag: "Generator",
-          desc: "C header AST parser & zero-copy binding generator",
+          id: "omnipython-lvgl",
+          name: "omnipython-lvgl",
+          path: "/omnipython-lvgl/",
+          url: ROOT + "/omnipython-lvgl/",
+          tag: "LVGL",
+          desc: "LVGL v9 for MicroPython, CircuitPython and CPython",
           icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>'
-        },
-        {
-          id: "lvgl-micropython",
-          name: "lvgl-micropython",
-          path: "/lvgl-micropython/",
-          url: ROOT + "/lvgl-micropython/",
-          tag: "MicroPython",
-          desc: "Precompiled LVGL v9 usermod bindings for MicroPython",
-          icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 17V7l8-4 8 4v10l-8 4z"/><path d="M4 7l8 4 8-4M12 11v10"/></svg>'
-        },
-        {
-          id: "lvgl-python",
-          name: "lvgl-python",
-          path: "/lvgl-python/",
-          url: ROOT + "/lvgl-python/",
-          tag: "CPython / WASM",
-          desc: "LVGL Python wheels for Linux, Windows & WebAssembly",
-          icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a4 4 0 0 1 4 4v1h1a3 3 0 0 1 3 3v1a4 4 0 0 1-4 4h-1v1a4 4 0 0 1-4 4 4 4 0 0 1-4-4v-1H6a4 4 0 0 1-4-4v-1a3 3 0 0 1 3-3h1V6a4 4 0 0 1 4-4z"/></svg>'
-        },
-        {
-          id: "lvgl-circuitpython",
-          name: "lvgl-circuitpython",
-          path: "/lvgl-circuitpython/",
-          url: ROOT + "/lvgl-circuitpython/",
-          tag: "CircuitPython",
-          desc: "Custom firmware builds with LVGL for CircuitPython",
-          icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 3v3M12 18v3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M3 12h3M18 12h3M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/></svg>'
         }
       ]
     },
