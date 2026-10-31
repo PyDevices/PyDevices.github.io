@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- PYDEVICES-HEAD-TAGS: START -->
+  <title>PyDevices - audioeffects</title>
+  <meta name="description" content="Compressors, EQs, reverbs, delays, modulation, drive and amp simulation, pitch shifters and racks, pure Python on audiodsp's audio nodes, the same on MicroPython-compatible boards, CircuitPython-compatible boards and a desktop. Install omnipython-audioeffects from TestPyPI, or audioeffects from the MIP index.">
+  <link rel="icon" href="/assets/img/favicon.ico" sizes="16x16 32x32 48x48">
+  <!-- PYDEVICES-HEAD-TAGS: END -->
+  <link rel="stylesheet" href="/assets/chrome/site.css">
+</head>
+<body>
+  <!-- PYDEVICES-ABOVE-THE-FOLD: START -->
+  <div id="pydevices-site-header"></div>
+
+  <!-- Hero Banner -->
+  <section class="hero wrap has-hero-canvas">
+    <div class="hero-main">
+      <div class="hero-lead">
+        <div class="logo-badge product-mark" style="background: linear-gradient(135deg, var(--tier-1-amber), var(--tier-1-deep)); color: var(--on-accent);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></svg></div>
+        <span class="eyebrow" style="color: var(--tier-1-amber);">audioeffects</span>
+      </div>
+      <h1>audioeffects — 45 studio and guitar-pedal effects, in pure Python.</h1>
+      <p><code>audioeffects</code> Compressors, EQs, reverbs, delays, modulation, drive and amp simulation, pitch shifters and racks, pure Python on audiodsp's audio nodes, the same on MicroPython-compatible boards, CircuitPython-compatible boards and a desktop. Install omnipython-audioeffects from TestPyPI, or audioeffects from the MIP index.</p>
+      <div class="cta">
+      <a class="btn primary" style="background: var(--github-ink); color: var(--on-accent); border-color: var(--github-ink);" href="https://github.com/PyDevices/audioeffects">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.9a3.4 3.4 0 0 0-1-2.6c3-.3 6-1.5 6-6.5a5 5 0 0 0-1.4-3.5 4.6 4.6 0 0 0-.1-3.5s-1.1-.3-3.5 1.3a12 12 0 0 0-6 0C6.6 1.7 5.5 2 5.5 2a4.6 4.6 0 0 0-.1 3.5A5 5 0 0 0 4 9c0 5 3 6.2 6 6.5a3.4 3.4 0 0 0-1 2.6V22"/></svg>
+        GitHub Repo
+      </a>
+      <a class="btn" style="border-color: var(--tier-1-amber); color: var(--tier-1-amber);" href="https://github.com/PyDevices/audioeffects/blob/main/docs/index.md">Docs</a>
+      <a class="btn" style="border-color: var(--tier-1-amber); color: var(--tier-1-amber);" href="https://github.com/PyDevices/audioeffects/blob/main/docs/reference/effects.md">Effects</a>
+      <a class="btn" style="border-color: var(--tier-1-amber); color: var(--tier-1-amber);" href="https://test.pypi.org/project/omnipython-audioeffects/">TestPyPI</a>
+      </div>
+    </div>
+    <div class="hero-canvas-wrap" data-hero-canvas="hero_canvas" data-hero-app="signal_gen" data-hero-app-url="https://PyDevices.github.io/assets/apps/signal_gen.py">
+      <div class="hero-canvas-square">
+        <div class="hero-canvas-loader">
+          <div class="hero-spinner"></div>
+          <span class="hero-canvas-status">Live Pure-Python Device</span>
+        </div>
+        <canvas id="hero_canvas" width="240" height="240" tabindex="0"></canvas>
+      </div>
+    </div>
+  </section>
+  <!-- PYDEVICES-ABOVE-THE-FOLD: END -->
+  <main class="wrap" style="padding-bottom: 60px;">
+    <div class="section-head">
+      <h2>Install</h2>
+      <span class="hint">TestPyPI for CPython, the MIP index for boards</span>
+    </div>
+    <div class="spec-block">
+      <pre><code># CPython: audiodsp comes along from PyPI
+pip install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ omnipython-audioeffects</code></pre>
+    </div>
+    <div class="spec-block">
+      <pre><code># MicroPython, on a firmware that has audiodsp in it
+import mip
+mip.install("audioeffects", index="https://PyDevices.github.io/mip")</code></pre>
+    </div>
+    <p class="prose" style="margin-top: 14px;">Both are pure Python. On a board they need a firmware built with <a href="/audiodsp/">audiodsp</a>, whose nodes they are made of.</p>
+    <div class="section-head" style="margin-top: 36px;">
+      <h2>Try this first</h2>
+      <span class="hint">One click through a digital delay</span>
+    </div>
+    <div class="spec-block">
+      <pre><code>import array
+import audiocore
+import audioeffects
+
+RATE = 48000
+click = array.array("h", [20000] + [0] * (RATE - 1))  # one click, one second
+source = audiocore.RawSample(click, sample_rate=RATE, channel_count=1)
+echo = audioeffects.create("DigitalDelay", source, RATE,
+                           time_ms=250, feedback=0.5, mix=0.5)
+heard = array.array("h")
+while len(heard) < RATE:
+    _, block = audiocore.get_buffer(echo.output)
+    heard.extend(array.array("h", bytes(block)))
+for ms in range(0, 1000, 250):
+    start = ms * RATE // 1000
+    print(ms, "ms: loudest sample", max(abs(v) for v in heard[start:start + 12000]))</code></pre>
+    </div>
+    <p class="prose" style="margin-top: 14px;">It prints the click, then echoes at 250, 500 and 750 ms, each half as loud as the last because feedback is 0.5. On a board, hand <code>echo.output</code> to <code>audio_out.play()</code> instead of pulling it yourself. To put something worth processing in front of it, add <a href="/audioinstruments/">audioinstruments</a>, and to use the effects in a DAW, install <a href="/mpvst/">MPVST</a>.</p>
+    <div class="section-head" style="margin-top: 36px;">
+      <h2>Read more</h2>
+      <span class="hint">Depth lives in the repository</span>
+    </div>
+    <div class="spec-block">
+      <div class="spec-grid">
+        <div class="spec-item tier-1">
+          <h4><a href="https://github.com/PyDevices/audioeffects/blob/main/docs/index.md">Docs</a></h4>
+          <p>Install, first program, guides and the reference.</p>
+        </div>
+        <div class="spec-item tier-1">
+          <h4><a href="https://github.com/PyDevices/audioeffects/blob/main/docs/reference/effects.md">The effects</a></h4>
+          <p>Every effect and rack, by name, with its controls.</p>
+        </div>
+        <div class="spec-item tier-1">
+          <h4><a href="https://github.com/PyDevices/audioeffects/blob/main/docs/guides/chain-effects.md">Chain effects</a></h4>
+          <p>Wire one effect into the next and keep the wire stable.</p>
+        </div>
+        <div class="spec-item tier-1">
+          <h4><a href="/audiodsp/">audiodsp</a></h4>
+          <p>The CircuitPython-compatible audio nodes underneath.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="pydevices-site-footer"></div>
+  <script src="/assets/chrome/site-chrome.js"></script>
+</body>
+</html>
