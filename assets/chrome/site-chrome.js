@@ -111,12 +111,21 @@
           icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 10v4M8 7v10M12 4v16M16 7v10M20 10v4"/></svg>'
         },
         {
-          id: "audiocomponents",
-          name: "audiocomponents",
-          path: "/audiocomponents/",
-          url: ROOT + "/audiocomponents/",
-          tag: "Instruments & FX",
-          desc: "55 instruments and 45 effects on audiodsp",
+          id: "audioinstruments",
+          name: "audioinstruments",
+          path: "/audioinstruments/",
+          url: ROOT + "/audioinstruments/",
+          tag: "Instruments",
+          desc: "33 playable instruments on audiodsp",
+          icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></svg>'
+        },
+        {
+          id: "audioeffects",
+          name: "audioeffects",
+          path: "/audioeffects/",
+          url: ROOT + "/audioeffects/",
+          tag: "Effects",
+          desc: "45 studio and pedal effects on audiodsp",
           icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></svg>'
         },
         {
