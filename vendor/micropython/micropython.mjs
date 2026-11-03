@@ -4583,6 +4583,22 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
       };
   
   
+  
+  var pydevices_rgba = () => {
+          if (!pydevices_state.rgba) {
+              const table = pydevices_state.rgba = new Uint32Array(65536);
+              const color = new Uint8ClampedArray(4);
+              const word = new Uint32Array(color.buffer);
+              for (let value = 0; value < 65536; value++) {
+                  color[0] = ((value >> 11) & 31) * 255 / 31;
+                  color[1] = ((value >> 5) & 63) * 255 / 63;
+                  color[2] = (value & 31) * 255 / 31;
+                  color[3] = 255;
+                  table[value] = word[0];
+              }
+          }
+          return pydevices_state.rgba;
+      };
   var pydevices_paint = () => {
           const state = pydevices_state;
           let active = false;
@@ -4590,16 +4606,27 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
               const fb = display.framebuffer;
               if (!fb || !display.context) continue;
               active = true;
-              const src = HEAPU8.subarray(fb.ptr, fb.ptr + fb.width * fb.height * 2);
-              const dst = display.image.data;
-              for (let s = 0, d = 0; s < src.length; s += 2, d += 4) {
-                  const value = src[s] | (src[s + 1] << 8);
-                  dst[d] = ((value >> 11) & 31) * 255 / 31;
-                  dst[d + 1] = ((value >> 5) & 63) * 255 / 63;
-                  dst[d + 2] = (value & 31) * 255 / 31;
-                  dst[d + 3] = 255;
+              // This scan runs every frame and shares its thread with the audio
+              // writes, so it has to be cheap: a table lookup, and only for the
+              // pixels that changed, and no canvas call when none did.
+              const count = fb.width * fb.height;
+              const src = fb.ptr & 1 ? new Uint16Array(HEAPU8.slice(fb.ptr, fb.ptr + count * 2).buffer)
+                                     : new Uint16Array(HEAPU8.buffer, fb.ptr, count);
+              const {shown, pixels} = display;
+              const rgba = pydevices_rgba();
+              let changed = !display.painted;
+              for (let i = 0; i < count; i++) {
+                  const value = src[i];
+                  if (value !== shown[i]) {
+                      shown[i] = value;
+                      pixels[i] = rgba[value];
+                      changed = true;
+                  }
               }
-              display.context.putImageData(display.image, 0, 0);
+              if (changed) {
+                  display.context.putImageData(display.image, 0, 0);
+                  display.painted = true;
+              }
               display.framesPainted++;
           }
           if (!active) { state.animation = 0; return; }
@@ -4717,6 +4744,7 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
           };
       };
   
+  
   var _pydevices_display_register = (ptr, len, width, height, canvasPtr) => {
           if (typeof document === 'undefined') return 0;
           const canvasId = UTF8ToString(canvasPtr);
@@ -4729,6 +4757,12 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
           display.canvas = canvas;
           display.context = context;
           display.image = context.createImageData(width, height);
+          // What the canvas shows, as RGB565, and the same pixels as the words of
+          // the image: both start black, to match the framebuffer's zeros.
+          display.shown = new Uint16Array(width * height);
+          display.pixels = new Uint32Array(display.image.data.buffer);
+          display.pixels.fill(pydevices_rgba()[0]);
+          display.painted = false;
           display.framesPainted = 0;
           pydevices_install_input(canvas, canvasId);
           pydevices_export_host();
@@ -5771,6 +5805,7 @@ missingLibrarySymbols.forEach(missingLibrarySymbol)
   'pydevices_relative_point',
   'pydevices_install_input',
   'pydevices_release_canvas',
+  'pydevices_rgba',
   'pydevices_paint',
   'pydevices_export_host',
   'pydevices_decode_pcm',
