@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 Brad Barnett
+#
+# SPDX-License-Identifier: MIT
+
 """
 PyDevices Simon Memory Game (Hero Canvas App for pygraphics)
 ============================================================

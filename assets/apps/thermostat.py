@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 Brad Barnett
+#
+# SPDX-License-Identifier: MIT
+
 """
 PyDevices LVGL Smart Thermostat (Hero Canvas App for omnipython-lvgl)
 =================================================================

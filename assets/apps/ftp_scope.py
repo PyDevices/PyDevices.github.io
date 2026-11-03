@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 Brad Barnett
+#
+# SPDX-License-Identifier: MIT
+
 """
 PyDevices Serial FTP Scope (Hero Canvas App for mpftp)
 ======================================================

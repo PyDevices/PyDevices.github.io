@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 Brad Barnett
+#
+# SPDX-License-Identifier: MIT
+
 """
 PyDevices Multi-Interpreter Benchmark (Hero Canvas App for gallery)
 =============================================================================
