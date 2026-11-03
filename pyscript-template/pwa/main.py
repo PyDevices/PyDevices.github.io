@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 Brad Barnett
+#
+# SPDX-License-Identifier: MIT
+
 """Application entry point for the PyDevices PyScript template.
 
 Interactive touch/paint demo built on the PyDevices Board Contract

@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: 2026 Brad Barnett
+#
+# SPDX-License-Identifier: MIT
+
 """Serve the local PyDevices Pages workspace on one origin.
 
 The organization portal is the default document root.  Pages sites published

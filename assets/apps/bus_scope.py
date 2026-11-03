@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 Brad Barnett
+#
+# SPDX-License-Identifier: MIT
+
 """
 PyDevices Bus Timing & Logic Scope (Hero Canvas App for displayif)
 =================================================================
