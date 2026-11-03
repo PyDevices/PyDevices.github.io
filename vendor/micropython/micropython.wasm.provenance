@@ -1,13 +1,12 @@
 {
   "binary": {
+    "mtime": "2026-11-03T03:26:07-06:00",
     "name": "micropython.wasm",
-    "sha256": "ccfa3c47b90920650c49561ace5fedb58bd8bda34c98b42e3c585316a7ac17fc",
-    "size": 8142825
+    "sha256": "9dc145950987ebddcae6d983bb7427843e35e6a0fe1e5e06f72510ad5049af7b",
+    "size": 8144199
   },
-  "built_by": "https://github.com/PyDevices/micropython-pydevices/actions/runs/41597089596",
   "format": 1,
   "install_only": false,
-  "modules": "all",
   "overlays": [
     "0001-micropython-windows-enable-networking-sockets-select-ssl-msvc.patch",
     "0002-micropython-unix-raise-MICROPY_SCHEDULER_DEPTH-for-desktop-SDL.patch",
@@ -54,137 +53,64 @@
     "0044-micropython-esp32-inisetup-new-filesystem-over-stale-flash.patch",
     "0045-micropython-esp32-modsocket-so-keepalive-and-tcp-keepalive-timers.patch"
   ],
-  "port": "webassembly",
   "sources": {
-    "audiocomponents": {
-      "describe": "1b9e2ea23015",
+    "airwindows": {
+      "committed": "2026-10-31T04:15:08-05:00",
+      "describe": "01b5675",
       "dirty": false,
-      "head": "1b9e2ea23015c015f7fa0d1528da84aaa5b13752"
+      "head": "01b5675377132b3ad106604de8f63f229a618f93",
+      "path": "airwindows"
     },
     "audiodsp": {
-      "describe": "14be12c475f7",
+      "committed": "2026-11-02T22:49:22-06:00",
+      "describe": "v0.0.3-573-g14be12c",
       "dirty": false,
-      "head": "14be12c475f73423cfd422128e26874966984111"
-    },
-    "audioeffects": {
-      "describe": "1b9e2ea23015",
-      "dirty": false,
-      "head": "1b9e2ea23015c015f7fa0d1528da84aaa5b13752"
-    },
-    "audioif": {
-      "describe": "1b9e2ea23015",
-      "dirty": false,
-      "head": "1b9e2ea23015c015f7fa0d1528da84aaa5b13752"
-    },
-    "audioinstruments": {
-      "describe": "1b9e2ea23015",
-      "dirty": false,
-      "head": "1b9e2ea23015c015f7fa0d1528da84aaa5b13752"
-    },
-    "cameraif": {
-      "describe": "1b9e2ea23015",
-      "dirty": false,
-      "head": "1b9e2ea23015c015f7fa0d1528da84aaa5b13752"
-    },
-    "castif": {
-      "describe": "1b9e2ea23015",
-      "dirty": false,
-      "head": "1b9e2ea23015c015f7fa0d1528da84aaa5b13752"
-    },
-    "displayif": {
-      "describe": "1b9e2ea23015",
-      "dirty": false,
-      "head": "1b9e2ea23015c015f7fa0d1528da84aaa5b13752"
-    },
-    "h264enc": {
-      "describe": "1b9e2ea23015",
-      "dirty": false,
-      "head": "1b9e2ea23015c015f7fa0d1528da84aaa5b13752"
-    },
-    "jpegio": {
-      "describe": "1b9e2ea23015",
-      "dirty": false,
-      "head": "1b9e2ea23015c015f7fa0d1528da84aaa5b13752"
-    },
-    "mdns": {
-      "describe": "1b9e2ea23015",
-      "dirty": false,
-      "head": "1b9e2ea23015c015f7fa0d1528da84aaa5b13752"
+      "head": "14be12c475f73423cfd422128e26874966984111",
+      "path": "audiodsp"
     },
     "micropython": {
-      "describe": "47df9e1f71b0"
-    },
-    "micropython-lib": {
-      "describe": "1b9e2ea23015",
+      "committed": "2026-11-03T00:55:08-06:00",
+      "describe": "v1.29.0-162-g794a0c4-dirty",
       "dirty": false,
-      "head": "1b9e2ea23015c015f7fa0d1528da84aaa5b13752"
+      "head": "794a0c460224e6d94f2e5362709c6e9f2c20328c",
+      "path": "micropython"
     },
     "micropython-pydevices": {
+      "committed": "2026-11-03T01:33:19-06:00",
       "describe": "1b9e2ea",
       "dirty": false,
-      "head": "1b9e2ea23015c015f7fa0d1528da84aaa5b13752"
-    },
-    "omnipython-lib": {
-      "describe": "e6325630cd18",
-      "dirty": false,
-      "head": "e6325630cd18ca0c16ebd1fed44127fadb49fa8e"
+      "head": "1b9e2ea23015c015f7fa0d1528da84aaa5b13752",
+      "path": "micropython-pydevices"
     },
     "omnipython-lvgl": {
-      "describe": "e2254f39a8e5",
+      "committed": "2026-10-31T03:25:32-05:00",
+      "describe": "e2254f3",
       "dirty": false,
-      "head": "e2254f39a8e548be3e9b886dfef3f84d2155aa27"
-    },
-    "palettes": {
-      "describe": "1b9e2ea23015",
-      "dirty": false,
-      "head": "1b9e2ea23015c015f7fa0d1528da84aaa5b13752"
-    },
-    "pdwidgets": {
-      "describe": "1b9e2ea23015",
-      "dirty": false,
-      "head": "1b9e2ea23015c015f7fa0d1528da84aaa5b13752"
-    },
-    "pngio": {
-      "describe": "1b9e2ea23015",
-      "dirty": false,
-      "head": "1b9e2ea23015c015f7fa0d1528da84aaa5b13752"
-    },
-    "ppa": {
-      "describe": "1b9e2ea23015",
-      "dirty": false,
-      "head": "1b9e2ea23015c015f7fa0d1528da84aaa5b13752"
+      "head": "e2254f39a8e548be3e9b886dfef3f84d2155aa27",
+      "path": "omnipython-lvgl"
     },
     "pydevices": {
-      "describe": "1b9e2ea23015",
+      "committed": "2026-11-03T02:48:37-06:00",
+      "describe": "v0.4.0-471-ge5eb36b",
       "dirty": false,
-      "head": "1b9e2ea23015c015f7fa0d1528da84aaa5b13752"
+      "head": "e5eb36b8747f9c4b1aed69c15121613c82675704",
+      "path": "pydevices"
     },
     "pygraphics": {
-      "describe": "f97fd2e20e73",
+      "committed": "2026-10-29T16:15:51-05:00",
+      "describe": "v0.0.32-112-gf97fd2e",
       "dirty": false,
-      "head": "f97fd2e20e73f23c2138ab52a630cf04b0a7aea1"
-    },
-    "sayso": {
-      "describe": "1b9e2ea23015",
-      "dirty": false,
-      "head": "1b9e2ea23015c015f7fa0d1528da84aaa5b13752"
-    },
-    "tsmux": {
-      "describe": "1b9e2ea23015",
-      "dirty": false,
-      "head": "1b9e2ea23015c015f7fa0d1528da84aaa5b13752"
+      "head": "f97fd2e20e73f23c2138ab52a630cf04b0a7aea1",
+      "path": "pygraphics"
     },
     "ulab": {
-      "describe": "1d3ddd8f5228",
+      "committed": "2024-09-09T06:55:05+02:00",
+      "describe": "1d3ddd8",
       "dirty": false,
-      "head": "1d3ddd8f5228e2c7335dac71f4846e6abb0ec9f9"
-    },
-    "usbhost": {
-      "describe": "1b9e2ea23015",
-      "dirty": false,
-      "head": "1b9e2ea23015c015f7fa0d1528da84aaa5b13752"
+      "head": "1d3ddd8f5228e2c7335dac71f4846e6abb0ec9f9",
+      "path": "ulab"
     }
   },
-  "stamped": "2026-11-03T07:36:04+00:00",
+  "stamped": "2026-11-03T03:26:07-06:00",
   "target": "mp-wasm"
 }
