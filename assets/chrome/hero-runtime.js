@@ -11,11 +11,16 @@
   function armAudioGesture() {
     if (audioGestureArmed) return;
     audioGestureArmed = true;
+    // A gesture while the page is still loading finds no runtime to unlock, so
+    // the listeners stay until one works.
     const tryEnable = () => {
-      globalThis.Module?.pydevicesBridge?.enableAudio(false)?.catch(() => {});
+      globalThis.Module?.pydevicesBridge?.enableAudio(false)?.then(() => {
+        document.removeEventListener("pointerdown", tryEnable);
+        document.removeEventListener("keydown", tryEnable);
+      }).catch(() => {});
     };
-    document.addEventListener("pointerdown", tryEnable, { once: true });
-    document.addEventListener("keydown", tryEnable, { once: true });
+    document.addEventListener("pointerdown", tryEnable);
+    document.addEventListener("keydown", tryEnable);
   }
   armAudioGesture();
   async function launch(container) {
