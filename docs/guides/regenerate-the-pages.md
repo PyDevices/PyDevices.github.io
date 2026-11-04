@@ -9,10 +9,10 @@ rarely.
 ## Set up the folders
 
 The generator finds its siblings by folder name, one level above itself. Put
-the `.github` repository in a folder called `dotgithub`:
+the `.github` repository in a folder called `dotgithub`, next to a clone of this
+one:
 
 ```bash
-git clone https://github.com/PyDevices/.github dotgithub
 git clone https://github.com/PyDevices/PyDevices.github.io
 ```
 
