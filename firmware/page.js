@@ -7,6 +7,7 @@
   var RELEASES = 'https://github.com/PyDevices/micropython-pydevices/releases/download/';
   var REPO = 'PyDevices/micropython-pydevices';
   var INTERP_RELEASES = 'https://github.com/PyDevices/pydevices/releases/download/';
+  var FLASH_GUIDE = 'https://github.com/' + REPO + '/blob/main/docs/guides/flash-a-board.md';
   var MIP = 'https://pydevices.github.io/mip/';
   // Chips the browser flasher (ESP Web Tools) can write. Set a chip to false to send its
   // boards to the esptool steps alone.
@@ -22,6 +23,7 @@
   var CHIP_ID = { 0: 'esp32', 2: 'esp32s2', 5: 'esp32c3', 9: 'esp32s3', 13: 'esp32c6', 18: 'esp32p4' };
   var ROLES = {
     flash: 'Flash image: the file to write',
+    wifi: 'Wi-Fi firmware: the file to write first',
     uf2: 'UF2: the file to copy',
     app: 'App image only',
     partitions: 'Partition table',
@@ -56,10 +58,11 @@
   function fileOf(b, role) { return b.files.filter(function (f) { return f.role === role; })[0]; }
   function mainFile(b) { return fileOf(b, 'flash') || fileOf(b, 'uf2'); }
   function isEsp(b) { return b.flash_offset != null && /^esp32/.test(b.chip); }
+  function isGiga(b) { return b.chip === 'stm32h747'; }
   function canBrowser(b) { return isEsp(b) && BROWSER_INSTALL[b.chip] === true; }
   function local(f) { return 'files/' + f.name; }
   function remote(f) { return RELEASES + doc.tag + '/' + f.name; }
-  function fileHref(f) { return f.role === 'flash' || f.role === 'uf2' ? local(f) : remote(f); }
+  function fileHref(f) { return f.role === 'flash' || f.role === 'wifi' || f.role === 'uf2' ? local(f) : remote(f); }
 
   function get(url, optional) {
     return fetch(url, { cache: 'no-cache' }).then(function (r) {
@@ -179,6 +182,21 @@
         pre('esptool --chip ' + b.chip + ' --port COM3 write-flash ' + b.flash_offset + ' ' + name)));
       steps.push(h('li', {}, 'Coming from another firmware, or want a clean board? Erase the flash first, then write as above (this removes your files):',
         pre('esptool --chip ' + b.chip + ' --port COM3 erase-flash')));
+    } else if (isGiga(b)) {
+      var wifi = fileOf(b, 'wifi');
+      var dfu = '-d 2341:0366';
+      steps.push(h('li', {}, 'Install ', link('https://dfu-util.sourceforge.net/', 'dfu-util'), ', the tool that writes to the board over USB.'));
+      steps.push(h('li', {}, 'Put the board in its bootloader: run ', code('machine.bootloader()'),
+        ' at its REPL, or double-tap RESET.'));
+      steps.push(h('li', {}, link(local(wifi), 'Download ' + wifi.name), ' (' + mb(wifi.size) + ') and write the Wi-Fi firmware first:',
+        pre('dfu-util -a 1 ' + dfu + ' -s ' + b.wifi_offset + ' -D ' + wifi.name)));
+      steps.push(h('li', {}, link(local(f), 'Download ' + name), ' (' + mb(f.size) + ') and write the main firmware. ' +
+        'The board restarts by itself when it finishes.',
+        pre('dfu-util -a 0 ' + dfu + ' -s ' + b.flash_offset + ':leave -D ' + name)));
+      steps.push(h('li', {}, 'The Wi-Fi firmware only changes when its driver does, so after the first time you can write the main firmware alone. ' +
+        'The main firmware overwrites any program on the board\'s M4 core.'));
+      steps.push(h('li', {}, 'The OmniPython libraries do not fit in this firmware beside LVGL. Put them in the board\'s ROMFS partition afterwards; ',
+        link(FLASH_GUIDE + '#stm32-arduino-giga-r1-wifi', 'the flash guide'), ' has the steps.'));
     } else {
       steps.push(h('li', {}, 'Put the board in its bootloader: hold BOOTSEL while you plug it into USB. ' +
         'A drive named RPI-RP2 appears.'));
@@ -204,18 +222,18 @@
     var t = clear($('fw-files'));
     t.appendChild(h('tr', {}, h('th', { text: 'What' }), h('th', { text: 'File' }),
       h('th', { text: 'Size' }), h('th', { text: 'sha256' })));
-    var order = ['flash', 'uf2', 'app', 'partitions', 'elf', 'map'];
+    var order = ['flash', 'wifi', 'uf2', 'app', 'partitions', 'elf', 'map'];
     var onRelease = false;
     order.forEach(function (role) {
       var f = fileOf(b, role);
       if (!f) return;
-      var here = role === 'flash' || role === 'uf2';
+      var here = role === 'flash' || role === 'wifi' || role === 'uf2';
       if (!here) onRelease = true;
       t.appendChild(h('tr', {}, h('td', { text: ROLES[role] }),
         h('td', {}, link(fileHref(f), f.name)),
         h('td', { class: 'num', text: mb(f.size) }), h('td', { class: 'hash', text: f.sha256 })));
     });
-    var note = 'The flash image is served from this site. ';
+    var note = (fileOf(b, 'wifi') ? 'The flash images are' : 'The flash image is') + ' served from this site. ';
     if (onRelease) {
       note += 'The rest are on the set\'s Release' + (doc.preview ? ', which is still a draft that only the maintainers can open' : '') + '.';
     }
