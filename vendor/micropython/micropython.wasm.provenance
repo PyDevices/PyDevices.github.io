@@ -1,12 +1,13 @@
 {
   "binary": {
-    "mtime": "2026-11-03T03:26:07-06:00",
     "name": "micropython.wasm",
-    "sha256": "9dc145950987ebddcae6d983bb7427843e35e6a0fe1e5e06f72510ad5049af7b",
-    "size": 8144199
+    "sha256": "7071105a921290ef88a6cb611e90d6d6840b8cdafa110c044cd8fa8de9ecfcc2",
+    "size": 8151593
   },
+  "built_by": "https://github.com/PyDevices/micropython-pydevices/actions/runs/42341429525",
   "format": 1,
   "install_only": false,
+  "modules": "all",
   "overlays": [
     "0001-micropython-windows-enable-networking-sockets-select-ssl-msvc.patch",
     "0002-micropython-unix-raise-MICROPY_SCHEDULER_DEPTH-for-desktop-SDL.patch",
@@ -51,66 +52,142 @@
     "0042-micropython-shared-tinyusb-a-streams-buffer-outlives-the-stream.patch",
     "0043-micropython-shared-tinyusb-cdc-read-write-space-once.patch",
     "0044-micropython-esp32-inisetup-new-filesystem-over-stale-flash.patch",
-    "0045-micropython-esp32-modsocket-so-keepalive-and-tcp-keepalive-timers.patch"
+    "0045-micropython-esp32-modsocket-so-keepalive-and-tcp-keepalive-timers.patch",
+    "0046-micropython-py-runtime-utils-printing-a-callback-error-cannot-escape.patch",
+    "0047-micropython-py-scheduler-no-wait-with-a-callback-ready.patch",
+    "0048-micropython-stm32-link-objects-from-a-response-file.patch"
   ],
+  "port": "webassembly",
   "sources": {
-    "airwindows": {
-      "committed": "2026-10-31T04:15:08-05:00",
-      "describe": "01b5675",
+    "audiocomponents": {
+      "describe": "55a90fb2c885",
       "dirty": false,
-      "head": "01b5675377132b3ad106604de8f63f229a618f93",
-      "path": "airwindows"
+      "head": "55a90fb2c885a99fa7d20172e49260294922e199"
     },
     "audiodsp": {
-      "committed": "2026-11-02T22:49:22-06:00",
-      "describe": "v0.0.3-573-g14be12c",
+      "describe": "a1645614f562",
       "dirty": false,
-      "head": "14be12c475f73423cfd422128e26874966984111",
-      "path": "audiodsp"
+      "head": "a1645614f5626ebcfb34d062e6c9bc5f94862b38"
+    },
+    "audioeffects": {
+      "describe": "55a90fb2c885",
+      "dirty": false,
+      "head": "55a90fb2c885a99fa7d20172e49260294922e199"
+    },
+    "audioif": {
+      "describe": "55a90fb2c885",
+      "dirty": false,
+      "head": "55a90fb2c885a99fa7d20172e49260294922e199"
+    },
+    "audioinstruments": {
+      "describe": "55a90fb2c885",
+      "dirty": false,
+      "head": "55a90fb2c885a99fa7d20172e49260294922e199"
+    },
+    "cameraif": {
+      "describe": "55a90fb2c885",
+      "dirty": false,
+      "head": "55a90fb2c885a99fa7d20172e49260294922e199"
+    },
+    "castif": {
+      "describe": "55a90fb2c885",
+      "dirty": false,
+      "head": "55a90fb2c885a99fa7d20172e49260294922e199"
+    },
+    "displayif": {
+      "describe": "55a90fb2c885",
+      "dirty": false,
+      "head": "55a90fb2c885a99fa7d20172e49260294922e199"
+    },
+    "h264enc": {
+      "describe": "55a90fb2c885",
+      "dirty": false,
+      "head": "55a90fb2c885a99fa7d20172e49260294922e199"
+    },
+    "jpegio": {
+      "describe": "55a90fb2c885",
+      "dirty": false,
+      "head": "55a90fb2c885a99fa7d20172e49260294922e199"
+    },
+    "mdns": {
+      "describe": "55a90fb2c885",
+      "dirty": false,
+      "head": "55a90fb2c885a99fa7d20172e49260294922e199"
     },
     "micropython": {
-      "committed": "2026-11-03T00:55:08-06:00",
-      "describe": "v1.29.0-162-g794a0c4-dirty",
+      "describe": "8bf4ff2f2743"
+    },
+    "micropython-lib": {
+      "describe": "55a90fb2c885",
       "dirty": false,
-      "head": "794a0c460224e6d94f2e5362709c6e9f2c20328c",
-      "path": "micropython"
+      "head": "55a90fb2c885a99fa7d20172e49260294922e199"
     },
     "micropython-pydevices": {
-      "committed": "2026-11-03T01:33:19-06:00",
-      "describe": "1b9e2ea",
+      "describe": "55a90fb",
       "dirty": false,
-      "head": "1b9e2ea23015c015f7fa0d1528da84aaa5b13752",
-      "path": "micropython-pydevices"
+      "head": "55a90fb2c885a99fa7d20172e49260294922e199"
+    },
+    "omnipython-lib": {
+      "describe": "10b54173abc8",
+      "dirty": false,
+      "head": "10b54173abc8644005f46f1e4b3ba394d4c843f5"
     },
     "omnipython-lvgl": {
-      "committed": "2026-10-31T03:25:32-05:00",
-      "describe": "e2254f3",
+      "describe": "00bfbab3a7a2",
       "dirty": false,
-      "head": "e2254f39a8e548be3e9b886dfef3f84d2155aa27",
-      "path": "omnipython-lvgl"
+      "head": "00bfbab3a7a28515b1da694deac5ccaab28a3c96"
+    },
+    "palettes": {
+      "describe": "55a90fb2c885",
+      "dirty": false,
+      "head": "55a90fb2c885a99fa7d20172e49260294922e199"
+    },
+    "pdwidgets": {
+      "describe": "55a90fb2c885",
+      "dirty": false,
+      "head": "55a90fb2c885a99fa7d20172e49260294922e199"
+    },
+    "pngio": {
+      "describe": "55a90fb2c885",
+      "dirty": false,
+      "head": "55a90fb2c885a99fa7d20172e49260294922e199"
+    },
+    "ppa": {
+      "describe": "55a90fb2c885",
+      "dirty": false,
+      "head": "55a90fb2c885a99fa7d20172e49260294922e199"
     },
     "pydevices": {
-      "committed": "2026-11-03T02:48:37-06:00",
-      "describe": "v0.4.0-471-ge5eb36b",
+      "describe": "55a90fb2c885",
       "dirty": false,
-      "head": "e5eb36b8747f9c4b1aed69c15121613c82675704",
-      "path": "pydevices"
+      "head": "55a90fb2c885a99fa7d20172e49260294922e199"
     },
     "pygraphics": {
-      "committed": "2026-10-29T16:15:51-05:00",
-      "describe": "v0.0.32-112-gf97fd2e",
+      "describe": "f97fd2e20e73",
       "dirty": false,
-      "head": "f97fd2e20e73f23c2138ab52a630cf04b0a7aea1",
-      "path": "pygraphics"
+      "head": "f97fd2e20e73f23c2138ab52a630cf04b0a7aea1"
+    },
+    "sayso": {
+      "describe": "55a90fb2c885",
+      "dirty": false,
+      "head": "55a90fb2c885a99fa7d20172e49260294922e199"
+    },
+    "tsmux": {
+      "describe": "55a90fb2c885",
+      "dirty": false,
+      "head": "55a90fb2c885a99fa7d20172e49260294922e199"
     },
     "ulab": {
-      "committed": "2024-09-09T06:55:05+02:00",
-      "describe": "1d3ddd8",
+      "describe": "1d3ddd8f5228",
       "dirty": false,
-      "head": "1d3ddd8f5228e2c7335dac71f4846e6abb0ec9f9",
-      "path": "ulab"
+      "head": "1d3ddd8f5228e2c7335dac71f4846e6abb0ec9f9"
+    },
+    "usbhost": {
+      "describe": "55a90fb2c885",
+      "dirty": false,
+      "head": "55a90fb2c885a99fa7d20172e49260294922e199"
     }
   },
-  "stamped": "2026-11-03T03:26:07-06:00",
+  "stamped": "2026-11-07T05:10:17+00:00",
   "target": "mp-wasm"
 }
