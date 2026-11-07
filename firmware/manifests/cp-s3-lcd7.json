@@ -1,0 +1,17 @@
+{
+ "name": "OmniPython CircuitPython-compatible for the ESP32-S3-Touch-LCD-7",
+ "version": "staged-20261021b",
+ "new_install_prompt_erase": true,
+ "new_install_improv_wait_time": 0,
+ "builds": [
+  {
+   "chipFamily": "ESP32-S3",
+   "parts": [
+    {
+     "path": "../files/omnipython-cp-waveshare_esp32s3_touch_lcd_7-11.0.0-alpha.1-20261021.bin",
+     "offset": 0
+    }
+   ]
+  }
+ ]
+}

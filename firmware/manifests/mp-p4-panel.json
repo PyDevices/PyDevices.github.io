@@ -1,0 +1,17 @@
+{
+ "name": "OmniPython MicroPython for the ESP32-P4-WIFI6-Touch-LCD-4B",
+ "version": "staged-20261021b",
+ "new_install_prompt_erase": true,
+ "new_install_improv_wait_time": 0,
+ "builds": [
+  {
+   "chipFamily": "ESP32-P4",
+   "parts": [
+    {
+     "path": "../files/omnipython-mp-esp32_generic_p4-pre_rev3_c6_wifi-staged-20261021b.bin",
+     "offset": 8192
+    }
+   ]
+  }
+ ]
+}

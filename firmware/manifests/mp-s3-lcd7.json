@@ -1,0 +1,17 @@
+{
+ "name": "OmniPython MicroPython for the ESP32-S3-Touch-LCD-7",
+ "version": "staged-20261021b",
+ "new_install_prompt_erase": true,
+ "new_install_improv_wait_time": 0,
+ "builds": [
+  {
+   "chipFamily": "ESP32-S3",
+   "parts": [
+    {
+     "path": "../files/omnipython-mp-esp32_generic_s3-lcd_7-staged-20261021b.bin",
+     "offset": 0
+    }
+   ]
+  }
+ ]
+}
