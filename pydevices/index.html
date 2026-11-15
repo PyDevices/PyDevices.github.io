@@ -30,7 +30,7 @@
       </a>
       <a class="btn" style="border-color: var(--tier-1-amber); color: var(--tier-1-amber);" href="https://github.com/PyDevices/pydevices/blob/main/README.md">Getting Started</a>
       <a class="btn" style="border-color: var(--tier-1-amber); color: var(--tier-1-amber);" href="https://test.pypi.org/project/pydevices-desktop/">TestPyPI</a>
-      <a class="btn" style="border-color: var(--tier-1-amber); color: var(--tier-1-amber);" href="https://PyDevices.github.io/mip">MIP Index</a>
+      <a class="btn" style="border-color: var(--tier-1-amber); color: var(--tier-1-amber);" href="https://lib.omnipython.org">Package Index</a>
       </div>
     </div>
     <div class="hero-canvas-wrap" data-hero-canvas="hero_canvas" data-hero-app="audio_scope" data-hero-app-url="https://PyDevices.github.io/assets/apps/audio_scope.py">
@@ -57,11 +57,8 @@
 pip install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ pydevices-desktop
 
 # A MicroPython board — install its board_config directly by path:
-import mip
-mip.install(
-    "github:PyDevices/pydevices/board_configs/fbdisplay/esp32-p4-wifi6-touch-lcd-4b",
-    index="https://PyDevices.github.io/mip",
-)
+import omip
+omip.install("github:PyDevices/pydevices/board_configs/fbdisplay/esp32-p4-wifi6-touch-lcd-4b")
 
 # Then the same app code runs everywhere:
 import board_config

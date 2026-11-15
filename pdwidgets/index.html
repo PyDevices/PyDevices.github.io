@@ -37,7 +37,7 @@
       </a>
       <a class="btn" style="border-color: var(--tier-2-emerald); color: var(--tier-2-emerald);" href="https://pdwidgets.readthedocs.io">Read the Docs</a>
       <a class="btn" style="border-color: var(--tier-2-emerald); color: var(--tier-2-emerald);" href="https://test.pypi.org/project/pydevices-pdwidgets/">TestPyPI</a>
-      <a class="btn" style="border-color: var(--tier-2-emerald); color: var(--tier-2-emerald);" href="https://PyDevices.github.io/mip">MIP Index</a>
+      <a class="btn" style="border-color: var(--tier-2-emerald); color: var(--tier-2-emerald);" href="https://lib.omnipython.org">Package Index</a>
       </div>
     </div>
     <div class="hero-canvas-wrap" data-hero-canvas="hero_canvas" data-hero-app="sensor_deck" data-hero-app-url="https://PyDevices.github.io/assets/apps/sensor_deck.py">
@@ -89,12 +89,12 @@
     </div>
 
     <div class="spec-block">
-      <pre><code>import mip
+      <pre><code>import omip
 # pdwidgets does not pull its dependencies on MIP -- install them too.
-mip.install("pydevices", index="https://PyDevices.github.io/mip")
-mip.install("pygraphics", index="https://PyDevices.github.io/mip")
-mip.install("palettes", index="https://PyDevices.github.io/mip")
-mip.install("pdwidgets", index="https://PyDevices.github.io/mip")
+omip.install("pydevices")
+omip.install("pygraphics")
+omip.install("palettes")
+omip.install("pdwidgets")
 
 # Example Usage: requires board_config (see docs/index.md)
 import board_config
