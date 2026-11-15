@@ -1,5 +1,6 @@
 {
   "binary": {
+    "mtime": "2026-11-15T06:30:21-06:00",
     "name": "micropython.wasm",
     "sha256": "34750a573704c83d2732be6c5564894473b1d0ce381974d2667bcdfa2ec22c2b",
     "size": 9803659
@@ -7,7 +8,6 @@
   "built_by": "https://github.com/PyDevices/micropython-pydevices/actions/runs/43712643917",
   "format": 1,
   "install_only": false,
-  "modules": "all",
   "overlays": [
     "0001-micropython-windows-enable-networking-sockets-select-ssl-msvc.patch",
     "0002-micropython-unix-raise-MICROPY_SCHEDULER_DEPTH-for-desktop-SDL.patch",
@@ -77,7 +77,6 @@
     "0066-micropython-py-scheduler-a-ctrl-c-in-a-callback-reaches-the-running-code.patch",
     "0067-micropython-shared-tinyusb-a-p4-stream-keeps-playing-while-flash-is-written.patch"
   ],
-  "port": "webassembly",
   "sources": {
     "audiocomponents": {
       "describe": "2f5df5585ff6",
@@ -85,7 +84,8 @@
       "head": "2f5df5585ff64ff6e7c6598a41bf732801bf3cb4"
     },
     "audiodsp": {
-      "describe": "c0ae8fba8194",
+      "committed": "2026-11-10T20:05:16-06:00",
+      "describe": "v0.0.3-604-gc0ae8fb",
       "dirty": false,
       "head": "c0ae8fba81946593698a51aae707cb54989f587e"
     },
@@ -203,7 +203,8 @@
       "head": "2f5df5585ff64ff6e7c6598a41bf732801bf3cb4"
     },
     "ulab": {
-      "describe": "15e999747079",
+      "committed": "2024-09-09T06:55:05+02:00",
+      "describe": "1d3ddd8",
       "dirty": false,
       "head": "15e999747079205b2415e71a6aa2840b8f85f9dc"
     },
