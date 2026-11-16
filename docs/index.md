@@ -1,6 +1,6 @@
 # PyDevices.github.io docs
 
-The repository behind <https://pydevices.github.io/>. Most pages here are
+The repository behind <https://omnipython.org/>. Most pages here are
 generated from a database in the `.github` repository, so these pages are about
 where each thing comes from and how to change it.
 

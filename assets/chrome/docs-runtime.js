@@ -1,6 +1,6 @@
 /** Reusable direct MicroPython runner for first-party Read the Docs embeds. */
 (function () {
-  const RUNTIME_URL = "https://PyDevices.github.io/vendor/micropython/micropython.mjs";
+  const RUNTIME_URL = "https://omnipython.org/vendor/micropython/micropython.mjs";
   const state = { phase: "idle", errors: [], mp: null, activeOutput: null };
   window.__pydevicesDocsRuntime = state;
 
