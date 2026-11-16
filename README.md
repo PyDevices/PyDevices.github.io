@@ -2,7 +2,7 @@
 
 # PyDevices.github.io
 
-The source of the PyDevices website at <https://pydevices.github.io/>: the front page, a landing page for each project, the firmware installer, and the WebAssembly MicroPython that runs the live demos. It is plain HTML, CSS and JavaScript with nothing to build.
+The source of the PyDevices website at <https://omnipython.org/>: the front page, a landing page for each project, the firmware installer, and the WebAssembly MicroPython that runs the live demos. It is plain HTML, CSS and JavaScript with nothing to build.
 
 ## Install
 

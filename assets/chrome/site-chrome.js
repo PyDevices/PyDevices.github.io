@@ -5,7 +5,7 @@
  *   <div id="pydevices-site-header"></div>
  *   ...
  *   <div id="pydevices-site-footer"></div>
- *   <script src="https://pydevices.github.io/assets/chrome/site-chrome.js"></script>
+ *   <script src="https://omnipython.org/assets/chrome/site-chrome.js"></script>
  *
  * That one script is the whole of it -- the theme toggle is built in below.
  */
