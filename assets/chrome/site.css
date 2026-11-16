@@ -85,12 +85,18 @@
   /* The unlit device screen behind a hero canvas demo (cool, not warm). */
   --device-glass: #16304c;
   --device-glass-deep: #0a1d33;
-  --radius: 16px;
-  --radius-sm: 10px;
+  --radius: 26px;
+  --radius-sm: 16px;
+  --radius-pill: 999px;
+  /* A card's corners are each a little different, so it reads as drawn by
+   * hand, not stamped. */
+  --radius-drawn: 28px 22px 30px 20px / 22px 30px 20px 28px;
+  /* The night ground behind art that is dark in both themes. */
+  --stage: var(--dark-panel-deep);
   --shadow: 0 18px 44px rgba(0, 0, 0, 0.45);
   --shadow-soft: 0 6px 18px rgba(0, 0, 0, 0.3);
   --hover-border: #3b6390;
-  --font-display: "Space Grotesk", ui-sans-serif, system-ui, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Nunito", ui-rounded, ui-sans-serif, system-ui, "Segoe UI", Roboto, sans-serif;
   --font: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --mono: "SF Mono", "JetBrains Mono", "Fira Code", ui-monospace, Menlo, Consolas, monospace;
 
@@ -184,7 +190,7 @@ body {
 
 h1, h2, h3, h4 {
   font-family: var(--font-display);
-  font-weight: 600;
+  font-weight: 800;
 }
 
 a {
@@ -204,7 +210,7 @@ code, kbd {
 code {
   background: var(--panel-2);
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: 8px;
   padding: 0.08em 0.4em;
   color: var(--ink);
 }
@@ -274,16 +280,19 @@ pre code {
   position: sticky;
   top: 0;
   z-index: 20;
-  backdrop-filter: blur(10px);
-  background: rgb(var(--bg-rgb) / 0.82);
-  border-bottom: 1px solid var(--border-soft);
+  padding: 12px 16px 0;
 }
 
 .site-header .wrap {
   display: flex;
   align-items: center;
   gap: 18px;
-  padding: 14px 16px;
+  padding: 9px 12px 9px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-pill);
+  background: rgb(var(--bg-rgb) / 0.86);
+  backdrop-filter: blur(12px);
+  box-shadow: var(--shadow-soft);
 }
 
 .brand {
@@ -291,10 +300,10 @@ pre code {
   align-items: center;
   gap: 11px;
   font-family: var(--font-display);
-  font-weight: 600;
-  letter-spacing: -0.01em;
+  font-weight: 800;
+  letter-spacing: 0;
   color: var(--ink);
-  font-size: 1.12rem;
+  font-size: 1.22rem;
   flex-shrink: 0;
 }
 
@@ -303,12 +312,12 @@ pre code {
 }
 
 /* The org mark sits free on the header ground rather than in a tile: the
- * bus mark is drawn in the accent colour in logo.svg itself, so the badge
+ * mark carries its own colours in logo.svg itself, so the badge
  * that used to carry the brand colour is no longer needed here. Platform
  * icons that need an opaque ground use the PNGs, not this. */
 .brand .logo {
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   display: grid;
   place-items: center;
   overflow: visible;
@@ -331,16 +340,21 @@ pre code {
   margin-left: auto;
   display: flex;
   align-items: center;
-  gap: 22px;
+  gap: 4px;
   font-size: 0.95rem;
+  font-weight: 500;
 }
 
 .nav a {
   color: var(--ink-soft);
+  padding: 6px 13px;
+  border-radius: var(--radius-pill);
+  transition: background 0.16s ease, color 0.16s ease;
 }
 
 .nav a:hover {
   color: var(--ink);
+  background: rgb(var(--accent-rgb) / 0.14);
   text-decoration: none;
 }
 
@@ -357,8 +371,8 @@ pre code {
     font-size: 0.84rem;
     font-weight: 600;
     color: var(--accent-strong);
-    padding: 3px 8px;
-    border-radius: 6px;
+    padding: 4px 12px;
+    border-radius: var(--radius-pill);
     background: var(--panel);
     border: 1px solid var(--border);
   }
@@ -418,7 +432,7 @@ pre code {
 /* ---------- Hero ---------- */
 
 .hero {
-  padding: 90px 0 34px;
+  padding: 64px 0 34px;
   text-align: left;
 }
 
@@ -526,6 +540,62 @@ pre code {
   text-align: center;
 }
 
+/* The right-hand side of a hero that has a drawing: the live device, if the
+ * page has one, with the drawing under it. */
+.hero.has-hero-stage {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(24px, 5vw, 56px);
+}
+
+.hero.has-hero-stage .hero-main {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.hero-stage {
+  flex: none;
+  width: min(380px, 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.hero-art {
+  margin: 0;
+  width: 100%;
+  text-align: center;
+}
+
+.hero-art img {
+  display: block;
+  width: 100%;
+  height: auto;
+  animation: hero-art-bob 6s ease-in-out infinite;
+}
+
+@keyframes hero-art-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+.hero-art figcaption {
+  display: inline-block;
+  margin-top: 2px;
+  padding: 4px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-pill);
+  background: var(--panel);
+  color: var(--ink-soft);
+  font-size: 0.82rem;
+}
+
+.hero-art figcaption a {
+  font-weight: 600;
+}
+
 @media (max-width: 860px) {
   .hero.has-hero-canvas {
     flex-direction: column-reverse;
@@ -534,6 +604,17 @@ pre code {
   .hero-canvas-wrap {
     align-self: center;
     margin-bottom: 24px;
+  }
+  /* With a drawing the words come first: the stage is too tall to lead. */
+  .hero.has-hero-stage {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .hero-stage {
+    align-self: center;
+  }
+  .hero-stage .hero-canvas-wrap {
+    margin-bottom: 0;
   }
 }
 
@@ -557,7 +638,7 @@ pre code {
   width: 112px;
   height: 112px;
   margin: 0;
-  border-radius: 28px;
+  border-radius: 38% 34% 40% 32% / 34% 40% 32% 38%;
   overflow: hidden;
   display: grid;
   place-items: center;
@@ -605,8 +686,8 @@ pre code {
 }
 
 .snippet-card {
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-drawn);
   background: var(--panel);
   box-shadow: var(--shadow-soft);
   padding: 18px 20px;
@@ -633,12 +714,15 @@ pre code {
 .hero .eyebrow {
   display: inline-block;
   text-transform: uppercase;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.14em;
   font-size: 0.72rem;
   font-weight: 700;
   color: var(--accent-strong);
   margin: 0;
   text-align: center;
+  padding: 5px 14px;
+  border: 1.5px solid currentColor;
+  border-radius: var(--radius-pill);
 }
 
 .hero-lead > h1,
@@ -646,10 +730,15 @@ pre code {
   margin: 0;
   flex: 1 1 auto;
   min-width: 0;
-  font-size: clamp(1.6rem, 3.2vw, 2.1rem);
-  letter-spacing: -0.015em;
-  line-height: 1.15;
+  font-size: clamp(1.75rem, 3.4vw, 2.5rem);
+  letter-spacing: -0.005em;
+  line-height: 1.14;
   color: var(--ink);
+}
+
+.hero h1 + p,
+.hero-lead + p {
+  margin-top: 16px;
 }
 
 .hero p {
@@ -719,11 +808,12 @@ pre code {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 12px 22px;
-  border-radius: var(--radius-sm);
-  font-size: 0.98rem;
-  font-weight: 600;
-  border: 1px solid var(--border);
+  padding: 11px 24px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-display);
+  font-size: 1.02rem;
+  font-weight: 700;
+  border: 1.5px solid var(--border);
   background: var(--panel);
   color: var(--ink);
   cursor: pointer;
@@ -734,6 +824,7 @@ pre code {
   border-color: var(--hover-border);
   box-shadow: var(--shadow-soft);
   text-decoration: none;
+  transform: translateY(-2px);
 }
 
 .btn:active {
@@ -741,8 +832,8 @@ pre code {
 }
 
 .btn.primary {
-  background: linear-gradient(135deg, var(--accent-soft), var(--accent));
-  border-color: transparent;
+  background: var(--accent);
+  border-color: var(--accent);
   color: var(--accent-ink);
 }
 
@@ -769,16 +860,38 @@ pre code {
 .section-head {
   display: flex;
   align-items: baseline;
-  gap: 12px;
+  flex-wrap: wrap;
+  gap: 4px 12px;
   margin: 6px 0 20px;
 }
 
 .section-head h2 {
   margin: 0;
-  font-size: 1.4rem;
-  letter-spacing: -0.01em;
+  font-size: 1.5rem;
+  letter-spacing: 0;
   color: var(--ink);
 }
+
+/* A tier's number, in a round dot of the tier's colour. */
+.tier-dot {
+  display: inline-grid;
+  place-items: center;
+  width: 1.55em;
+  height: 1.55em;
+  margin-right: 0.35em;
+  border-radius: 50%;
+  font-size: 0.82em;
+  font-weight: 600;
+  color: var(--dark-panel-deep);
+  background: var(--accent);
+  vertical-align: 0.06em;
+}
+
+.tier-dot-1 { background: var(--tier-1-amber); }
+.tier-dot-2 { background: var(--tier-2-emerald); }
+.tier-dot-3 { background: var(--tier-3-blue); }
+.tier-dot-4 { background: var(--tier-4-purple); }
+.tier-dot-5 { background: var(--tier-5-steel); }
 
 .section-head .hint {
   color: var(--muted);
@@ -803,27 +916,23 @@ pre code {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding: 22px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
+  padding: 24px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-drawn);
   background: var(--panel);
   box-shadow: var(--shadow-soft);
   overflow: hidden;
-  transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+  transition: transform 0.2s ease, border-color 0.16s ease, box-shadow 0.16s ease;
 }
 
+/* The gem-cut top edge is gone: a card is one soft shape now. The rule stays
+ * so the tier rules below, which colour it, have nothing to draw on. */
 .card::before {
-  content: "";
-  position: absolute;
-  inset: 0 0 auto 0;
-  height: 3px;
-  background: linear-gradient(90deg, var(--accent), transparent 70%);
-  opacity: 0;
-  transition: opacity 0.16s ease;
+  content: none;
 }
 
 .card:hover {
-  transform: translateY(-3px);
+  transform: translateY(-4px) rotate(-0.4deg);
   border-color: var(--hover-border);
   box-shadow: var(--shadow);
   text-decoration: none;
@@ -835,13 +944,13 @@ pre code {
 
 .card .icon,
 .card .card-icon {
-  width: 42px;
-  height: 42px;
-  border-radius: 11px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
   display: grid;
   place-items: center;
   background: var(--panel-2);
-  border: 1px solid var(--border);
+  border: 1.5px solid var(--border);
   color: var(--accent-strong);
   margin-bottom: 6px;
   overflow: hidden;
@@ -865,9 +974,9 @@ pre code {
 
 .card h3 {
   margin: 0;
-  font-size: 1.1rem;
+  font-size: 1.22rem;
   color: var(--ink);
-  letter-spacing: -0.01em;
+  letter-spacing: 0;
 }
 
 .card p {
@@ -903,7 +1012,7 @@ pre code {
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  padding: 0.18em 0.55em;
+  padding: 0.3em 0.8em;
   border-radius: 999px;
   border: 1px solid var(--border);
   color: var(--ink-soft);
@@ -1250,7 +1359,7 @@ pre code {
 }
 
 .peeking-logo {
-  border-radius: 6px;
+  border-radius: 0;
   transition: transform 0.2s ease;
 }
 
@@ -1322,7 +1431,7 @@ pre code {
 
 .pydevices-nav-brand-title {
   font-family: var(--font-display);
-  font-weight: 700;
+  font-weight: 800;
   font-size: 1.05rem;
   line-height: 1.1;
 }
@@ -1416,8 +1525,8 @@ pre code {
   font-size: 0.65rem;
   font-weight: 700;
   color: var(--on-accent);
-  padding: 1px 6px;
-  border-radius: 4px;
+  padding: 1px 8px;
+  border-radius: var(--radius-pill);
   text-transform: uppercase;
 }
 
@@ -1489,7 +1598,7 @@ pre code {
 
 .nav-card-title {
   font-family: var(--font-display, var(--font));
-  font-weight: 600;
+  font-weight: 700;
   font-size: 0.84rem;
   color: var(--ink);
   white-space: nowrap;
@@ -1590,7 +1699,7 @@ body.pydevices-drawer-open {
   background: var(--panel-2);
   color: var(--ink);
   font-family: var(--font-display);
-  font-weight: 600;
+  font-weight: 700;
   font-size: 0.88rem;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -1781,9 +1890,8 @@ body.pydevices-drawer-open {
 /* ---------- Footer ---------- */
 
 .site-footer {
-  border-top: 1px solid var(--border-soft);
   margin-top: 40px;
-  padding: 26px 0;
+  padding: 0 16px 22px;
   color: var(--muted);
   font-size: 0.88rem;
 }
@@ -1794,6 +1902,94 @@ body.pydevices-drawer-open {
   gap: 12px;
   justify-content: space-between;
   align-items: center;
+  padding: 14px 22px;
+  border: 1.5px solid var(--border-soft);
+  border-radius: var(--radius);
+  background: rgb(var(--bg-rgb) / 0.6);
+}
+
+.site-footer .footer-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.site-footer .footer-brand img {
+  width: 26px;
+  height: 26px;
+}
+
+/* ---------- The page-not-found scene ---------- */
+
+.notfound {
+  padding: 48px 16px 20px;
+}
+
+/* Night in both themes, like a code block: the drawing's lime and white
+ * need a dark ground behind them. */
+.notfound-stage {
+  position: relative;
+  margin: 0 0 34px;
+  padding: 26px 20px 8px;
+  border-radius: var(--radius-drawn);
+  background:
+    radial-gradient(circle at 18% 24%, rgb(var(--dark-good-rgb) / 0.12), transparent 42%),
+    var(--stage);
+  border: 1.5px solid var(--border);
+  text-align: center;
+  overflow: hidden;
+}
+
+.notfound-stage img {
+  width: min(520px, 100%);
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+.notfound-stage .notfound-code {
+  position: absolute;
+  left: 26px;
+  top: 14px;
+  font-family: var(--font-display);
+  font-size: clamp(2.6rem, 9vw, 5rem);
+  font-weight: 800;
+  line-height: 1;
+  color: var(--dark-ink);
+  opacity: 0.16;
+}
+
+.notfound h1 {
+  margin: 0 0 10px;
+  font-size: clamp(1.7rem, 3.4vw, 2.4rem);
+}
+
+.notfound p {
+  color: var(--ink-soft);
+  max-width: 44rem;
+}
+
+.notfound .linklist {
+  margin: 22px 0;
+}
+
+.notfound .linklist a {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  border-radius: var(--radius-sm);
+  border-width: 1.5px;
+}
+
+.notfound .linklist b {
+  color: var(--accent-strong);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+.notfound .linklist span {
+  font-size: 0.86rem;
 }
 
 .site-footer a {
@@ -1809,7 +2005,12 @@ body.pydevices-drawer-open {
 
 @media (prefers-reduced-motion: reduce) {
   .pydevices-nav-peeking-tab,
-  .peeking-chevron {
+  .peeking-chevron,
+  .hero-art img {
     animation: none;
+  }
+  .card:hover,
+  .btn:hover {
+    transform: none;
   }
 }

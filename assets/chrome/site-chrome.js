@@ -23,6 +23,8 @@
     } catch (e) {}
   }
   var LOGO = (ROOT || '') + '/assets/img/logo.svg';
+  /* Three pads a side: the drawing for slots under about 32 px. */
+  var LOGO_SMALL = (ROOT || '') + '/assets/img/logo-small.svg';
 
   var HEADER =
     '<header class="site-header">' +
@@ -32,7 +34,7 @@
     '/">' +
     '<span class="logo"><img src="' +
     LOGO +
-    '" alt="" width="30" height="30"></span>' +
+    '" alt="" width="36" height="36"></span>' +
     "PyDevices" +
     "</a>" +
     '<nav class="nav">' +
@@ -51,8 +53,8 @@
     '/gallery/gallery/" class="nav-gallery-link">Gallery</a>' +
     "</nav>" +
     '<button type="button" class="theme-toggle" id="theme-toggle" aria-label="Toggle color theme" title="Toggle color theme">' +
-    '<svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>' +
-    '<svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>' +
+    '<svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v1.5M12 20v1.5M5.3 5.3l1.1 1.1M17.6 17.6l1.1 1.1M2.5 12H4M20 12h1.5M5.3 18.7l1.1-1.1M17.6 6.4l1.1-1.1"/></svg>' +
+    '<svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 13.2A8.5 8.5 0 1 1 10.8 3.5a6.7 6.7 0 0 0 9.7 9.7z"/></svg>' +
     "</button>" +
     "</div>" +
     "</header>";
@@ -60,7 +62,9 @@
   var FOOTER =
     '<footer class="site-footer">' +
     '<div class="wrap">' +
-    "<span>&copy; 2026 PyDevices &middot; MIT License</span>" +
+    '<span class="footer-brand"><img src="' +
+    LOGO_SMALL +
+    '" alt="" width="26" height="26">&copy; 2026 PyDevices &middot; MIT License</span>' +
     '<span><a href="https://github.com/PyDevices">github.com/PyDevices</a></span>' +
     "</div>" +
     "</footer>";
@@ -83,7 +87,7 @@
           url: ROOT + "/",
           tag: "HOME",
           desc: "Universal board contract & Python graphics umbrella",
-          icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>'
+          icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.7 3.6q1.3-.7 2.6 0l6.6 3.5q1.6.9 0 1.8l-6.6 3.5q-1.3.7-2.6 0L4.1 8.9q-1.6-.9 0-1.8z"/><path d="M3.6 12.6l7.2 3.8q1.2.6 2.4 0l7.2-3.8"/><path d="M3.6 16.6l7.2 3.8q1.2.6 2.4 0l7.2-3.8" stroke="var(--accent, currentColor)"/></svg>'
         }
       ]
     },
@@ -99,7 +103,7 @@
           url: ROOT + "/pydevices/",
           tag: "Core HAL",
           desc: "Unified display HAL & device driver abstraction",
-          icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>'
+          icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="3.5" width="19" height="13" rx="4"/><path d="M12 16.5v3.5M8 20.5h8"/><circle cx="12" cy="10" r="2.8"/><circle cx="12.6" cy="9.6" r="1.1" fill="var(--accent, currentColor)" stroke="none"/></svg>'
         },
         {
           id: "audiodsp",
@@ -108,7 +112,7 @@
           url: ROOT + "/audiodsp/",
           tag: "C Audio",
           desc: "CircuitPython audio stack as MicroPython usermods",
-          icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 10v4M8 7v10M12 4v16M16 7v10M20 10v4"/></svg>'
+          icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5v3M8 7.5v9M16 7.5v9M20 10.5v3"/><path d="M12 4v16" stroke="var(--accent, currentColor)"/></svg>'
         },
         {
           id: "audioinstruments",
@@ -117,7 +121,7 @@
           url: ROOT + "/audioinstruments/",
           tag: "Instruments",
           desc: "33 playable instruments on audiodsp",
-          icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></svg>'
+          icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3.5"/><path d="M9 12.5V19M15 12.5V19"/><path d="M9 5.5v6M15 5.5v6" stroke="var(--accent, currentColor)" stroke-width="3"/></svg>'
         },
         {
           id: "audioeffects",
@@ -126,7 +130,7 @@
           url: ROOT + "/audioeffects/",
           tag: "Effects",
           desc: "45 studio and pedal effects on audiodsp",
-          icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></svg>'
+          icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4v7.5M5 16.5V20M12 4v1.5M12 10.5V20M19 4v6.5M19 15.5V20"/><g stroke="var(--accent, currentColor)"><circle cx="5" cy="14" r="2.5"/><circle cx="12" cy="8" r="2.5"/><circle cx="19" cy="13" r="2.5"/></g></svg>'
         },
         {
           id: "gallery",
@@ -135,7 +139,7 @@
           url: ROOT + "/gallery/",
           tag: "Showcase",
           desc: "Multi-interpreter demos, benchmarks & PyScript runner",
-          icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6M9 12h6M9 15h4"/><circle cx="17" cy="15" r="1.5"/></svg>'
+          icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="17" height="17" rx="4.5"/><path d="M4.5 16.5c3-4.5 5.5-4.5 7.5-1.5 2-2.5 4.5-2.5 7.5.5"/><circle cx="15.2" cy="8.8" r="1.9" fill="var(--accent, currentColor)" stroke="none"/></svg>'
         }
       ]
     },
@@ -151,7 +155,7 @@
           url: ROOT + "/pygraphics/",
           tag: "2D FrameBuffer",
           desc: "0-dependency raster graphics, native C & pure-Python",
-          icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>'
+          icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3c-4.5 5-4.5 13 0 18M12 3c4.5 5 4.5 13 0 18"/><path d="M3.2 12q8.8 2.4 17.6 0" stroke="var(--accent, currentColor)"/></svg>'
         },
         {
           id: "pdwidgets",
@@ -160,7 +164,7 @@
           url: ROOT + "/pdwidgets/",
           tag: "UI Toolkit",
           desc: "Embedded widgets with gauges, sliders & switches",
-          icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>'
+          icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="17" height="17" rx="4.5"/><path d="M3.5 9.5h17M9.5 9.5v11"/><path d="M7 6.5h3.5" stroke="var(--accent, currentColor)"/></svg>'
         },
         {
           id: "palettes",
@@ -169,7 +173,7 @@
           url: ROOT + "/palettes/",
           tag: "Color Engine",
           desc: "HSV wheel, RGB cubes & RGB565 format conversion",
-          icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.9 0 2-.8 2-2 0-.5-.2-1-.2-1.5 0-.8.7-1.5 1.5-1.5H17c2.8 0 5-2.2 5-5 0-5.5-4.5-10-10-10z"/></svg>'
+          icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5c-5.3 0-9.5 4.2-9.5 9.5s4.2 9.5 9.5 9.5c1.1 0 2-.9 2-2 0-.6-.3-1-.3-1.6 0-.9.8-1.6 1.7-1.6H17c2.5 0 4.5-2 4.5-4.6 0-5-4.2-9.2-9.5-9.2z"/><circle cx="8" cy="8" r="1.4" fill="var(--accent, currentColor)" stroke="none"/><circle cx="13.5" cy="6.5" r="1.4" fill="var(--accent, currentColor)" stroke="none"/><circle cx="17.3" cy="10.3" r="1.4" fill="var(--accent, currentColor)" stroke="none"/><circle cx="6.5" cy="12.8" r="1.4" fill="var(--accent, currentColor)" stroke="none"/></svg>'
         }
       ]
     },
@@ -185,7 +189,7 @@
           url: ROOT + "/omnipython-lvgl/",
           tag: "LVGL",
           desc: "LVGL v9 for MicroPython, CircuitPython and CPython",
-          icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>'
+          icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="7" height="7" rx="2.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="2.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="2.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="2.5" fill="var(--accent, currentColor)" stroke="var(--accent, currentColor)"/></svg>'
         }
       ]
     },
@@ -201,7 +205,7 @@
           url: ROOT + "/pyscript-template/",
           tag: "PWA Template",
           desc: "Zero-config PyScript & WebAssembly app scaffold",
-          icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M8 21h8M12 18v3"/><path d="M8 9h8M8 13h5"/></svg>'
+          icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="3.5" width="19" height="14" rx="4"/><path d="M8 21h8M12 17.5V21M7.5 8.5h6"/><path d="M7.5 12.5h3.5" stroke="var(--accent, currentColor)"/></svg>'
         },
         {
           id: "android-template",
@@ -210,7 +214,7 @@
           url: ROOT + "/android-template/",
           tag: "Android APK",
           desc: "python-for-android / Buildozer APK template",
-          icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M10 19h4"/></svg>'
+          icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6.5" y="2.5" width="11" height="19" rx="3.5"/><path d="M10.8 18.3h2.4"/><path d="M10.7 8.3v4.4l3.4-2.2z" stroke="var(--accent, currentColor)"/></svg>'
         }
       ]
     },
@@ -226,7 +230,7 @@
           url: ROOT + "/mpftp/",
           tag: "IDE Extension",
           desc: "Editor, CLI, and agent tools for MCU boards",
-          icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="3" width="12" height="18" rx="2"/><path d="M9 7h6M9 11h6M9 15h4"/><circle cx="15" cy="15" r="1"/><path d="M15 16v3M13 19h4"/></svg>'
+          icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="12" rx="3.5"/><path d="M9 7.5h6M9 11h3.5"/><path d="M12 15v3c0 3.2-5 3.2-5 .2 0-2 3-2 3-.2" stroke="var(--accent, currentColor)"/></svg>'
         },
         {
           id: "micropython-pydevices",
@@ -235,7 +239,7 @@
           url: ROOT + "/micropython-pydevices/",
           tag: "Runtime Overlay",
           desc: "Patch queue, presets, boards & variants for MicroPython",
-          icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>'
+          icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6.5" y="6.5" width="11" height="11" rx="3"/><path d="M9.8 3v3.5M14.2 3v3.5M9.8 17.5V21M14.2 17.5V21M3 9.8h3.5M3 14.2h3.5M17.5 9.8H21M17.5 14.2H21"/><circle cx="12" cy="12" r="1.7" fill="var(--accent, currentColor)" stroke="none"/></svg>'
         },
         {
           id: "workbench",
@@ -244,7 +248,7 @@
           url: ROOT + "/workbench/",
           tag: "Browser IDE",
           desc: "MicroPython IDE with a built-in device simulator",
-          icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M10 10l-2 2 2 2M14 10l2 2-2 2"/></svg>'
+          icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4" width="19" height="16" rx="4.5"/><path d="M9.8 9.5L7.3 12l2.5 2.5M14.2 9.5l2.5 2.5-2.5 2.5" stroke="var(--accent, currentColor)"/></svg>'
         },
         {
           id: "mpvst",
@@ -253,7 +257,7 @@
           url: ROOT + "/mpvst/",
           tag: "VST3 Plug-in",
           desc: "The instrument and effect library inside your DAW",
-          icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>'
+          icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 17.5V6.3q0-.8.8-1l9-1.8q1.2-.2 1.2 1V15.5"/><g stroke="var(--accent, currentColor)"><circle cx="6.3" cy="17.5" r="2.7"/><circle cx="18.3" cy="15.5" r="2.7"/></g></svg>'
         }
       ]
     }
@@ -267,16 +271,16 @@
 
     // 1. Peeking Handle (visible on screens <= 1400px when collapsed)
     html += '<div class="pydevices-nav-peeking-tab" id="pydevices-nav-peeking-tab" title="Click to browse PyDevices Ecosystem">';
-    html += '  <img src="' + LOGO + '" alt="" class="peeking-logo" width="22" height="22">';
+    html += '  <img src="' + LOGO_SMALL + '" alt="" class="peeking-logo" width="22" height="22">';
     html += '  <span class="peeking-title">ECOSYSTEM</span>';
-    html += '  <svg class="peeking-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>';
+    html += '  <svg class="peeking-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 6l6 6-6 6" stroke-width="2.5"/></svg>';
     html += '</div>';
 
     // 2. Full Navigation Panel
     html += '<div class="pydevices-nav-panel">';
     html += '  <div class="pydevices-nav-header">';
     html += '    <a class="pydevices-nav-brand" href="' + ROOT + '/">';
-    html += '      <img src="' + LOGO + '" alt="PyDevices" width="28" height="28">';
+    html += '      <img src="' + LOGO_SMALL + '" alt="PyDevices" width="28" height="28">';
     html += '      <div>';
     html += '        <div class="pydevices-nav-brand-title">PyDevices</div>';
     html += '        <div class="pydevices-nav-brand-sub">Ecosystem Navigator</div>';
@@ -287,7 +291,7 @@
 
     // Search Filter Input
     html += '  <div class="pydevices-nav-search-wrap">';
-    html += '    <svg class="pydevices-nav-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>';
+    html += '    <svg class="pydevices-nav-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.8" cy="10.8" r="7.3"/><path d="M16.2 16.2L20.5 20.5"/><circle cx="12" cy="9.6" r="2.2" fill="var(--accent, currentColor)" stroke="none"/></svg>';
     html += '    <input type="text" class="pydevices-nav-search" id="pydevices-nav-search" placeholder="Filter..." autocomplete="off">';
     html += '  </div>';
 
