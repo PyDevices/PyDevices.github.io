@@ -14,7 +14,7 @@
     // A gesture while the page is still loading finds no runtime to unlock, so
     // the listeners stay until one works.
     const tryEnable = () => {
-      globalThis.Module?.omnipythonBridge?.enableAudio(false)?.then(() => {
+      globalThis.Module?.pydevicesBridge?.enableAudio(false)?.then(() => {
         document.removeEventListener("pointerdown", tryEnable);
         document.removeEventListener("keydown", tryEnable);
       }).catch(() => {});
