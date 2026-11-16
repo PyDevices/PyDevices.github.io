@@ -10,7 +10,7 @@
  *
  *   <script>try{if(localStorage.getItem('pydevices-theme')==='light'){document.documentElement.setAttribute('data-theme','light');}}catch(e){}</script>
  *
- * Canonical copy: https://pydevices.github.io/assets/js/theme-toggle.js
+ * Canonical copy: https://omnipython.org/assets/js/theme-toggle.js
  */
 (function () {
   var STORAGE_KEY = "pydevices-theme";

@@ -5,7 +5,7 @@
  *   <div id="pydevices-site-header"></div>
  *   ...
  *   <div id="pydevices-site-footer"></div>
- *   <script src="https://pydevices.github.io/assets/chrome/site-chrome.js"></script>
+ *   <script src="https://omnipython.org/assets/chrome/site-chrome.js"></script>
  *
  * That one script is the whole of it -- the theme toggle is built in below.
  */
@@ -45,12 +45,8 @@
     '<a href="' +
     ROOT +
     '/micropython-pydevices/">Firmware</a>' +
-    '<a href="' +
-    ROOT +
-    '/workbench/">Workbench</a>' +
-    '<a href="' +
-    ROOT +
-    '/gallery/gallery/" class="nav-gallery-link">Gallery</a>' +
+    '<a href="https://workbench.pydevices.com/">Workbench</a>' +
+    '<a href="https://gallery.omnipython.org/" class="nav-gallery-link">Gallery</a>' +
     "</nav>" +
     '<button type="button" class="theme-toggle" id="theme-toggle" aria-label="Toggle color theme" title="Toggle color theme">' +
     '<svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v1.5M12 20v1.5M5.3 5.3l1.1 1.1M17.6 17.6l1.1 1.1M2.5 12H4M20 12h1.5M5.3 18.7l1.1-1.1M17.6 6.4l1.1-1.1"/></svg>' +
@@ -136,7 +132,7 @@
           id: "gallery",
           name: "gallery",
           path: "/gallery/",
-          url: ROOT + "/gallery/",
+          url: "https://gallery.omnipython.org/",
           tag: "Showcase",
           desc: "Multi-interpreter demos, benchmarks & PyScript runner",
           icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="17" height="17" rx="4.5"/><path d="M4.5 16.5c3-4.5 5.5-4.5 7.5-1.5 2-2.5 4.5-2.5 7.5.5"/><circle cx="15.2" cy="8.8" r="1.9" fill="var(--accent, currentColor)" stroke="none"/></svg>'
@@ -245,7 +241,7 @@
           id: "workbench",
           name: "workbench",
           path: "/workbench/",
-          url: ROOT + "/workbench/",
+          url: "https://workbench.pydevices.com/",
           tag: "Browser IDE",
           desc: "MicroPython IDE with a built-in device simulator",
           icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4" width="19" height="16" rx="4.5"/><path d="M9.8 9.5L7.3 12l2.5 2.5M14.2 9.5l2.5 2.5-2.5 2.5" stroke="var(--accent, currentColor)"/></svg>'
@@ -335,7 +331,7 @@
 
     // Footer Links
     html += '  <div class="pydevices-nav-footer">';
-    html += '    <a href="' + ROOT + '/gallery/gallery/" class="nav-foot-link">Interactive Gallery</a> &middot; ';
+    html += '    <a href="https://gallery.omnipython.org/" class="nav-foot-link">Interactive Gallery</a> &middot; ';
     html += '    <a href="https://lib.omnipython.org" class="nav-foot-link">Package Index</a> &middot; ';
     html += '    <a href="https://github.com/PyDevices" class="nav-foot-link">GitHub</a>';
     html += '  </div>';

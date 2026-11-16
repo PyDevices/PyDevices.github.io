@@ -1,9 +1,9 @@
 #!/bin/sh
 # Install PyDevices' MicroPython build system, and optionally build.
 #
-#   curl -fsSL https://pydevices.github.io/install.sh | sh
-#   curl -fsSL https://pydevices.github.io/install.sh | sh -s -- --port unix --variant pydevices --modules all
-#   curl -fsSL https://pydevices.github.io/install.sh | sh -s -- --deps rp2
+#   curl -fsSL https://omnipython.org/install.sh | sh
+#   curl -fsSL https://omnipython.org/install.sh | sh -s -- --port unix --variant pydevices --modules all
+#   curl -fsSL https://omnipython.org/install.sh | sh -s -- --deps rp2
 #
 # Clones micropython-pydevices into ./micropython-pydevices, in the current
 # directory (or updates the clone already there), checks the tools every build needs, and says what to
@@ -202,7 +202,7 @@ install_deps() {  # port...
     $sudo env DEBIAN_FRONTEND=noninteractive apt-get install -y $pkgs < /dev/null || fail "apt-get install failed"
     say ""
     say "Installed: $which can build once micropython-pydevices is cloned:"
-    say "  curl -fsSL https://pydevices.github.io/install.sh | sh"
+    say "  curl -fsSL https://omnipython.org/install.sh | sh"
 }
 
 check_tools() {
@@ -259,7 +259,7 @@ port_notes() {
     say "for a port that's still missing something stops and says so."
     say ""
     say "This script can install them too, a port at a time or all of them:"
-    say "  curl -fsSL https://pydevices.github.io/install.sh | sh -s -- --deps rp2"
+    say "  curl -fsSL https://omnipython.org/install.sh | sh -s -- --deps rp2"
 }
 
 port_note() {  # port "missing packages" aside

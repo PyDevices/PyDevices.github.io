@@ -1,12 +1,10 @@
 # Roadmap
 
-The portal at [pydevices.github.io](https://pydevices.github.io/) follows the
+The portal at [omnipython.org](https://omnipython.org/) follows the
 packages it describes, so most of its changes arrive with theirs.
 
 ## Next
 
-- The site moves to omnipython.org, with the documentation, the package index
-  and the gallery each at their own address beside it.
 - Install your own build from the firmware page: "Install from a file" takes a
   `.bin` you built and writes it to your board from Chrome or Edge.
 

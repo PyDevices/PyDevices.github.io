@@ -35,7 +35,7 @@ PyDevices stack frozen in, so a demo imports it with nothing to install.
 
 ## Publishing
 
-Pushes to `main` publish the repository root at <https://pydevices.github.io/>.
+Pushes to `main` publish the repository root at <https://omnipython.org/>.
 There is no build step, so what is in the repository is what is served.
 `.nojekyll` keeps GitHub Pages from running Jekyll over it.
 
