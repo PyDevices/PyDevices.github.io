@@ -44,9 +44,9 @@ class WorkspaceRequestHandler(SimpleHTTPRequestHandler):
         self.send_header("Cross-Origin-Embedder-Policy", "credentialless")
         self.send_header("Cross-Origin-Resource-Policy", "cross-origin")
         self.send_header("Access-Control-Allow-Origin", "*")
-        # pydevices' wasm.py and pyscript.py probe for this header and reuse
+        # OmniPython's wasm.py and pyscript.py probe for this header and reuse
         # a running server that says "portal" instead of starting their own.
-        self.send_header("X-PyDevices-Server", "portal")
+        self.send_header("X-OmniPython-Server", "portal")
         super().end_headers()
 
     def send_head(self):

@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: MIT
 
 """
-PyDevices 3D Rotary Encoder (Hero Canvas App for pydevices)
+PyDevices 3D Rotary Encoder (Hero Canvas App for OmniPython)
 ===========================================================
 Interactive 3D knurled aluminum rotary encoder with 24 physical detents,
 rotational drag physics, tactile momentary push-button switch, and live telemetry.

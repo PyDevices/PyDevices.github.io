@@ -37,7 +37,7 @@ def _text(display, value, x, y, color):
 
 
 PACKAGES = [
-    ("pydevices", 0x38BDF8, ["appdev", "displaydev"]),
+    ("omnipython", 0x38BDF8, ["appdev", "displaydev"]),
     ("pygraphics", 0x34D399, ["framebuf", "fonts"]),
     ("pdwidgets", 0xF59E0B, ["widgets", "theming"]),
     ("palettes", 0xEC4899, ["color_math", "swatches"]),

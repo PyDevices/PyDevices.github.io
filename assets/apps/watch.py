@@ -25,7 +25,7 @@ from boarddev import env_int
 # hero-runtime.js sets this from the browser's Date.getTimezoneOffset() (same
 # sign convention: minutes local time is BEHIND UTC) so the watch face can
 # still show the viewer's actual local time.
-_TZ_OFFSET_SEC = env_int("PYDEVICES_TZ_OFFSET_MIN", 0) * 60
+_TZ_OFFSET_SEC = env_int("OMNIPYTHON_TZ_OFFSET_MIN", 0) * 60
 
 
 def _color(rgb):
@@ -147,7 +147,7 @@ def _local_time():
     return t[3], t[4], t[5], millis, day_name, month_name, t[2]
 
 
-class PyDevicesWatch:
+class OmniPythonWatch:
     def __init__(self, parent, size=240):
         self.parent = parent
         self.size = size
@@ -271,7 +271,7 @@ class PyDevicesWatch:
         # 6. Brand Label (Upper Dial Quadrant)
         # Horizontal center aligned to parent (x_offset = 0), calculated y_offset
         brand_top_offset = int(dial_size * 0.25)
-        self.brand_lbl = _clean_label(self.face, "PYDEVICES", 0xC4DC4C, 11)
+        self.brand_lbl = _clean_label(self.face, "OMNIPYTHON", 0xC4DC4C, 11)
         self.brand_lbl.align(lv.ALIGN.TOP_MID, 0, brand_top_offset)
         try:
             self.brand_lbl.update_layout()
@@ -418,4 +418,4 @@ class PyDevicesWatch:
 
 
 _scr = lv.screen_active() if hasattr(lv, "screen_active") else lv.scr_act()
-_watch_app = PyDevicesWatch(_scr, size=min(display_drv.width, display_drv.height))
+_watch_app = OmniPythonWatch(_scr, size=min(display_drv.width, display_drv.height))

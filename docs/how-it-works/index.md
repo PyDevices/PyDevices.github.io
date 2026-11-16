@@ -8,7 +8,7 @@ turns each entry into the head tags and hero of that project's landing page,
 and all of them into the portal's cards. Keeping this in one file is what makes
 the pages agree: a button label or a tier name is edited once. A full run also
 writes the organization's ecosystem map into the `.github` profile README and,
-when it is checked out, the `pydevices` repository's `docs/ecosystem.md`, so a
+when it is checked out, the `omnipython` repository's `docs/ecosystem.md`, so a
 database change has effects outside this repository.
 
 **Copied.** The shared stylesheet, scripts, logo and demo apps live in the

@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: MIT
 
 """
-PyDevices Serial FTP Scope (Hero Canvas App for mpftp)
+PyDevices Serial FTP Scope (Hero Canvas App for MCU Control)
 ======================================================
 Interactive dual-pane serial FTP and hex data transfer monitor:
 - Real-time animated serial packet progress bar
