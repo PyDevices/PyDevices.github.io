@@ -3,7 +3,7 @@
 <head>
   <!-- PYDEVICES-HEAD-TAGS: START -->
   <title>PyDevices - displayif (moved)</title>
-  <meta name="description" content="Moved to micropython-pydevices as modules/displayif, with its history. It was never published on its own: it reaches you in firmware built by micropython-pydevices' build_mp.py, so that is where it is built, tested and changed now. Your code doesn't change. The old repository is archived.">
+  <meta name="description" content="Moved to omnipython-builds as modules/displayif, with its history. It was never published on its own: it reaches you in firmware built by omnipython-builds' build_mp.py, so that is where it is built, tested and changed now. Your code doesn't change. The old repository is archived.">
   <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
   <link rel="alternate icon" href="/assets/img/favicon.ico" sizes="16x16 32x32 48x48">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&display=swap">
@@ -30,16 +30,16 @@
         <div class="logo-badge product-mark" style="background: linear-gradient(135deg, var(--tier-1-amber), var(--tier-1-deep)); color: var(--on-accent);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="3.5" width="19" height="13" rx="4"/><path d="M12 16.5v3.5M8 20.5h8"/><circle cx="12" cy="10" r="2.8"/><circle cx="12.6" cy="9.6" r="1.1" fill="var(--accent, currentColor)" stroke="none"/></svg></div>
         <span class="eyebrow" style="color: var(--tier-1-amber);">displayif · moved</span>
       </div>
-      <h1>displayif has moved into micropython-pydevices.</h1>
+      <h1>displayif has moved into omnipython-builds.</h1>
     </div>
-    <p><code>displayif</code> Moved to micropython-pydevices as modules/displayif, with its history. It was never published on its own: it reaches you in firmware built by micropython-pydevices' build_mp.py, so that is where it is built, tested and changed now. Your code doesn't change. The old repository is archived.</p>
+    <p><code>displayif</code> Moved to omnipython-builds as modules/displayif, with its history. It was never published on its own: it reaches you in firmware built by omnipython-builds' build_mp.py, so that is where it is built, tested and changed now. Your code doesn't change. The old repository is archived.</p>
     <div class="cta">
-      <a class="btn primary" href="https://github.com/PyDevices/micropython-pydevices/tree/main/modules/displayif">
+      <a class="btn primary" href="https://github.com/PyDevices/omnipython-builds/tree/main/modules/displayif">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.9a3.4 3.4 0 0 0-1-2.6c3-.3 6-1.5 6-6.5a5 5 0 0 0-1.4-3.5 4.6 4.6 0 0 0-.1-3.5s-1.1-.3-3.5 1.3a12 12 0 0 0-6 0C6.6 1.7 5.5 2 5.5 2a4.6 4.6 0 0 0-.1 3.5A5 5 0 0 0 4 9c0 5 3 6.2 6 6.5a3.4 3.4 0 0 0-1 2.6V22"/></svg>
         modules/displayif
       </a>
-      <a class="btn" style="border-color: var(--tier-1-amber); color: var(--tier-1-amber);" href="https://github.com/PyDevices/micropython-pydevices/blob/main/modules/displayif/docs/soft-reset-and-bring-up.md">Hardware bring-up</a>
-      <a class="btn" style="border-color: var(--tier-1-amber); color: var(--tier-1-amber);" href="https://omnipython.org/micropython-pydevices/">micropython-pydevices</a>
+      <a class="btn" style="border-color: var(--tier-1-amber); color: var(--tier-1-amber);" href="https://github.com/PyDevices/omnipython-builds/blob/main/modules/displayif/docs/soft-reset-and-bring-up.md">Hardware bring-up</a>
+      <a class="btn" style="border-color: var(--tier-1-amber); color: var(--tier-1-amber);" href="https://omnipython.org/omnipython-builds/">omnipython-builds</a>
       <a class="btn" style="border-color: var(--tier-1-amber); color: var(--tier-1-amber);" href="https://github.com/PyDevices/displayif">Archived repo</a>
     </div>
   </section>
@@ -49,14 +49,14 @@
       <h2>Where it went</h2>
       <span class="hint">Same code, same history, one repository fewer</span>
     </div>
-    <p class="prose" style="margin-top: 14px;">displayif now lives in <a href="https://github.com/PyDevices/micropython-pydevices">micropython-pydevices</a>, the repository that builds MicroPython with PyDevices' C modules compiled in. It was never released on its own: it reached you in firmware built by micropython-pydevices, so that is where it is built, tested and changed now. The old repository is archived and kept as a record; open issues and pull requests against micropython-pydevices.</p>
+    <p class="prose" style="margin-top: 14px;">displayif now lives in <a href="https://github.com/PyDevices/omnipython-builds">omnipython-builds</a>, the repository that builds MicroPython with PyDevices' C modules compiled in. It was never released on its own: it reached you in firmware built by omnipython-builds, so that is where it is built, tested and changed now. The old repository is archived and kept as a record; open issues and pull requests against omnipython-builds.</p>
     <div class="section-head" style="margin-top: 36px;">
       <h2>Build it in</h2>
       <span class="hint">Name it in the build, as before</span>
     </div>
     <div class="spec-block">
-      <pre><code>git clone https://github.com/PyDevices/micropython-pydevices
-cd micropython-pydevices
+      <pre><code>git clone https://github.com/PyDevices/omnipython-builds
+cd omnipython-builds
 ./build_mp.py --port unix --modules displayif</code></pre>
     </div>
     <p class="prose" style="margin-top: 14px;">Your code doesn&rsquo;t change: <code>spibus</code>, <code>i80bus</code>, <code>mipidsi</code>, <code>dotclockframebuffer</code> and the other bus modules import as before. <code>--modules all</code> builds it with everything else.</p>
@@ -67,19 +67,19 @@ cd micropython-pydevices
     <div class="spec-block">
       <div class="spec-grid">
         <div class="spec-item tier-1">
-          <h4><a href="https://github.com/PyDevices/micropython-pydevices/blob/main/modules/displayif/docs/newcomers.md">Newcomer's guide</a></h4>
+          <h4><a href="https://github.com/PyDevices/omnipython-builds/blob/main/modules/displayif/docs/newcomers.md">Newcomer's guide</a></h4>
           <p>What the module supplies, and what a board needs to use it.</p>
         </div>
         <div class="spec-item tier-1">
-          <h4><a href="https://github.com/PyDevices/micropython-pydevices/blob/main/modules/displayif/docs/port-matrix.md">Port matrix</a></h4>
+          <h4><a href="https://github.com/PyDevices/omnipython-builds/blob/main/modules/displayif/docs/port-matrix.md">Port matrix</a></h4>
           <p>Which buses and panels build and run on which port.</p>
         </div>
         <div class="spec-item tier-1">
-          <h4><a href="https://github.com/PyDevices/micropython-pydevices/blob/main/modules/displayif/docs/soft-reset-and-bring-up.md">Bring-up</a></h4>
+          <h4><a href="https://github.com/PyDevices/omnipython-builds/blob/main/modules/displayif/docs/soft-reset-and-bring-up.md">Bring-up</a></h4>
           <p>Getting a new panel to show something, and what a soft reset does to it.</p>
         </div>
         <div class="spec-item tier-1">
-          <h4><a href="https://github.com/PyDevices/micropython-pydevices/tree/main/modules/displayif">Module README</a></h4>
+          <h4><a href="https://github.com/PyDevices/omnipython-builds/tree/main/modules/displayif">Module README</a></h4>
           <p>Install, the API and the tests.</p>
         </div>
       </div>

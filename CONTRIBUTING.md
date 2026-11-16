@@ -9,7 +9,7 @@ first question is where a change belongs.
 | Below a landing page's hero: feature grids, code samples, prose | The page's `index.html` here, by hand |
 | The shared stylesheet, scripts, logo or demo apps under `assets/` | The `.github` repository's `assets/`, then regenerate |
 | The offline app under `pyscript-template/pwa/` | The `pyscript-template` repository, then [refresh the copy](docs/guides/regenerate-the-pages.md#refresh-the-pyscript-template-copy) |
-| The MicroPython runtime under `vendor/micropython/` | `micropython-pydevices`, [rebuilt for the web](docs/guides/rebuild-the-webassembly-runtime.md) |
+| The MicroPython runtime under `vendor/micropython/` | `omnipython-builds`, [rebuilt for the web](docs/guides/rebuild-the-webassembly-runtime.md) |
 | `tools/serve_local.py`, `install.sh`, `404.html`, `com/` | Here |
 
 Open an [issue](https://github.com/PyDevices/PyDevices.github.io/issues) for a

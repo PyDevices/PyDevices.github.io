@@ -2,12 +2,12 @@
 #
 # SPDX-License-Identifier: MIT
 """
-PyDevices Signal Generator (Hero Canvas App for pydevices)
+PyDevices Signal Generator (Hero Canvas App for OmniPython)
 ============================================================
 A rotary-knob audio signal generator. Drag the knob to dial in a frequency
 on a logarithmic (equal-octave) scale, tap the center hub to toggle the
 tone on/off, and pick a waveform along the top. The only hero app with
-sound -- pydevices' own hero, showing off `board_config.audio_out`
+sound -- omnipython's own hero, showing off `board_config.audio_out`
 (appdev's audio stack) alongside LVGL.
 """
 
@@ -19,8 +19,8 @@ import time
 # generic (default 320x480) local test harness.
 from boarddev import env_set
 
-env_set("PYDEVICES_WIDTH", "480")
-env_set("PYDEVICES_HEIGHT", "480")
+env_set("OMNIPYTHON_WIDTH", "480")
+env_set("OMNIPYTHON_HEIGHT", "480")
 
 import display_driver  # wires LVGL display/input into the app
 import lvgl as lv

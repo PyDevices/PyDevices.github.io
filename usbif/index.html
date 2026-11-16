@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- PYDEVICES-HEAD-TAGS: START -->
   <title>PyDevices - usbif (moved)</title>
-  <meta name="description" content="The C module is now usbhost, in micropython-pydevices as modules/usbhost (its binding is _usbhost, it was _usbif). The Python USB packages (usb.core, the host and device classes, usb-hid) are top-level packages in pydevices, installed with mip. Code that uses the packages doesn't change. The old repository is archived.">
+  <meta name="description" content="The C module is now usbhost, in omnipython-builds as modules/usbhost (its binding is _usbhost, it was _usbif). The Python USB packages (usb.core, the host and device classes, usb-hid) are top-level packages in omnipython, installed with mip. Code that uses the packages doesn't change. The old repository is archived.">
   <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
   <link rel="alternate icon" href="/assets/img/favicon.ico" sizes="16x16 32x32 48x48">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&display=swap">
@@ -25,14 +25,14 @@
       </div>
       <h1>usbif has moved, to two homes.</h1>
     </div>
-    <p><code>usbif</code> The C module is now usbhost, in micropython-pydevices as modules/usbhost (its binding is _usbhost, it was _usbif). The Python USB packages (usb.core, the host and device classes, usb-hid) are top-level packages in pydevices, installed with mip. Code that uses the packages doesn't change. The old repository is archived.</p>
+    <p><code>usbif</code> The C module is now usbhost, in omnipython-builds as modules/usbhost (its binding is _usbhost, it was _usbif). The Python USB packages (usb.core, the host and device classes, usb-hid) are top-level packages in omnipython, installed with mip. Code that uses the packages doesn't change. The old repository is archived.</p>
     <div class="cta">
-      <a class="btn primary" href="https://github.com/PyDevices/micropython-pydevices/tree/main/modules/usbhost">
+      <a class="btn primary" href="https://github.com/PyDevices/omnipython-builds/tree/main/modules/usbhost">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.9a3.4 3.4 0 0 0-1-2.6c3-.3 6-1.5 6-6.5a5 5 0 0 0-1.4-3.5 4.6 4.6 0 0 0-.1-3.5s-1.1-.3-3.5 1.3a12 12 0 0 0-6 0C6.6 1.7 5.5 2 5.5 2a4.6 4.6 0 0 0-.1 3.5A5 5 0 0 0 4 9c0 5 3 6.2 6 6.5a3.4 3.4 0 0 0-1 2.6V22"/></svg>
         modules/usbhost
       </a>
-      <a class="btn" style="border-color: var(--tier-1-amber); color: var(--tier-1-amber);" href="https://github.com/PyDevices/pydevices/blob/main/docs/guides/usb.md">USB packages in pydevices</a>
-      <a class="btn" style="border-color: var(--tier-1-amber); color: var(--tier-1-amber);" href="https://omnipython.org/micropython-pydevices/">micropython-pydevices</a>
+      <a class="btn" style="border-color: var(--tier-1-amber); color: var(--tier-1-amber);" href="https://github.com/PyDevices/omnipython/blob/main/docs/guides/usb.md">USB packages in omnipython</a>
+      <a class="btn" style="border-color: var(--tier-1-amber); color: var(--tier-1-amber);" href="https://omnipython.org/omnipython-builds/">omnipython-builds</a>
       <a class="btn" style="border-color: var(--tier-1-amber); color: var(--tier-1-amber);" href="https://github.com/PyDevices/usbif">Archived repo</a>
     </div>
   </section>
@@ -42,23 +42,23 @@
       <h2>Where it went</h2>
       <span class="hint">Same code, same history, one repository fewer</span>
     </div>
-    <p class="prose" style="margin-top: 14px;">usbif split in two. Its C module is now <code>usbhost</code>, in <a href="https://github.com/PyDevices/micropython-pydevices">micropython-pydevices</a>, the repository that builds MicroPython with PyDevices' C modules compiled in. Its Python packages are in pydevices. The old repository is archived and kept as a record; open issues and pull requests against micropython-pydevices.</p>
+    <p class="prose" style="margin-top: 14px;">usbif split in two. Its C module is now <code>usbhost</code>, in <a href="https://github.com/PyDevices/omnipython-builds">omnipython-builds</a>, the repository that builds MicroPython with PyDevices' C modules compiled in. Its Python packages are in pydevices. The old repository is archived and kept as a record; open issues and pull requests against omnipython-builds.</p>
     <div class="section-head" style="margin-top: 36px;">
       <h2>Install the Python packages</h2>
       <span class="hint">usb.core, the host classes, the device classes</span>
     </div>
     <div class="spec-block">
       <pre><code>import mip
-mip.install("github:PyDevices/pydevices/usb-host-msc")</code></pre>
+mip.install("github:PyDevices/omnipython/usb-host-msc")</code></pre>
     </div>
-    <p class="prose" style="margin-top: 14px;">The packages (<code>usb-core</code>, <code>usb-host-msc</code>, <code>-hid</code>, <code>-cdc</code>, <code>-audio</code>, <code>-video</code>, <code>-net</code>, <code>usb-device-audio</code>, <code>-video</code>, <code>-msc</code> and <code>usb-hid</code>) are top-level packages in <a href="https://github.com/PyDevices/pydevices">pydevices</a>, beside <code>midiports</code>. Code that uses them doesn&rsquo;t change.</p>
+    <p class="prose" style="margin-top: 14px;">The packages (<code>usb-core</code>, <code>usb-host-msc</code>, <code>-hid</code>, <code>-cdc</code>, <code>-audio</code>, <code>-video</code>, <code>-net</code>, <code>usb-device-audio</code>, <code>-video</code>, <code>-msc</code> and <code>usb-hid</code>) are top-level packages in <a href="https://github.com/PyDevices/omnipython">pydevices</a>, beside <code>midiports</code>. Code that uses them doesn&rsquo;t change.</p>
     <div class="section-head" style="margin-top: 36px;">
       <h2>Build it in</h2>
       <span class="hint">Name it in the build, as before</span>
     </div>
     <div class="spec-block">
-      <pre><code>git clone https://github.com/PyDevices/micropython-pydevices
-cd micropython-pydevices
+      <pre><code>git clone https://github.com/PyDevices/omnipython-builds
+cd omnipython-builds
 ./build_mp.py --port esp32 --board ESP32_GENERIC_S3 --variant SPIRAM_OCT --modules usbhost</code></pre>
     </div>
     <p class="prose" style="margin-top: 14px;">The C module is now <code>usbhost</code>, and its binding is <code>_usbhost</code> (it was <code>_usbif</code>), so code that imported <code>_usbif</code> directly imports <code>_usbhost</code>. The examples, the proof matrix and the host checks moved with it.</p>
@@ -69,19 +69,19 @@ cd micropython-pydevices
     <div class="spec-block">
       <div class="spec-grid">
         <div class="spec-item tier-1">
-          <h4><a href="https://github.com/PyDevices/pydevices/blob/main/docs/usb.md">USB in pydevices</a></h4>
+          <h4><a href="https://github.com/PyDevices/omnipython/blob/main/docs/usb.md">USB in OmniPython</a></h4>
           <p>The packages, what each one does, and how to install them.</p>
         </div>
         <div class="spec-item tier-1">
-          <h4><a href="https://github.com/PyDevices/micropython-pydevices/blob/main/modules/usbhost/docs/newcomers.md">usbhost newcomer's guide</a></h4>
+          <h4><a href="https://github.com/PyDevices/omnipython-builds/blob/main/modules/usbhost/docs/newcomers.md">usbhost newcomer's guide</a></h4>
           <p>How the C module and the Python packages fit together, as a device and as a host.</p>
         </div>
         <div class="spec-item tier-1">
-          <h4><a href="https://github.com/PyDevices/micropython-pydevices/tree/main/modules/usbhost/examples">Examples</a></h4>
+          <h4><a href="https://github.com/PyDevices/omnipython-builds/tree/main/modules/usbhost/examples">Examples</a></h4>
           <p>A keyboard, a drive, a MIDI controller, a webcam, a sound card.</p>
         </div>
         <div class="spec-item tier-1">
-          <h4><a href="https://github.com/PyDevices/micropython-pydevices/tree/main/modules/usbhost">Module README</a></h4>
+          <h4><a href="https://github.com/PyDevices/omnipython-builds/tree/main/modules/usbhost">Module README</a></h4>
           <p>Install, boards and the proof matrix.</p>
         </div>
       </div>

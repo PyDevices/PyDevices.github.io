@@ -244,7 +244,7 @@ class PolyhedronHero:
             pygraphics.line(display, int(x2), int(y2), int(x0), int(y0), edge)
 
         # 6. Tech HUD Overlay
-        _text(display, "PYDEVICES 3D ENGINE", 12, 20, "#94A3B8")
+        _text(display, "OMNIPYTHON 3D ENGINE", 12, 20, "#94A3B8")
         _text(display, "60 FPS", w - 12, 20, "#94A3B8", "right")
 
         if hasattr(self.drv, "show"):

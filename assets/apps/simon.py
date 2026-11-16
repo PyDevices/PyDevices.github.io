@@ -5,7 +5,7 @@
 """
 PyDevices Simon Memory Game (Hero Canvas App for pygraphics)
 ============================================================
-Classic 4-color memory game rendered in pure Python directly on PyDevices PSDisplay.
+Classic 4-color memory game rendered in pure Python directly on OmniPython PSDisplay.
 Features idle attract mode and full interactive touch/click gameplay.
 """
 

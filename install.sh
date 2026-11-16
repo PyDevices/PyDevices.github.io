@@ -2,10 +2,10 @@
 # Install PyDevices' MicroPython build system, and optionally build.
 #
 #   curl -fsSL https://omnipython.org/install.sh | sh
-#   curl -fsSL https://omnipython.org/install.sh | sh -s -- --port unix --variant pydevices --modules all
+#   curl -fsSL https://omnipython.org/install.sh | sh -s -- --port unix --variant omnipython --modules all
 #   curl -fsSL https://omnipython.org/install.sh | sh -s -- --deps rp2
 #
-# Clones micropython-pydevices into ./micropython-pydevices, in the current
+# Clones omnipython-builds into ./omnipython-builds, in the current
 # directory (or updates the clone already there), checks the tools every build needs, and says what to
 # run next. Arguments after "--" go to build_mp.py, which fetches MicroPython,
 # the modules and each port's toolchain on its first run.
@@ -19,8 +19,8 @@
 # way. It uses sudo unless it runs as root.
 #
 # Environment:
-#   PYDEVICES_DIR     where to clone (default ./micropython-pydevices)
-#   PYDEVICES_BRANCH  branch to check out (default main)
+#   OMNIPYTHON_DIR     where to clone (default ./omnipython-builds)
+#   OMNIPYTHON_BRANCH  branch to check out (default main)
 #
 # Plain POSIX sh, and everything runs from main() on the last line, so a
 # download cut short runs nothing. Nothing reads stdin: piped, stdin is this
@@ -28,7 +28,7 @@
 
 set -u
 
-URL=https://github.com/PyDevices/micropython-pydevices.git
+URL=https://github.com/PyDevices/omnipython-builds.git
 
 say() { echo "$*"; }
 fail() { echo "install.sh: $*" >&2; exit 1; }
@@ -201,7 +201,7 @@ install_deps() {  # port...
     # shellcheck disable=SC2086
     $sudo env DEBIAN_FRONTEND=noninteractive apt-get install -y $pkgs < /dev/null || fail "apt-get install failed"
     say ""
-    say "Installed: $which can build once micropython-pydevices is cloned:"
+    say "Installed: $which can build once omnipython-builds is cloned:"
     say "  curl -fsSL https://omnipython.org/install.sh | sh"
 }
 
@@ -279,20 +279,20 @@ fetch() {  # dir branch
     if [ -d "$1/.git" ]; then
         origin=$(git -C "$1" remote get-url origin 2>/dev/null || true)
         case "$origin" in
-            *PyDevices/micropython-pydevices*) ;;
-            *) fail "$1 is a different git checkout ($origin); set PYDEVICES_DIR" ;;
+            *PyDevices/omnipython-builds*) ;;
+            *) fail "$1 is a different git checkout ($origin); set OMNIPYTHON_DIR" ;;
         esac
         say "Updating $1"
         git -C "$1" fetch -q origin "$2" < /dev/null || fail "git fetch failed"
         git -C "$1" checkout -q "$2" < /dev/null || fail "could not check out $2 (local changes?)"
         git -C "$1" merge -q --ff-only "origin/$2" < /dev/null || fail "$1 has diverged from origin/$2; update it by hand"
     elif [ -e "$1" ] && [ -n "$(ls -A "$1" 2>/dev/null)" ]; then
-        fail "$1 exists and is not a micropython-pydevices clone; set PYDEVICES_DIR"
+        fail "$1 exists and is not a omnipython-builds clone; set OMNIPYTHON_DIR"
     else
-        say "Cloning micropython-pydevices into $1"
+        say "Cloning omnipython-builds into $1"
         git clone -q --branch "$2" "$URL" "$1" < /dev/null || fail "git clone failed"
     fi
-    say "micropython-pydevices $(git -C "$1" rev-parse --short HEAD) ($2)"
+    say "omnipython-builds $(git -C "$1" rev-parse --short HEAD) ($2)"
 }
 
 main_windows() {  # dir branch [build_mp.py arguments]
@@ -324,10 +324,10 @@ main_windows() {  # dir branch [build_mp.py arguments]
     fi
     say ""
     say "  cd $dir"
-    say "  ${PYTHON:-python} build_mp.py --port windows --variant pydevices --modules all"
+    say "  ${PYTHON:-python} build_mp.py --port windows --variant omnipython --modules all"
     say ""
     say "Every other port (esp32, rp2, webassembly, unix) builds from WSL, as on Linux."
-    say "The guide: https://github.com/PyDevices/micropython-pydevices/blob/main/docs/guides/build-on-windows.md"
+    say "The guide: https://github.com/PyDevices/omnipython-builds/blob/main/docs/guides/build-on-windows.md"
 }
 
 main() {
@@ -336,8 +336,8 @@ main() {
         install_deps "$@"
         return
     fi
-    dir=${PYDEVICES_DIR:-micropython-pydevices}
-    branch=${PYDEVICES_BRANCH:-main}
+    dir=${OMNIPYTHON_DIR:-omnipython-builds}
+    branch=${OMNIPYTHON_BRANCH:-main}
     if windows_host; then
         main_windows "$dir" "$branch" "$@"
         return
@@ -372,10 +372,10 @@ main() {
     say ""
     say "  cd $dir"
     say "  ./build_mp.py          # asks for port, board, variant, flash size and modules"
-    say "  ./build_mp.py --port unix --variant pydevices --modules all"
+    say "  ./build_mp.py --port unix --variant omnipython --modules all"
     say "  ./build_mp.py --port esp32 --board ESP32_GENERIC_S3 --variant SPIRAM_OCT --flash 8MB --modules all"
     say ""
-    say "The guide: https://github.com/PyDevices/micropython-pydevices/blob/main/docs/get-started/install.md"
+    say "The guide: https://github.com/PyDevices/omnipython-builds/blob/main/docs/get-started/install.md"
 }
 
 main "$@"
