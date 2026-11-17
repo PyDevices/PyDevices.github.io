@@ -7,8 +7,8 @@ from the `.github` repository.
 | Path | What it is | Written by |
 |---|---|---|
 | `index.html` | The portal's front page. Regions between `PYDEVICES-...: START` and `END` comments (head tags, hero, project cards) are generated. | Generated regions; the rest by hand |
-| `<project>/index.html` | A landing page per project, one for each of the 19 repositories in the database that has a portal page. The head tags and hero are generated. Feature grids and code samples below the hero are not. | Generated regions; the rest by hand |
-| `com/index.html` | The page for pydevices.com. It has no generated regions. | By hand |
+| `<project>/index.html` | A landing page per project, one for each repository in the database that has a portal page. The head tags and hero are generated. Feature grids and code samples below the hero are not. | Generated regions; the rest by hand |
+| `com/`, `mcuctl/`, `mpvst/` | "Moved" notices that send a browser to the same page on [pydevices.com](https://pydevices.com/), where the tools' pages live. | By hand |
 | `micropython-vst3/index.html` | A "moved" notice for a renamed project. | By hand |
 | `404.html` | The Pages error page. | By hand |
 | `install.sh` | The script behind `curl -fsSL https://omnipython.org/install.sh \| sh`. It clones `omnipython-builds` and checks the build tools. | By hand |
