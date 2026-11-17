@@ -359,19 +359,34 @@ pre code {
 }
 
 @media (max-width: 768px) {
-  .nav a:not(.nav-gallery-link) {
-    display: none;
+  /* Every link stays reachable on a phone: the header wraps, with the brand
+   * and theme toggle on the first row and the links on a row of their own. */
+  .site-header .wrap {
+    flex-wrap: wrap;
+    row-gap: 4px;
+    border-radius: 26px;
+  }
+  .site-header .theme-toggle {
+    margin-left: auto;
   }
   .nav {
-    gap: 8px;
+    order: 3;
+    flex-basis: 100%;
+    margin-left: 0;
+    justify-content: space-between;
+    gap: 2px;
+    font-size: 0.86rem;
+  }
+  .nav a {
+    padding: 6px 8px;
   }
   .nav-gallery-link {
     display: inline-flex;
     align-items: center;
-    font-size: 0.84rem;
+    font-size: 0.86rem;
     font-weight: 600;
     color: var(--accent-strong);
-    padding: 4px 12px;
+    padding: 4px 10px;
     border-radius: var(--radius-pill);
     background: var(--panel);
     border: 1px solid var(--border);

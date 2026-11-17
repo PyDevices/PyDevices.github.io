@@ -7,7 +7,7 @@
 #
 # Clones omnipython-builds into ./omnipython-builds, in the current
 # directory (or updates the clone already there), checks the tools every build needs, and says what to
-# run next. Arguments after "--" go to build_mp.py, which fetches MicroPython,
+# run next. Arguments after "--" go to build.py, which fetches MicroPython,
 # the modules and each port's toolchain on its first run.
 #
 # On Windows, run it from Git Bash. There it clones first, then checks for
@@ -58,7 +58,7 @@ find_python() {
 }
 
 windows_tools() {
-    # What build_mp.py uses on Windows: MSYS2 at $MSYS2_ROOT (C:\msys64), or a
+    # What build.py uses on Windows: MSYS2 at $MSYS2_ROOT (C:\msys64), or a
     # make and gcc already on PATH. A warning, never a stop: the clone is done.
     missing=
     find_python || missing="$missing Python-3.9+"
@@ -295,7 +295,7 @@ fetch() {  # dir branch
     say "omnipython-builds $(git -C "$1" rev-parse --short HEAD) ($2)"
 }
 
-main_windows() {  # dir branch [build_mp.py arguments]
+main_windows() {  # dir branch [build.py arguments]
     dir=$1 branch=$2
     shift 2
     have git || fail "git is missing; install Git for Windows (https://git-scm.com), then run this again from Git Bash"
