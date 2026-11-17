@@ -48,20 +48,17 @@
   <main class="wrap" style="padding-bottom: 60px;">
     <div class="section-head">
       <h2>Installation Workflows</h2>
-      <span class="hint">Precompiled binary wheels published on TestPyPI &amp; GitHub Releases</span>
+      <span class="hint">Precompiled binary wheels published on PyPI &amp; GitHub Releases</span>
     </div>
 
     <div class="spec-block">
       <pre><code># Install CPython extension on Desktop (Linux x86_64 / Windows x64):
-pip install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ omnipython-lvgl
+pip install omnipython-lvgl
 
 # Pyodide / PyScript Browser Integration — micropip resolves the matching
-# Pyodide wasm32 wheel straight from TestPyPI, no manual wheel URL needed:
+# Pyodide wasm32 wheel straight from PyPI, no manual wheel URL needed:
 import micropip
-await micropip.install(
-    "omnipython-lvgl",
-    index_urls=["https://test.pypi.org/simple/", "https://pypi.org/simple/"],
-)</code></pre>
+await micropip.install("omnipython-lvgl")</code></pre>
     </div>
     <div class="section-head" style="margin-top: 36px;">
       <h2>New in 9.5.45</h2>
