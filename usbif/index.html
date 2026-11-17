@@ -59,7 +59,7 @@ mip.install("github:PyDevices/omnipython/usb-host-msc")</code></pre>
     <div class="spec-block">
       <pre><code>git clone https://github.com/PyDevices/omnipython-builds
 cd omnipython-builds
-./build_mp.py --port esp32 --board ESP32_GENERIC_S3 --variant SPIRAM_OCT --modules usbhost</code></pre>
+./build.py --port esp32 --board ESP32_GENERIC_S3 --variant SPIRAM_OCT --modules usbhost</code></pre>
     </div>
     <p class="prose" style="margin-top: 14px;">The C module is now <code>usbhost</code>, and its binding is <code>_usbhost</code> (it was <code>_usbif</code>), so code that imported <code>_usbif</code> directly imports <code>_usbhost</code>. The examples, the proof matrix and the host checks moved with it.</p>
     <div class="section-head" style="margin-top: 36px;">

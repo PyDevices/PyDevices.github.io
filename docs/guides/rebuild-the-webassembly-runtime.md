@@ -10,7 +10,7 @@ Build its `webassembly` port:
 ```bash
 git clone https://github.com/PyDevices/omnipython-builds
 cd omnipython-builds
-python3 build_mp.py --port webassembly
+python3 build.py --port webassembly
 ```
 
 The prerequisites, the other ports and where the build writes its files are in

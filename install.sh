@@ -85,7 +85,7 @@ windows_tools() {
             printf '%s\n' "  C:\\msys64\\usr\\bin\\bash.exe -lc \"pacman -Syu --noconfirm\""
             printf '%s\n' "  C:\\msys64\\usr\\bin\\bash.exe -lc \"pacman -S --needed --noconfirm make mingw-w64-x86_64-gcc autoconf automake libtool\""
             say ""
-            say "(Run the first pacman line again if it says it must close.) build_mp.py finds"
+            say "(Run the first pacman line again if it says it must close.) build.py finds"
             printf '%s\n' "MSYS2 in C:\\msys64 by itself; set MSYS2_ROOT if it's elsewhere."
             say "" ;;
     esac
@@ -306,7 +306,7 @@ main_windows() {  # dir branch [build_mp.py arguments]
     if [ $# -gt 0 ]; then
         [ -n "$PYTHON" ] || fail "no Python to build with; install it, then run this again"
         say ""
-        say "Building: $PYTHON build_mp.py $*"
+        say "Building: $PYTHON build.py $*"
         cd "$dir" || fail "cannot enter $dir"
         # shellcheck disable=SC2086
         if [ -r /dev/tty ] && ( : < /dev/tty ) 2>/dev/null; then
@@ -324,7 +324,7 @@ main_windows() {  # dir branch [build_mp.py arguments]
     fi
     say ""
     say "  cd $dir"
-    say "  ${PYTHON:-python} build_mp.py --port windows --variant omnipython --modules all"
+    say "  ${PYTHON:-python} build.py --port windows --variant omnipython --modules all"
     say ""
     say "Every other port (esp32, rp2, webassembly, unix) builds from WSL, as on Linux."
     say "The guide: https://github.com/PyDevices/omnipython-builds/blob/main/docs/guides/build-on-windows.md"
@@ -352,7 +352,7 @@ main() {
 
     if [ $# -gt 0 ]; then
         say ""
-        say "Building: ./build_mp.py $*"
+        say "Building: ./build.py $*"
         cd "$dir" || fail "cannot enter $dir"
         if [ -r /dev/tty ] && ( : < /dev/tty ) 2>/dev/null; then
             exec python3 build_mp.py "$@" < /dev/tty
@@ -371,9 +371,9 @@ main() {
     fi
     say ""
     say "  cd $dir"
-    say "  ./build_mp.py          # asks for port, board, variant, flash size and modules"
-    say "  ./build_mp.py --port unix --variant omnipython --modules all"
-    say "  ./build_mp.py --port esp32 --board ESP32_GENERIC_S3 --variant SPIRAM_OCT --flash 8MB --modules all"
+    say "  ./build.py          # asks for port, board, variant, flash size and modules"
+    say "  ./build.py --port unix --variant omnipython --modules all"
+    say "  ./build.py --port esp32 --board ESP32_GENERIC_S3 --variant SPIRAM_OCT --flash 8MB --modules all"
     say ""
     say "The guide: https://github.com/PyDevices/omnipython-builds/blob/main/docs/get-started/install.md"
 }
