@@ -3,18 +3,19 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <script>try{if(localStorage.getItem('pydevices-theme')==='light'){document.documentElement.setAttribute('data-theme','light');}}catch(e){}</script>
+  <script>try{if(localStorage.getItem('omnipython-theme')==='light'){document.documentElement.setAttribute('data-theme','light');}}catch(e){}</script>
   <!-- PYDEVICES-HEAD-TAGS: START -->
-  <title>PyDevices - PyDevices.github.io</title>
-  <meta name="description" content="The same driver, event, and display code runs unchanged on bare-metal MicroPython and CircuitPython boards, as native CPython wheels on desktop and Android, and directly in a browser tab, once the board or host has its board_config — no rewrites, no plugins.">
+  <title>OmniPython: one Python program on boards, desktops, browsers and phones</title>
+  <meta name="description" content="OmniPython is a set of Python libraries and C modules that run unchanged on MicroPython, CircuitPython and CPython. Give each board or host a small board_config, and the same program drives its display, input and audio.">
+  <meta property="og:title" content="OmniPython: one Python program on boards, desktops, browsers and phones">
+  <meta property="og:description" content="OmniPython is a set of Python libraries and C modules that run unchanged on MicroPython, CircuitPython and CPython. Give each board or host a small board_config, and the same program drives its display, input and audio.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://omnipython.org/">
+  <meta property="og:image" content="https://omnipython.org/assets/img/omnipython-social.png">
   <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
   <link rel="alternate icon" href="/assets/img/favicon.ico" sizes="16x16 32x32 48x48">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&display=swap">
   <!-- PYDEVICES-HEAD-TAGS: END -->
-  <meta property="og:title" content="PyDevices">
-  <meta property="og:description" content="One display & hardware contract across 5 Python interpreters: MicroPython, CircuitPython, CPython, PyScript, and Android.">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://omnipython.org/">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&display=swap">
@@ -28,20 +29,19 @@
   <section class="hero wrap has-hero-stage">
     <div class="hero-main">
       <div class="hero-lead">
-        <div class="logo-badge logo-badge--free"><img src="/assets/img/logo.svg" alt="PyDevices" width="112" height="112"></div>
-        <span class="eyebrow" style="color: var(--accent);">PyDevices Portal</span>
+        <div class="logo-badge logo-badge--free"><img src="/assets/img/omnipython-mark.svg" alt="OmniPython" width="112" height="112"></div>
+        <span class="eyebrow" style="color: var(--accent);">OmniPython</span>
       </div>
-      <h1>One display & hardware contract for MicroPython, CircuitPython, and CPython — from bare metal to the browser.</h1>
-      <p>The same driver, event, and display code runs unchanged on bare-metal MicroPython and CircuitPython boards, as native CPython wheels on desktop and Android, and directly in a browser tab, once the board or host has its board_config — no rewrites, no plugins.</p>
-      <p>Get Started installs the Python packages, with pip on a desktop or mip on a board. To build MicroPython firmware with the modules compiled in, run <code>curl -fsSL https://omnipython.org/install.sh | sh</code> and follow the guide on the <a href="https://omnipython.org/omnipython-builds/">omnipython-builds page</a>.</p>
+      <h1>One Python program, on boards, desktops, browsers and phones.</h1>
+      <p>OmniPython is a set of Python libraries and C modules that run unchanged on MicroPython, CircuitPython and CPython. Give each board or host a small board_config, and the same program drives its display, input and audio.</p>
+      <p>Install it with pip on a desktop or omip on a board: <a href="https://docs.omnipython.org/en/latest/install.html">the install page</a> has the line for each. Or try it first, with nothing installed: the watch on this page is Python running in your browser, and every app in the <a href="https://gallery.omnipython.org/">gallery</a> runs the same way.</p>
       <div class="cta">
-      <a class="btn primary" href="https://github.com/PyDevices">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.9a3.4 3.4 0 0 0-1-2.6c3-.3 6-1.5 6-6.5a5 5 0 0 0-1.4-3.5 4.6 4.6 0 0 0-.1-3.5s-1.1-.3-3.5 1.3a12 12 0 0 0-6 0C6.6 1.7 5.5 2 5.5 2a4.6 4.6 0 0 0-.1 3.5A5 5 0 0 0 4 9c0 5 3 6.2 6 6.5a3.4 3.4 0 0 0-1 2.6V22"/></svg>
-        GitHub Org
+      <a class="btn primary" href="https://docs.omnipython.org/">
+        Get started
       </a>
-      <a class="btn" style="border-color: var(--accent); color: var(--accent);" href="https://omnipython.org/omnipython/">Get Started</a>
-      <a class="btn" style="border-color: var(--accent); color: var(--accent);" href="https://gallery.omnipython.org/">Gallery</a>
-      <a class="btn" style="border-color: var(--accent); color: var(--accent);" href="https://lib.omnipython.org">Package Index</a>
+      <a class="btn" style="border-color: var(--accent); color: var(--accent);" href="#try-it">Try it now</a>
+      <a class="btn" style="border-color: var(--accent); color: var(--accent);" href="https://lib.omnipython.org/">Packages</a>
+      <a class="btn" style="border-color: var(--accent); color: var(--accent);" href="https://github.com/PyDevices">GitHub</a>
       </div>
     </div>
     <div class="hero-stage">
@@ -54,37 +54,105 @@
         <canvas id="hero_canvas" width="240" height="240" tabindex="0"></canvas>
       </div>
     </div>
-      <figure class="hero-art"><img src="/assets/img/huey-hero.svg" alt="Huey, a blue chameleon with lime spots, waving from a jumper wire" width="640" height="420"><figcaption><a href="/omnipython/">OmniPython</a>'s mascot</figcaption></figure>
+      <figure class="hero-art"><img src="/assets/img/huey-hero.svg" alt="Huey, a blue chameleon with lime spots, waving from a jumper wire" width="640" height="420"><figcaption>Huey, <a href="/omnipython/">OmniPython</a>'s mascot</figcaption></figure>
     </div>
   </section>
   <!-- PYDEVICES-ABOVE-THE-FOLD: END -->
 
+  <!-- PYDEVICES-PORTAL-TRY: START -->
+  <section class="try-it wrap" id="try-it" aria-labelledby="try-it-heading">
+    <div class="try-it-head">
+      <h2 id="try-it-heading">Try it now</h2>
+      <span class="hint">Nothing to install, in this browser tab.</span>
+    </div>
+    <div class="doors">
+      <a class="door" href="https://gallery.omnipython.org/">
+        <span class="door-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="17" height="17" rx="4.5"/><path d="M4.5 16.5c3-4.5 5.5-4.5 7.5-1.5 2-2.5 4.5-2.5 7.5.5"/><circle cx="15.2" cy="8.8" r="1.9" fill="var(--accent, currentColor)" stroke="none"/></svg></span>
+        <span class="door-body">
+          <span class="door-title">Watch it run</span>
+          <span class="door-text">Apps written with OmniPython running in your tab, MicroPython compiled to WebAssembly, with the code that draws them.</span>
+          <span class="door-where">gallery.omnipython.org</span>
+        </span>
+        <span class="door-action">Open the gallery <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      </a>
+      <a class="door" href="https://workbench.pydevices.com/">
+        <span class="door-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4" width="19" height="16" rx="4.5"/><path d="M9.8 9.5L7.3 12l2.5 2.5M14.2 9.5l2.5 2.5-2.5 2.5" stroke="var(--accent, currentColor)"/></svg></span>
+        <span class="door-body">
+          <span class="door-title">Write your own in PyDevices Workbench</span>
+          <span class="door-text">An editor and a simulated board in your browser: write a program, run it on the simulator, then send it to a real board.</span>
+          <span class="door-where">On workbench.pydevices.com</span>
+        </span>
+        <span class="door-action">Open Workbench <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      </a>
+    </div>
+  </section>
+  <!-- PYDEVICES-PORTAL-TRY: END -->
+
   <main class="cards wrap">
   <!-- PYDEVICES-PORTAL-GRIDS: START -->
-    <!-- Tier 1 Section -->
     <div class="section-head">
-      <h2><span class="tier-dot tier-dot-1">1</span>Core Platform & Board Contract</h2>
-      <span class="hint">Standard hardware driver engine and companion reference code.</span>
+      <h2>The libraries, and where to read about them</h2>
+      <span class="hint">The docs and the package library first, then what your program imports, most used first.</span>
     </div>
     <div class="grid">
+      <a class="card card-tier-1" href="https://docs.omnipython.org/">
+        <div class="card-top">
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6.5C10 5 7 4.5 3.5 5v13c3.5-.5 6.5 0 8.5 1.5 2-1.5 5-2 8.5-1.5V5C17 4.5 14 5 12 6.5z"/><path d="M12 6.5v13"/></svg></span>
+          <span class="tag tag-tier-1">Docs</span>
+        </div>
+        <h3>docs.omnipython.org</h3>
+        <p>Install OmniPython on a board, a desktop or in the browser, then the guides and the reference for each library.</p>
+        <span class="go">Open <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      </a>
+
+      <a class="card card-tier-1" href="https://lib.omnipython.org/">
+        <div class="card-top">
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg></span>
+          <span class="tag tag-tier-1">Packages</span>
+        </div>
+        <h3>lib.omnipython.org</h3>
+        <p>The package library: every OmniPython package and board driver, installed on a MicroPython board with mip or omip.</p>
+        <span class="go">Open <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      </a>
+
       <a class="card card-tier-1" href="/omnipython/">
         <div class="card-top">
           <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="3.5" width="19" height="13" rx="4"/><path d="M12 16.5v3.5M8 20.5h8"/><circle cx="12" cy="10" r="2.8"/><circle cx="12.6" cy="9.6" r="1.1" fill="var(--accent, currentColor)" stroke="none"/></svg></span>
-          <span class="tag tag-tier-1">Core Flagship</span>
+          <span class="tag tag-tier-1">Core</span>
         </div>
         <h3>omnipython</h3>
-        <p>Unified pure-Python hardware abstraction layer and core device contract for MicroPython, CircuitPython, CPython, direct WebAssembly, Pyodide, and Android.</p>
-        <span class="go">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        <p>The board contract: a small board_config per board, and display, touch, audio and event code that runs the same on all three Pythons.</p>
+        <span class="go">Open <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      </a>
+
+      <a class="card card-tier-2" href="/pygraphics/">
+        <div class="card-top">
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3c-4.5 5-4.5 13 0 18M12 3c4.5 5 4.5 13 0 18"/><path d="M3.2 12q8.8 2.4 17.6 0" stroke="var(--accent, currentColor)"/></svg></span>
+          <span class="tag tag-tier-2">Graphics</span>
+        </div>
+        <h3>pygraphics</h3>
+        <p>2D drawing, text and bitmaps: native C where it is built in, pure Python everywhere else.</p>
+        <span class="go">Open <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      </a>
+
+      <a class="card card-tier-3" href="/omnipython-lvgl/">
+        <div class="card-top">
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="7" height="7" rx="2.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="2.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="2.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="2.5" fill="var(--accent, currentColor)" stroke="var(--accent, currentColor)"/></svg></span>
+          <span class="tag tag-tier-3">LVGL</span>
+        </div>
+        <h3>omnipython-lvgl</h3>
+        <p>LVGL 9 for Python: a program imports lvgl the same way on MicroPython, CircuitPython and a desktop.</p>
+        <span class="go">Open <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
 
       <a class="card card-tier-1" href="/audiodsp/">
         <div class="card-top">
           <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5v3M8 7.5v9M16 7.5v9M20 10.5v3"/><path d="M12 4v16" stroke="var(--accent, currentColor)"/></svg></span>
-          <span class="tag tag-tier-1">C Audio Usermod</span>
+          <span class="tag tag-tier-1">Audio</span>
         </div>
         <h3>audiodsp</h3>
-        <p>CircuitPython's audio system (audiocore, synthio, audiomixer, effects, audiomp3) ported to MicroPython and CPython, extending CircuitPython along the way: dynamics, routing, convolution, and offline rendering. On PyPI as omnipython-audiodsp; the instrument and effect libraries built on it are audioinstruments and audioeffects.</p>
-        <span class="go">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        <p>CircuitPython's audio system (audiocore, synthio, audiomixer, effects) on MicroPython and CPython as well.</p>
+        <span class="go">Open <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
 
       <a class="card card-tier-1" href="/audioinstruments/">
@@ -93,8 +161,8 @@
           <span class="tag tag-tier-1">Instruments</span>
         </div>
         <h3>audioinstruments</h3>
-        <p>Playable synthesizers, organs, electric pianos and drum machines, each a patch of modules on a virtual rack, rendered a block at a time on audiodsp. Pure Python on CPython and MicroPython-compatible firmware. Install omnipython-audioinstruments from TestPyPI, or audioinstruments from the MIP index.</p>
-        <span class="go">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        <p>Playable synthesizers, organs, electric pianos and drum machines, in pure Python on audiodsp.</p>
+        <span class="go">Open <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
 
       <a class="card card-tier-1" href="/audioeffects/">
@@ -103,146 +171,68 @@
           <span class="tag tag-tier-1">Effects</span>
         </div>
         <h3>audioeffects</h3>
-        <p>Compressors, EQs, reverbs, delays, modulation, drive and amp simulation, pitch shifters and racks, pure Python on audiodsp's audio nodes, the same on MicroPython-compatible boards, CircuitPython-compatible boards and a desktop. Install omnipython-audioeffects from TestPyPI, or audioeffects from the MIP index.</p>
-        <span class="go">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
-      </a>
-
-      <a class="card card-tier-1" href="https://gallery.omnipython.org/">
-        <div class="card-top">
-          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="17" height="17" rx="4.5"/><path d="M4.5 16.5c3-4.5 5.5-4.5 7.5-1.5 2-2.5 4.5-2.5 7.5.5"/><circle cx="15.2" cy="8.8" r="1.9" fill="var(--accent, currentColor)" stroke="none"/></svg></span>
-          <span class="tag tag-tier-1">Companion Showcase</span>
-        </div>
-        <h3>gallery</h3>
-        <p>Comprehensive example code, direct MicroPython WebAssembly demos, board configurations, and multi-interpreter showcase benchmarks.</p>
-        <span class="go">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
-      </a>
-    </div>
-
-    <!-- Tier 2 Section -->
-    <div class="section-head" style="margin-top: 40px;">
-      <h2><span class="tier-dot tier-dot-2">2</span>Python Framebuffers & GUI Toolkits</h2>
-      <span class="hint">Pure Python on any Python 3 host; pygraphics adds native wheels for Linux x86_64, Windows, Android and Pyodide.</span>
-    </div>
-    <div class="grid">
-      <a class="card card-tier-2" href="/pygraphics/">
-        <div class="card-top">
-          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3c-4.5 5-4.5 13 0 18M12 3c4.5 5 4.5 13 0 18"/><path d="M3.2 12q8.8 2.4 17.6 0" stroke="var(--accent, currentColor)"/></svg></span>
-          <span class="tag tag-tier-2">0-Dependency</span>
-        </div>
-        <h3>pygraphics</h3>
-        <p>Native C and pure-Python 2D graphics library with drawing primitives, bitmap font rendering, paletted surface blitting, and area-dirtying pipelines.</p>
-        <span class="go">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        <p>Studio and guitar-pedal effects: compressors, EQs, reverbs, delays, drive and amps, in pure Python on audiodsp.</p>
+        <span class="go">Open <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
 
       <a class="card card-tier-2" href="/palettes/">
         <div class="card-top">
           <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5c-5.3 0-9.5 4.2-9.5 9.5s4.2 9.5 9.5 9.5c1.1 0 2-.9 2-2 0-.6-.3-1-.3-1.6 0-.9.8-1.6 1.7-1.6H17c2.5 0 4.5-2 4.5-4.6 0-5-4.2-9.2-9.5-9.2z"/><circle cx="8" cy="8" r="1.4" fill="var(--accent, currentColor)" stroke="none"/><circle cx="13.5" cy="6.5" r="1.4" fill="var(--accent, currentColor)" stroke="none"/><circle cx="17.3" cy="10.3" r="1.4" fill="var(--accent, currentColor)" stroke="none"/><circle cx="6.5" cy="12.8" r="1.4" fill="var(--accent, currentColor)" stroke="none"/></svg></span>
-          <span class="tag tag-tier-2">Color Engine</span>
+          <span class="tag tag-tier-2">Colour</span>
         </div>
         <h3>palettes</h3>
-        <p>Color management library with RGB565 / RGB888 output, an HSV color wheel, RGB color cubes, Material Design swatches, and Win16 color names.</p>
-        <span class="go">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        <p>Colour wheels, colour cubes, Material Design swatches and RGB565 conversion.</p>
+        <span class="go">Open <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
 
-      <a class="card card-tier-2" href="/pdwidgets/">
+      <a class="card card-tier-2" href="https://github.com/PyDevices/omnipython/tree/main/packages/iconkit">
         <div class="card-top">
-          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="17" height="17" rx="4.5"/><path d="M3.5 9.5h17M9.5 9.5v11"/><path d="M7 6.5h3.5" stroke="var(--accent, currentColor)"/></svg></span>
-          <span class="tag tag-tier-2">Pure-Python UI</span>
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="7" r="3.3"/><rect x="13.7" y="3.7" width="6.6" height="6.6" rx="2.2"/><path d="M7 14.2l3.3 5.6H3.7z"/><path d="M17 13.6v6.8M13.6 17h6.8" stroke="var(--accent, currentColor)"/></svg></span>
+          <span class="tag tag-tier-2">Icons</span>
         </div>
-        <h3>pdwidgets</h3>
-        <p>A complete UI widget framework in Python with no C: buttons, sliders, progress bars, labels and event routing on OmniPython screens. It demonstrates that the core can carry a UI framework; for an interface you ship, use LVGL. Not in release firmware: `mip install pdwidgets`.</p>
-        <span class="go">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
-      </a>
-    </div>
-
-    <!-- Tier 3 Section -->
-    <div class="section-head" style="margin-top: 40px;">
-      <h2><span class="tier-dot tier-dot-3">3</span>LVGL Native Extensions & Binding Generator</h2>
-      <span class="hint">Single-source LVGL C header binding generator and native interpreter modules.</span>
-    </div>
-    <div class="grid">
-      <a class="card card-tier-3" href="/omnipython-lvgl/">
-        <div class="card-top">
-          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="7" height="7" rx="2.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="2.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="2.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="2.5" fill="var(--accent, currentColor)" stroke="var(--accent, currentColor)"/></svg></span>
-          <span class="tag tag-tier-3">LVGL for Python</span>
-        </div>
-        <h3>omnipython-lvgl</h3>
-        <p>LVGL v9 for Python: one binding generator turns LVGL's C headers into a MicroPython module, a CircuitPython module and a CPython wheel, so a program imports lvgl the same way on a desktop and on both kinds of board.</p>
-        <span class="go">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
-      </a>
-    </div>
-
-    <!-- Tier 4 Section -->
-    <div class="section-head" style="margin-top: 40px;">
-      <h2><span class="tier-dot tier-dot-4">4</span>App Hosts & Mobile</h2>
-      <span class="hint">Deploy PyDevices apps directly to desktop browsers or mobile APKs.</span>
-    </div>
-    <div class="grid">
-      <a class="card card-tier-4" href="/pyscript-template/">
-        <div class="card-top">
-          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="3.5" width="19" height="14" rx="4"/><path d="M8 21h8M12 17.5V21M7.5 8.5h6"/><path d="M7.5 12.5h3.5" stroke="var(--accent, currentColor)"/></svg></span>
-          <span class="tag tag-tier-4">PWA Template</span>
-        </div>
-        <h3>pyscript-template</h3>
-        <p>Progressive Web App starter template repository for deploying offline-capable client-side OmniPython applications on GitHub Pages.</p>
-        <span class="go">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
-      </a>
-
-      <a class="card card-tier-4" href="/android-template/">
-        <div class="card-top">
-          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6.5" y="2.5" width="11" height="19" rx="3.5"/><path d="M10.8 18.3h2.4"/><path d="M10.7 8.3v4.4l3.4-2.2z" stroke="var(--accent, currentColor)"/></svg></span>
-          <span class="tag tag-tier-4">Android APK</span>
-        </div>
-        <h3>android-template</h3>
-        <p>Pre-configured python-for-android build recipes and Buildozer project template for packaging OmniPython applications into native Android APKs.</p>
-        <span class="go">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
-      </a>
-    </div>
-
-    <!-- Tier 5 Section -->
-    <div class="section-head" style="margin-top: 40px;">
-      <h2><span class="tier-dot tier-dot-5">5</span>Developer Tools & Infrastructure</h2>
-      <span class="hint">MIP package indexing, multi-usermod builds, and serial/FTP IDE extensions.</span>
-    </div>
-    <div class="grid">
-      <a class="card card-tier-5" href="https://pydevices.com/mcuctl/">
-        <div class="card-top">
-          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="12" rx="3.5"/><path d="M9 7.5h6M9 11h3.5"/><path d="M12 15v3c0 3.2-5 3.2-5 .2 0-2 3-2 3-.2" stroke="var(--accent, currentColor)"/></svg></span>
-          <span class="tag tag-tier-5">IDE Extension</span>
-        </div>
-        <h3>mcuctl</h3>
-        <p>Connect MicroPython and CircuitPython boards from VS Code, Cursor, or the CLI, over USB or Wi-Fi: dual-pane file transfer, in-editor REPL, firmware builds and flashing, mip/circup, plus RPC and an optional browser PWA.</p>
-        <span class="go">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        <h3>iconkit</h3>
+        <p>Material Design icons kept in flash, drawn in LVGL or pygraphics.</p>
+        <span class="go">Open <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
 
       <a class="card card-tier-5" href="/omnipython-builds/">
         <div class="card-top">
           <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6.5" y="6.5" width="11" height="11" rx="3"/><path d="M9.8 3v3.5M14.2 3v3.5M9.8 17.5V21M14.2 17.5V21M3 9.8h3.5M3 14.2h3.5M17.5 9.8H21M17.5 14.2H21"/><circle cx="12" cy="12" r="1.7" fill="var(--accent, currentColor)" stroke="none"/></svg></span>
-          <span class="tag tag-tier-5">Runtime Overlay</span>
+          <span class="tag tag-tier-5">Firmware</span>
         </div>
         <h3>omnipython-builds</h3>
-        <p>The OmniPython patch queue for MicroPython, kept like a distribution keeps one: an ordered, provenance-tracked patch series over the pinned upstream (MicroPython v1.30.0-preview-160), with presets, boards and variants that build PyDevices modules into firmware with upstream's own make.</p>
-        <span class="go">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        <p>Builds MicroPython and CircuitPython firmware with OmniPython inside, the desktop interpreters and the WebAssembly runtime.</p>
+        <span class="go">Open <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
 
-      <a class="card card-tier-5" href="https://workbench.pydevices.com/">
+      <a class="card card-tier-4" href="/pyscript-template/">
         <div class="card-top">
-          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4" width="19" height="16" rx="4.5"/><path d="M9.8 9.5L7.3 12l2.5 2.5M14.2 9.5l2.5 2.5-2.5 2.5" stroke="var(--accent, currentColor)"/></svg></span>
-          <span class="tag tag-tier-5">Browser IDE</span>
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="3.5" width="19" height="14" rx="4"/><path d="M8 21h8M12 17.5V21M7.5 8.5h6"/><path d="M7.5 12.5h3.5" stroke="var(--accent, currentColor)"/></svg></span>
+          <span class="tag tag-tier-4">Web app</span>
         </div>
-        <h3>workbench</h3>
-        <p>A ViperIDE fork with a built-in WebAssembly MicroPython simulator: edit, run, and debug OmniPython code against a simulated board entirely in the browser, no hardware required.</p>
-        <span class="go">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        <h3>pyscript-template</h3>
+        <p>A starting point for an OmniPython web app that works offline, published on GitHub Pages.</p>
+        <span class="go">Open <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
 
-      <a class="card card-tier-5" href="https://pydevices.com/mpvst/">
+      <a class="card card-tier-4" href="/android-template/">
         <div class="card-top">
-          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 17.5V6.3q0-.8.8-1l9-1.8q1.2-.2 1.2 1V15.5"/><g stroke="var(--accent, currentColor)"><circle cx="6.3" cy="17.5" r="2.7"/><circle cx="18.3" cy="15.5" r="2.7"/></g></svg></span>
-          <span class="tag tag-tier-5">VST3 Plug-in</span>
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6.5" y="2.5" width="11" height="19" rx="3.5"/><path d="M10.8 18.3h2.4"/><path d="M10.7 8.3v4.4l3.4-2.2z" stroke="var(--accent, currentColor)"/></svg></span>
+          <span class="tag tag-tier-4">Android app</span>
         </div>
-        <h3>mpvst</h3>
-        <p>Programmable VST3 instruments and effects: every audioinstruments instrument and audioeffects effect as a named plug-in, each instance running its Python in a sidecar process. Installers for Windows and Linux; nothing has to be built.</p>
-        <span class="go">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        <h3>android-template</h3>
+        <p>Package an OmniPython app as an Android APK.</p>
+        <span class="go">Open <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      </a>
+
+      <a class="card card-tier-2" href="/pdwidgets/">
+        <div class="card-top">
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="17" height="17" rx="4.5"/><path d="M3.5 9.5h17M9.5 9.5v11"/><path d="M7 6.5h3.5" stroke="var(--accent, currentColor)"/></svg></span>
+          <span class="tag tag-tier-2">Demonstration</span>
+        </div>
+        <h3>pdwidgets</h3>
+        <p>A widget toolkit in pure Python, showing that the core can carry a UI framework. For an interface you ship, use LVGL.</p>
+        <span class="go">Open <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
     </div>
   <!-- PYDEVICES-PORTAL-GRIDS: END -->
@@ -252,7 +242,7 @@
        never clobbers it. Plain HTML on the site's own tokens, so a palette
        or theme change reaches it with no script. -->
   <style>
-    .arch{display:grid;grid-template-columns:1fr 250px;gap:18px;align-items:start}
+    .arch{display:grid;grid-template-columns:1fr;gap:18px;align-items:start}
     .arch .stack{display:flex;flex-direction:column}
     .arch .row{border:1px solid var(--border);background:var(--bg-soft);border-radius:12px;padding:12px 16px}
     .arch .row.program{border-style:dashed;text-align:center}
@@ -269,17 +259,13 @@
     .arch .cells{display:grid;gap:10px}.arch .cells.three{grid-template-columns:repeat(3,1fr)}.arch .cells.four{grid-template-columns:repeat(4,1fr)}
     .arch .cell{border:1px solid var(--border);border-radius:9px;padding:9px 10px;background:var(--panel);text-align:center}
     .arch .cell b{display:block;font-weight:600;font-size:14px}.arch .cell span{color:var(--ink-soft);font-size:12px}
-    .arch .tools{border:1px solid var(--border);border-radius:12px;background:var(--bg-soft);padding:12px 14px}
-    .arch .tools h3{margin:0 0 4px 0;font-size:15px;color:var(--indigo)}.arch .tools .sub{margin:0 0 10px 0;display:block}
-    .arch .tool{border:1px solid var(--border);background:var(--panel);border-radius:9px;padding:8px 10px;margin-bottom:8px}
-    .arch .tool b{display:block;font-size:13.5px;font-weight:600}.arch .tool span{font-size:12px;color:var(--ink-soft)}
     @media (max-width: 900px){.arch{grid-template-columns:1fr}.arch .groups{grid-template-columns:1fr 1fr}.arch .cells.four{grid-template-columns:1fr 1fr}}
     @media (max-width: 560px){.arch .groups,.arch .cells.three,.arch .cells.four{grid-template-columns:1fr}}
   </style>
   <section class="wrap" style="margin: 60px auto 20px auto; max-width: 1200px; padding: 0 20px;">
     <div class="section-head" style="text-align: center; margin-bottom: 30px;">
       <h2>Architecture &amp; Layers</h2>
-      <span class="hint">How a program reaches the hardware: the OmniPython libraries it imports, the Python it runs on, and the host underneath. The tools stand beside the stack.</span>
+      <span class="hint">How a program reaches the hardware: the OmniPython libraries it imports, the Python it runs on, and the host underneath.</span>
     </div>
 <div class="arch">
     <div class="stack">
@@ -306,18 +292,14 @@
       <div class="cell"><b>Browser</b><span>WebAssembly, Pyodide</span></div>
       <div class="cell"><b>Android</b><span>phones and tablets</span></div></div></div>
     </div>
-    <div class="tools"><h3>PyDevices tools</h3><span class="sub">for building, flashing and running</span>
-     <div class="tool"><b>MCU Control</b><span>CLI, VS Code, Desktop: files, REPL, held sessions, flashing</span></div>
-     <div class="tool"><b>Workbench</b><span>a zero-install link, with a simulator</span></div>
-     <div class="tool"><b>mpvst</b><span>the stack inside a DAW</span></div>
-     <div class="tool"><b>Firmware and interpreters</b><span>MicroPython and CircuitPython with OmniPython built in; the desktop builds</span></div>
-     <div class="tool"><b>Examples and the gallery</b><span>apps you can copy, run in a tab</span></div>
-    </div>
 </div>
-    <p style="margin:14px 0 0 0;color:var(--muted);font-size:13px">OmniPython is made by PyDevices.</p>
   </section>
 
   </main>
+
+  <!-- PYDEVICES-PORTAL-TOOLS: START -->
+  <p class="portal-tools wrap">Looking for the board tool or the audio plug-in? MCU Control and mpvst are made by PyDevices, like Workbench, at <a href="https://pydevices.com/">pydevices.com</a>.</p>
+  <!-- PYDEVICES-PORTAL-TOOLS: END -->
 
   <div id="pydevices-site-footer"></div>
 
