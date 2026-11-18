@@ -4,8 +4,8 @@
 (function () {
   'use strict';
 
-  var RELEASES = 'https://github.com/PyDevices/micropython-pydevices/releases/download/';
-  var REPO = 'PyDevices/micropython-pydevices';
+  var RELEASES = 'https://github.com/PyDevices/omnipython-builds/releases/download/';
+  var REPO = 'PyDevices/omnipython-builds';
   var INTERP_RELEASES = 'https://github.com/PyDevices/pydevices/releases/download/';
   var FLASH_GUIDE = 'https://github.com/' + REPO + '/blob/main/docs/guides/flash-a-board.md';
   var MIP = 'https://pydevices.github.io/mip/';
@@ -91,10 +91,14 @@
 
   function renderPins() {
     var box = clear($('fw-pins'));
-    var rows = [['MicroPython', doc.pins.UPSTREAM]];
-    Object.keys(doc.pins['deps.lock']).forEach(function (k) { rows.push([k, doc.pins['deps.lock'][k]]); });
-    Object.keys(doc.pins['modules.lock']).forEach(function (k) { rows.push([k + ' (module)', doc.pins['modules.lock'][k]]); });
-    if (doc.pins['lvgl-circuitpython']) rows.push(['lvgl-circuitpython (module)', doc.pins['lvgl-circuitpython']]);
+    // One entry per pin, as DEPENDENCIES.lock names them: {commit, tag} for a
+    // checkout, {version} for a downloaded archive.
+    var rows = [];
+    Object.keys(doc.pins).forEach(function (k) {
+      var p = doc.pins[k];
+      var v = p.tag ? p.tag + ' (' + p.commit.slice(0, 12) + ')' : p.commit ? p.commit.slice(0, 12) : p.version;
+      rows.push([k, v]);
+    });
     var t = h('table', { class: 'fw-table' });
     rows.forEach(function (r) {
       t.appendChild(h('tr', {}, h('th', { text: r[0] }), h('td', { class: 'hash', text: r[1] })));
@@ -294,7 +298,7 @@
   }
 
   function fileCli(text, line) {
-    var box = clear($('fw-file-mpftp'));
+    var box = clear($('fw-file-cli'));
     box.appendChild(h('p', {}, text));
     box.appendChild(pre(line));
   }
@@ -322,7 +326,7 @@
       return;
     }
     if (head.image && !head.chip) {
-      fileNote(name + ' is for a chip this page does not list. mpftp and esptool can write it: both read the chip from the file.');
+      fileNote(name + ' is for a chip this page does not list. mcuctl and esptool can write it: both read the chip from the file.');
       return;
     }
     if (!head.image && !head.padded) {
@@ -362,8 +366,8 @@
       pre('esptool --chip ' + chip + ' --port COM3 write-flash ' + offset + ' ' + arg)));
     ol.appendChild(h('li', {}, 'Coming from another firmware, or want a clean board? Erase the flash first, then write as above (this removes your files):',
       pre('esptool --chip ' + chip + ' --port COM3 erase-flash')));
-    fileCli('mpftp writes the same file from a terminal, and reads the chip and the offset from the file itself:',
-      'mpftp firmware flash --port esp32 --artifact ' + arg + ' -d COM3');
+    fileCli('mcuctl writes the same file from a terminal, and reads the chip and the offset from the file itself:',
+      'mcuctl firmware flash --port esp32 --artifact ' + arg + ' -d COM3');
   }
 
   function renderFileUf2(name) {
@@ -374,8 +378,8 @@
       'hold BOOTSEL while you plug it into USB; on most other boards, double-tap RESET. ' +
       'A drive appears, named RPI-RP2, RP2350 or after the board.'));
     ol.appendChild(h('li', {}, 'Copy ' + name + ' onto that drive. The board restarts by itself when the copy finishes.'));
-    fileCli('mpftp finds the bootloader drive and copies the file for you. Give your board\'s port: rp2, samd or esp32.',
-      'mpftp firmware flash --port rp2 --uf2 --artifact ' + shellName(name));
+    fileCli('mcuctl finds the bootloader drive and copies the file for you. Give your board\'s port: rp2, samd or esp32.',
+      'mcuctl firmware flash --port rp2 --uf2 --artifact ' + shellName(name));
   }
 
   function setupFile() {
