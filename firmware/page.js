@@ -24,6 +24,8 @@
   var ROLES = {
     flash: 'Flash image: the file to write',
     wifi: 'Wi-Fi firmware: the file to write first',
+    romfs: 'ROMFS image: the file to write second',
+    'romfs-files': 'The OmniPython libraries for the ROMFS, as a zip to unpack and deploy',
     uf2: 'UF2: the file to copy',
     app: 'App image only',
     partitions: 'Partition table',
@@ -58,11 +60,17 @@
   function fileOf(b, role) { return b.files.filter(function (f) { return f.role === role; })[0]; }
   function mainFile(b) { return fileOf(b, 'flash') || fileOf(b, 'uf2'); }
   function isEsp(b) { return b.flash_offset != null && /^esp32/.test(b.chip); }
+  // Boards whose only USB port is the chip's own (it shows up as an ACM/CDC serial port, not a
+  // CH340/CH343/CP210x bridge), so esptool must be shown how to put them in download mode. The
+  // others have a bridge port marked UART as well; their native port needs the same steps.
+  var NATIVE_ONLY = { 'mp-s3': 1, 'mp-s3-8mb': 1, 'mp-s3-octal': 1, 'mp-s3-tembed': 1, 'mp-p4-eye': 1,
+                      'cp-s3-qualia': 1, 'cp-twatch': 1 };
+  function nativeOnly(b) { return NATIVE_ONLY[b.id] === 1; }
   function isGiga(b) { return b.chip === 'stm32h747'; }
   function canBrowser(b) { return isEsp(b) && BROWSER_INSTALL[b.chip] === true; }
   function local(f) { return 'files/' + f.name; }
   function remote(f) { return RELEASES + doc.tag + '/' + f.name; }
-  function fileHref(f) { return f.role === 'flash' || f.role === 'wifi' || f.role === 'uf2' ? local(f) : remote(f); }
+  function fileHref(f) { return f.role === 'flash' || f.role === 'wifi' || f.role === 'romfs' || f.role === 'romfs-files' || f.role === 'uf2' ? local(f) : remote(f); }
 
   function get(url, optional) {
     return fetch(url, { cache: 'no-cache' }).then(function (r) {
@@ -120,11 +128,20 @@
     renderBuild(b);
   }
 
+  // Where this build keeps the board's files. The page can not know what a board ran before, so it says
+  // what this set does and what to do about a difference.
+  function fsNote(b) {
+    if (!b.fs_offset) return '';
+    return ' Its filesystem is ' + Math.round(b.fs_bytes / 1024).toLocaleString('en-US') + ' KB at ' + b.fs_offset +
+      '. A board that ran a build with its filesystem somewhere else, such as a different release or a build from a branch, ' +
+      'comes up with an empty one, so copy your files off first. firmware.json and the Release notes list this for every board.';
+  }
+
   function renderBuild(b) {
     var f = mainFile(b);
     $('fw-out').hidden = false;
     $('fw-build-note').textContent = kind(b) + ' ' + b.interpreter_version.replace(/-dirty$/, '') +
-      ' with ' + modules(b) + '. Flash image ' + mb(f.size) + '.';
+      ' with ' + modules(b) + '. Flash image ' + mb(f.size) + '.' + fsNote(b);
     renderInstall(b);
     renderSteps(b);
     renderFiles(b);
@@ -166,6 +183,28 @@
     return btn;
   }
 
+  function downloadModeStep(b) {
+    var lead = nativeOnly(b)
+      ? 'This board has no USB-serial chip: its USB port goes straight to the ' + b.chip.replace('esp32', 'ESP32-').toUpperCase() +
+        ', and esptool usually can not reset it into the bootloader on its own. Put it in download mode before you run the line above. '
+      : 'If this board has a port marked UART, use that one and skip this step. If you use its native USB port instead, or esptool says it can not connect, put the board in download mode. ';
+    return h('li', {}, lead,
+      h('strong', {}, 'To enter download mode: '),
+      'hold BOOT (the button marked BOOT, IO0 or 0), press and release RESET, then release BOOT. ' +
+      'If the board has no RESET button, unplug it, hold BOOT, plug it in, then release BOOT. ',
+      h('strong', {}, 'Its port changes: '),
+      'in download mode the board shows up as a different USB device, and the port\'s number or name can change, ' +
+      'so find it again. esptool installs pyserial, so in the same virtual environment this lists the ports with their USB IDs; ' +
+      'a board in download mode is ', code('303A:1001'), ' (the same ID with a name like USB JTAG/serial debug unit), ' +
+      'a running OmniPython board is ', code('303A:4001'), ':',
+      pre('python -m serial.tools.list_ports -v'),
+      'On Windows, Device Manager under Ports (COM & LPT) shows the same change: unplug and replug while it is open. ' +
+      'On Linux, ', code('ls /dev/ttyACM*'), ' before and after, or ', code('sudo dmesg | tail'), '. ' +
+      'On macOS, ', code('ls /dev/cu.usbmodem*'), ' before and after. Use the new name as ', code('--port'), '. ',
+      'When esptool finishes, a native-USB board may stay in download mode: press RESET, or add ', code('--after watchdog-reset'),
+      ' to the write line, and the board starts the new firmware. After that it comes back on its first port.');
+  }
+
   function renderSteps(b) {
     var ol = clear($('fw-steps'));
     var f = mainFile(b);
@@ -178,12 +217,10 @@
       steps.push(h('li', {}, link(local(f), 'Download ' + name), ' (' + mb(f.size) + '), then write it. ' +
         'The port is COM3 or similar on Windows, /dev/ttyACM0 or /dev/ttyUSB0 on Linux, /dev/cu.usbmodem... on macOS. ' +
         'On a board with two USB ports, use the one wired to the serial chip, usually marked UART. ',
-        'If esptool can not reach the board and its USB port goes straight to the chip ' +
-        '(the LilyGO T-Embed S3 and the native port of the ESP32-S3-Touch-LCD-7 do), put it in download mode first: ' +
-        'hold BOOT, press and release RESET, then release BOOT. The port\'s COM number can change in download mode, so check which port it is now. ',
         'If your board\'s USB-serial bridge takes a faster speed, add ', code('--baud 921600'),
         ' after the port to shorten the write; the line below works without it, only slower.',
         pre('esptool --chip ' + b.chip + ' --port COM3 write-flash ' + b.flash_offset + ' ' + name)));
+      steps.push(downloadModeStep(b));
       steps.push(h('li', {}, 'Coming from another firmware, or want a clean board? Erase the flash first, then write as above (this removes your files):',
         pre('esptool --chip ' + b.chip + ' --port COM3 erase-flash')));
     } else if (isGiga(b)) {
@@ -194,12 +231,18 @@
         ' at its REPL, or double-tap RESET.'));
       steps.push(h('li', {}, link(local(wifi), 'Download ' + wifi.name), ' (' + mb(wifi.size) + ') and write the Wi-Fi firmware first:',
         pre('dfu-util -a 1 ' + dfu + ' -s ' + b.wifi_offset + ' -D ' + wifi.name)));
+      var romfs = fileOf(b, 'romfs');
+      if (romfs) {
+        steps.push(h('li', {}, link(local(romfs), 'Download ' + romfs.name), ' (' + mb(romfs.size) + ') and write the ROMFS image, ' +
+          'which holds the firmware\'s own Python modules (asyncio, webrepl, mip, requests and the rest). Write it with every update:',
+          pre('dfu-util -a 1 ' + dfu + ' -s ' + b.romfs_offset + ' -D ' + romfs.name)));
+      }
       steps.push(h('li', {}, link(local(f), 'Download ' + name), ' (' + mb(f.size) + ') and write the main firmware. ' +
         'The board restarts by itself when it finishes.',
         pre('dfu-util -a 0 ' + dfu + ' -s ' + b.flash_offset + ':leave -D ' + name)));
       steps.push(h('li', {}, 'The Wi-Fi firmware only changes when its driver does, so after the first time you can write the main firmware alone. ' +
         'The main firmware overwrites any program on the board\'s M4 core.'));
-      steps.push(h('li', {}, 'The OmniPython libraries do not fit in this firmware beside LVGL. Put them in the board\'s ROMFS partition afterwards; ',
+      steps.push(h('li', {}, 'The OmniPython libraries do not fit in this firmware beside LVGL. To add them to the ROMFS image, unzip the romfs-files zip from the table below into the folder you deploy, because a deploy replaces the whole partition; ',
         link(FLASH_GUIDE + '#stm32-arduino-giga-r1-wifi', 'the flash guide'), ' has the steps.'));
     } else {
       steps.push(h('li', {}, 'Put the board in its bootloader: hold BOOTSEL while you plug it into USB. ' +
@@ -226,12 +269,12 @@
     var t = clear($('fw-files'));
     t.appendChild(h('tr', {}, h('th', { text: 'What' }), h('th', { text: 'File' }),
       h('th', { text: 'Size' }), h('th', { text: 'sha256' })));
-    var order = ['flash', 'wifi', 'uf2', 'app', 'partitions', 'elf', 'map'];
+    var order = ['flash', 'wifi', 'romfs', 'romfs-files', 'uf2', 'app', 'partitions', 'elf', 'map'];
     var onRelease = false;
     order.forEach(function (role) {
       var f = fileOf(b, role);
       if (!f) return;
-      var here = role === 'flash' || role === 'wifi' || role === 'uf2';
+      var here = role === 'flash' || role === 'wifi' || role === 'romfs' || role === 'romfs-files' || role === 'uf2';
       if (!here) onRelease = true;
       t.appendChild(h('tr', {}, h('td', { text: ROLES[role] }),
         h('td', {}, link(fileHref(f), f.name)),
