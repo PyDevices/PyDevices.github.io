@@ -4381,7 +4381,9 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
   var _mp_js_random_u32 = () =>
           globalThis.crypto.getRandomValues(new Uint32Array(1))[0];
 
-  var _mp_js_ticks_ms = () => Date.now() - MP_JS_EPOCH;
+  var _mp_js_ticks_ms = () => (performance.now() - MP_JS_EPOCH) | 0;
+
+  var _mp_js_ticks_us = () => ((performance.now() - MP_JS_EPOCH) * 1000) | 0;
 
   var _mp_js_time_ms = () => Date.now();
 
@@ -5210,13 +5212,28 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
 
   var _omnipython_sleep_ms = (ms) => Asyncify.handleSleep((wakeUp) => setTimeout(wakeUp, Math.max(0, ms)));
 
-  var _omnipython_timer_cancel = (id) => { const t=omnipython_state.timers.get(id); if (t) { t.periodic ? clearInterval(t.handle) : clearTimeout(t.handle); omnipython_state.timers.delete(id); } };
+  
+  var omnipython_drop_fired = (id) => {
+          const fired = omnipython_state.firedTimers;
+          for (let i = fired.length - 1; i >= 0; i--) if (fired[i] === id) fired.splice(i, 1);
+      };
+  var _omnipython_timer_cancel = (id) => { const t=omnipython_state.timers.get(id); if (t) { t.periodic ? clearInterval(t.handle) : clearTimeout(t.handle); omnipython_state.timers.delete(id); } omnipython_drop_fired(id); };
 
-  var _omnipython_timer_poll = () => omnipython_state.firedTimers.length ? omnipython_state.firedTimers.shift() : -1;
+  var _omnipython_timer_poll = () => {
+          const state = omnipython_state;
+          if (!state.firedTimers.length) return -1;
+          const id = state.firedTimers.shift();
+          state.timerDeliveries.push({id, at:performance.now()});
+          if (state.timerDeliveries.length > 512) state.timerDeliveries.shift();
+          return id;
+      };
 
+  
   var _omnipython_timer_start = (id, delay, periodic) => {
           const state = omnipython_state;
-          const old = state.timers.get(id); if (old) clearTimeout(old.handle);
+          const old = state.timers.get(id); if (old) old.periodic ? clearInterval(old.handle) : clearTimeout(old.handle);
+          // A restart drops the old timer's firings that are still queued.
+          omnipython_drop_fired(id);
           const fire = () => {
               state.timerFirings.push({id, at:performance.now()});
               if (state.timerFirings.length > 512) state.timerFirings.shift();
@@ -5379,7 +5396,7 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
   FS.preloadFile = FS_preloadFile;
   FS.staticInit();;
 if (globalThis.crypto === undefined) { globalThis.crypto = require('crypto'); };
-var MP_JS_EPOCH = Date.now();
+var MP_JS_EPOCH = performance.now();
 // End JS library code
 
 // include: postlibrary.js
@@ -5839,6 +5856,7 @@ missingLibrarySymbols.forEach(missingLibrarySymbol)
   'omnipython_rgba',
   'omnipython_paint',
   'omnipython_export_host',
+  'omnipython_drop_fired',
   'omnipython_enable_audio',
   'omnipython_disarm_audio_unlock',
   'omnipython_arm_audio_unlock',
@@ -6237,6 +6255,8 @@ var wasmImports = {
   mp_js_random_u32: _mp_js_random_u32,
   /** @export */
   mp_js_ticks_ms: _mp_js_ticks_ms,
+  /** @export */
+  mp_js_ticks_us: _mp_js_ticks_us,
   /** @export */
   mp_js_time_ms: _mp_js_time_ms,
   /** @export */
