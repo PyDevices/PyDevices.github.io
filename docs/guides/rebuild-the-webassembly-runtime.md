@@ -30,7 +30,8 @@ before you push.
 
 The watch on the front page, and the hero on the apps page, boot a second
 runtime: every app of the [apps repository](https://github.com/PyDevices/apps)
-frozen in. It isn't kept here. The pages load it from
+frozen in, the same build that boots Home and Watch everywhere else. It
+isn't kept here. The pages load it from
 <https://apps.omnipython.org/>, where omnipython-builds publishes it with
 each apps release, so there is nothing to rebuild in this repository. How
 that build is made and published is in its

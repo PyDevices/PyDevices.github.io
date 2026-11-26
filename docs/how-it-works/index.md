@@ -33,11 +33,13 @@ runtime is one shared copy so that every page downloads it once. Its
 provenance file says which patches and sources it was built from. The runtime has the
 PyDevices stack frozen in, so a demo imports it with nothing to install.
 
-The front page's watch is the other kind of hero: a whole home screen. Its
-database entry names a `home` rather than an `app`, and the page boots the
+The front page's watch and the apps page's Home are the other kind of hero:
+a whole home screen. The database entry names a `home` rather than an `app`,
+and the page boots the
 apps' launcher from the all-apps runtime that <https://apps.omnipython.org/>
-publishes, which has every app frozen in. Only the apps the entry lists are offered, since most of
-the rest need hardware a browser hasn't got.
+publishes, which has every app frozen in. When the entry lists apps, only
+those are offered: the front page lists the few that need no hardware a
+browser hasn't got.
 
 ## Publishing
 
