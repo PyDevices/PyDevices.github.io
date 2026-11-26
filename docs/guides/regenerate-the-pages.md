@@ -26,8 +26,8 @@ python3 dotgithub/scripts/generate_sites.py --only pygraphics
 ```
 
 ```
-=== Pure Harmonized PyDevices Site Generator (.github) ===
-[OK] Database valid: 25 repos across 6 tiers
+=== Site generator (.github) ===
+[OK] Database valid: 29 repos across 6 tiers
 [OK] Generated & Updated pygraphics (PyDevices.github.io/pygraphics/index.html)
 === Complete! Processed pygraphics only ===
 ```
