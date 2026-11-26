@@ -14,7 +14,7 @@ from the `.github` repository.
 | `install.sh` | The script behind `curl -fsSL https://omnipython.org/install.sh \| sh`. It clones `omnipython-builds` and checks the build tools. | By hand |
 | `assets/img/` | `logo.svg`, `logo-512.png`, `logo-avatar.png`, `favicon.ico`. | Copied from `.github` |
 | `assets/chrome/` | The shared stylesheet and scripts: `site.css`, `site-chrome.js`, `theme-toggle.js`, `hero-runtime.js`, `docs-runtime.js`. | Copied from `.github` |
-| `assets/apps/` | The pure-Python demo apps the heroes run. | Copied from `.github` |
+| `assets/apps/` | The pure-Python demo apps the other heroes run. | Copied from `.github` |
 | `pyscript-template/pwa/` | The offline PyScript app, mirrored from the `pyscript-template` repository. | Copied from `pyscript-template` |
 | `vendor/micropython/` | The WebAssembly MicroPython runtime and its provenance file. | [Rebuilt by hand](../guides/rebuild-the-webassembly-runtime.md) |
 | `tools/serve_local.py` | The [preview server](../get-started/install.md). | By hand |

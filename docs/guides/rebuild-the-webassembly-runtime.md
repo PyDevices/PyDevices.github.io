@@ -25,3 +25,14 @@ Check that `binary.sha256` in the provenance file equals
 `sha256sum vendor/micropython/micropython.wasm`, then
 [preview the site](../get-started/install.md) and open a page with a live demo
 before you push.
+
+## The all-apps runtime
+
+The watch on the front page and on the apps page boots a second
+runtime: every app of the [apps repository](https://github.com/PyDevices/apps)
+frozen in, the same build that boots Home and Watch everywhere else. It
+isn't kept here. The pages load it from
+<https://apps.omnipython.org/>, where omnipython-builds publishes it with
+each apps release, so there is nothing to rebuild in this repository. How
+that build is made and published is in its
+[guide](https://github.com/PyDevices/omnipython-builds/blob/main/docs/guides/build-the-all-apps-page.md).
