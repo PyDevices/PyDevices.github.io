@@ -5229,6 +5229,25 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
       };
 
   
+  
+  var omnipython_feed_repl = async () => {
+          const state = omnipython_state;
+          if (state.feedingRepl || !Module._mp_js_stdin_pending) return;
+          if (typeof Asyncify !== 'undefined' && Asyncify.currData) {
+              setTimeout(omnipython_feed_repl, 20);
+              return;
+          }
+          state.feedingRepl = true;
+          try {
+              if (!Module._mp_js_repl_started()) Module.ccall('mp_js_repl_init', 'null', [], []);
+              let c;
+              while ((c = Module._mp_js_stdin_rx_chr()) >= 0) {
+                  await Module.ccall('mp_js_repl_process_char', 'number', ['number'], [c], {async: true});
+              }
+          } finally {
+              state.feedingRepl = false;
+          }
+      };
   var _omnipython_timer_start = (id, delay, periodic) => {
           const state = omnipython_state;
           const old = state.timers.get(id); if (old) old.periodic ? clearInterval(old.handle) : clearTimeout(old.handle);
@@ -5245,6 +5264,9 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
                   state.firedTimers.push(id);
               }
               if (!periodic) state.timers.delete(id);
+              if (!state.feedingRepl && Module._mp_js_stdin_pending && Module._mp_js_stdin_pending()) {
+                  setTimeout(omnipython_feed_repl, 0);
+              }
           };
           const handle = periodic ? setInterval(fire, delay) : setTimeout(fire, delay);
           state.timers.set(id, {handle, periodic});
@@ -5857,6 +5879,7 @@ missingLibrarySymbols.forEach(missingLibrarySymbol)
   'omnipython_paint',
   'omnipython_export_host',
   'omnipython_drop_fired',
+  'omnipython_feed_repl',
   'omnipython_enable_audio',
   'omnipython_disarm_audio_unlock',
   'omnipython_arm_audio_unlock',
@@ -5905,7 +5928,7 @@ function js_check_existing(c_ref) { return proxy_js_check_existing(c_ref); }
 function js_get_error_info(jsref,out_name,out_message) { const error = proxy_js_ref[jsref]; proxy_convert_js_to_mp_obj_jsside(error.name, out_name); proxy_convert_js_to_mp_obj_jsside(error.message, out_message); }
 function js_then_resolve(ret_value,resolve) { const ret_value_js = proxy_convert_mp_to_js_obj_jsside(ret_value); const resolve_js = proxy_convert_mp_to_js_obj_jsside(resolve); resolve_js(ret_value_js); }
 function js_then_reject(ret_value,reject) { let ret_value_js; try { ret_value_js = proxy_convert_mp_to_js_obj_jsside(ret_value); } catch(error) { ret_value_js = error; } const reject_js = proxy_convert_mp_to_js_obj_jsside(reject); reject_js(ret_value_js); }
-function js_then_continue(jsref,py_resume,resolve,reject,out) { const py_resume_js = proxy_convert_mp_to_js_obj_jsside(py_resume); const resolve_js = proxy_convert_mp_to_js_obj_jsside(resolve); const reject_js = proxy_convert_mp_to_js_obj_jsside(reject); const ret = proxy_js_ref[jsref].then( (result) => { py_resume_js(result, null, resolve_js, reject_js); }, (reason) => { py_resume_js(null, reason, resolve_js, reject_js); }, ); proxy_convert_js_to_mp_obj_jsside(ret, out); }
+function js_then_continue(jsref,thenable,resolve,reject,out) { const thenable_js = proxy_convert_mp_to_js_obj_jsside(thenable); const resolve_js = proxy_convert_mp_to_js_obj_jsside(resolve); const reject_js = proxy_convert_mp_to_js_obj_jsside(reject); const ret = proxy_js_ref[jsref].then( (result) => { return thenable_js._resume(result, null, resolve_js, reject_js); }, (reason) => { return thenable_js._resume(null, reason, resolve_js, reject_js); }, ); proxy_convert_js_to_mp_obj_jsside(ret, out); }
 function create_promise(out_set,out_promise) { const out_set_js = proxy_convert_mp_to_js_obj_jsside(out_set); const promise = new Promise(out_set_js); proxy_convert_js_to_mp_obj_jsside(promise, out_promise); }
 
 // Imports from the Wasm binary.
@@ -5921,7 +5944,11 @@ var _proxy_convert_mp_to_js_obj_cside = Module['_proxy_convert_mp_to_js_obj_csid
 var _mp_js_do_exec = Module['_mp_js_do_exec'] = makeInvalidEarlyAccess('_mp_js_do_exec');
 var _mp_js_do_exec_async = Module['_mp_js_do_exec_async'] = makeInvalidEarlyAccess('_mp_js_do_exec_async');
 var _mp_js_repl_init = Module['_mp_js_repl_init'] = makeInvalidEarlyAccess('_mp_js_repl_init');
+var _mp_js_repl_started = Module['_mp_js_repl_started'] = makeInvalidEarlyAccess('_mp_js_repl_started');
+var _mp_js_stdin_pending = Module['_mp_js_stdin_pending'] = makeInvalidEarlyAccess('_mp_js_stdin_pending');
+var _mp_js_stdin_rx_chr = Module['_mp_js_stdin_rx_chr'] = makeInvalidEarlyAccess('_mp_js_stdin_rx_chr');
 var _mp_js_repl_process_char = Module['_mp_js_repl_process_char'] = makeInvalidEarlyAccess('_mp_js_repl_process_char');
+var _mp_js_repl_process_char_async = Module['_mp_js_repl_process_char_async'] = makeInvalidEarlyAccess('_mp_js_repl_process_char_async');
 var _mp_hal_get_interrupt_char = Module['_mp_hal_get_interrupt_char'] = makeInvalidEarlyAccess('_mp_hal_get_interrupt_char');
 var _proxy_c_init = Module['_proxy_c_init'] = makeInvalidEarlyAccess('_proxy_c_init');
 var _proxy_c_free_obj = Module['_proxy_c_free_obj'] = makeInvalidEarlyAccess('_proxy_c_free_obj');
@@ -6002,7 +6029,11 @@ function assignWasmExports(wasmExports) {
   assert(typeof wasmExports['mp_js_do_exec'] != 'undefined', 'missing Wasm export: mp_js_do_exec');
   assert(typeof wasmExports['mp_js_do_exec_async'] != 'undefined', 'missing Wasm export: mp_js_do_exec_async');
   assert(typeof wasmExports['mp_js_repl_init'] != 'undefined', 'missing Wasm export: mp_js_repl_init');
+  assert(typeof wasmExports['mp_js_repl_started'] != 'undefined', 'missing Wasm export: mp_js_repl_started');
+  assert(typeof wasmExports['mp_js_stdin_pending'] != 'undefined', 'missing Wasm export: mp_js_stdin_pending');
+  assert(typeof wasmExports['mp_js_stdin_rx_chr'] != 'undefined', 'missing Wasm export: mp_js_stdin_rx_chr');
   assert(typeof wasmExports['mp_js_repl_process_char'] != 'undefined', 'missing Wasm export: mp_js_repl_process_char');
+  assert(typeof wasmExports['mp_js_repl_process_char_async'] != 'undefined', 'missing Wasm export: mp_js_repl_process_char_async');
   assert(typeof wasmExports['mp_hal_get_interrupt_char'] != 'undefined', 'missing Wasm export: mp_hal_get_interrupt_char');
   assert(typeof wasmExports['proxy_c_init'] != 'undefined', 'missing Wasm export: proxy_c_init');
   assert(typeof wasmExports['proxy_c_free_obj'] != 'undefined', 'missing Wasm export: proxy_c_free_obj');
@@ -6079,7 +6110,11 @@ function assignWasmExports(wasmExports) {
   _mp_js_do_exec = Module['_mp_js_do_exec'] = createExportWrapper('mp_js_do_exec', 3);
   _mp_js_do_exec_async = Module['_mp_js_do_exec_async'] = createExportWrapper('mp_js_do_exec_async', 3);
   _mp_js_repl_init = Module['_mp_js_repl_init'] = createExportWrapper('mp_js_repl_init', 0);
+  _mp_js_repl_started = Module['_mp_js_repl_started'] = createExportWrapper('mp_js_repl_started', 0);
+  _mp_js_stdin_pending = Module['_mp_js_stdin_pending'] = createExportWrapper('mp_js_stdin_pending', 0);
+  _mp_js_stdin_rx_chr = Module['_mp_js_stdin_rx_chr'] = createExportWrapper('mp_js_stdin_rx_chr', 0);
   _mp_js_repl_process_char = Module['_mp_js_repl_process_char'] = createExportWrapper('mp_js_repl_process_char', 1);
+  _mp_js_repl_process_char_async = Module['_mp_js_repl_process_char_async'] = createExportWrapper('mp_js_repl_process_char_async', 1);
   _mp_hal_get_interrupt_char = Module['_mp_hal_get_interrupt_char'] = createExportWrapper('mp_hal_get_interrupt_char', 0);
   _proxy_c_init = Module['_proxy_c_init'] = createExportWrapper('proxy_c_init', 0);
   _proxy_c_free_obj = Module['_proxy_c_free_obj'] = createExportWrapper('proxy_c_free_obj', 1);
@@ -6243,6 +6278,8 @@ var wasmImports = {
   invoke_viiiffff,
   /** @export */
   invoke_viiii,
+  /** @export */
+  invoke_viiiii,
   /** @export */
   invoke_viiiiii,
   /** @export */
@@ -6497,6 +6534,17 @@ function invoke_viiii(index,a1,a2,a3,a4) {
   }
 }
 
+function invoke_viiiii(index,a1,a2,a3,a4,a5) {
+  var sp = stackSave();
+  try {
+    dynCall_viiiii(index,a1,a2,a3,a4,a5);
+  } catch(e) {
+    stackRestore(sp);
+    if (!(e instanceof EmscriptenEH)) throw e;
+    _setThrew(1, 0);
+  }
+}
+
 
 // include: postamble.js
 // === Auto-generated postamble setup entry stuff ===
@@ -6713,6 +6761,23 @@ export async function loadMicroPython(options) {
     }
     Module = await _createMicroPythonModule(Module);
     globalThis.Module = Module;
+    // On a jspi build, jsffi.run_sync() suspends until its promise is
+    // fulfilled or rejected.  But a KeyboardInterrupt must also end that
+    // wait.  The solution is to wrap the interrupt function.  While
+    // run_sync() is suspended, js_run_sync_wait (in modjsffi.c) also
+    // waits on Module.jspiInterrupt.  ccall finds this function by name
+    // on Module, so every caller gets the wrapped one.
+    const schedKeyboardInterrupt = Module._mp_sched_keyboard_interrupt;
+    Module._mp_sched_keyboard_interrupt = () => {
+        if (Module.jspiInterrupt) {
+            // run_sync() is suspended.  Wake it and let it raise the
+            // KeyboardInterrupt itself, so no other code can receive
+            // the interrupt first.
+            Module.jspiInterrupt.resolve();
+        } else {
+            schedKeyboardInterrupt();
+        }
+    };
     proxy_js_init();
     const pyimport = (name) => {
         const value = Module._malloc(3 * 4);
@@ -6790,6 +6855,10 @@ export async function loadMicroPython(options) {
             const buf = Module._malloc(len + 1);
             Module.stringToUTF8(code, buf, len + 1);
             const value = Module._malloc(3 * 4);
+            // On a jspi build this ccall returns a promise, because the
+            // code may suspend in jsffi.run_sync(); "value" is only valid
+            // once that promise is fulfilled.  On other builds the await
+            // passes the return value straight through.
             await Module.ccall(
                 "mp_js_do_exec_async",
                 "number",
@@ -6815,15 +6884,37 @@ export async function loadMicroPython(options) {
                 [chr],
             );
         },
-        // Needed if the GC/asyncify is enabled.
+        // Needed if the GC/asyncify is enabled.  On a jspi build the REPL
+        // may suspend in jsffi.run_sync(), so characters are processed one
+        // at a time: each ccall starts only after the previous one has
+        // finished, which queues anything typed while a line is suspended.
+        // The one exception is the interrupt character (Ctrl-C), which
+        // interrupts the suspended line at once instead of waiting.
         async replProcessCharWithAsyncify(chr) {
-            return Module.ccall(
-                "mp_js_repl_process_char",
-                "number",
-                ["number"],
-                [chr],
-                { async: true },
+            if (Module.jspiInterrupt) {
+                const interruptChar = Module.ccall(
+                    "mp_hal_get_interrupt_char",
+                    "number",
+                    [],
+                    [],
+                );
+                if (chr === interruptChar) {
+                    Module._mp_sched_keyboard_interrupt();
+                    return 0;
+                }
+            }
+            const previous = Module.replPending ?? Promise.resolve();
+            const current = previous.then(() =>
+                Module.ccall(
+                    "mp_js_repl_process_char_async",
+                    "number",
+                    ["number"],
+                    [chr],
+                    { async: true },
+                ),
             );
+            Module.replPending = current.catch(() => {});
+            return current;
         },
     };
 }
@@ -7162,27 +7253,44 @@ class PyProxyThenable {
         this._generation = globalThis.proxy_js_generation;
     }
 
-    then(resolve, reject) {
+    // Resume the generator with a value to receive ("send") or an
+    // exception to raise ("throw_"); the unused one is null.  "resolve"
+    // and "reject" settle the promise waiting on the generator.  The
+    // four arguments go to C in "values", which also carries the result
+    // back.  On a jspi build the ccall returns a promise, hence the await.
+    // An error from the resume (for example the generator yielding
+    // something that is not a promise) rejects the waiting promise.  It
+    // cannot be thrown instead: this function is async, so a throw
+    // would only reject its own, unobserved promise.
+    async _resume(send, throw_, resolve, reject) {
         if (this._generation !== globalThis.proxy_js_generation) {
             // The interpreter this generator belonged to is gone; its ref
             // would resolve to an arbitrary object in the current one.  The
             // promise machinery calls this spontaneously, so settle the
             // chain instead of throwing into it.
-            reject(
-                new Error("PyProxyThenable outlived its interpreter"),
-            );
+            reject(new Error("PyProxyThenable outlived its interpreter"));
             return undefined;
         }
-        const values = Module._malloc(3 * 3 * 4);
-        proxy_convert_js_to_mp_obj_jsside(resolve, values + 3 * 4);
-        proxy_convert_js_to_mp_obj_jsside(reject, values + 2 * 3 * 4);
-        Module.ccall(
-            "proxy_c_to_js_resume",
-            "null",
-            ["number", "pointer"],
-            [this._ref, values],
-        );
-        return proxy_convert_mp_to_js_obj_jsside_with_free(values);
+        try {
+            const values = Module._malloc(5 * 3 * 4);
+            proxy_convert_js_to_mp_obj_jsside(resolve, values + 1 * 3 * 4);
+            proxy_convert_js_to_mp_obj_jsside(reject, values + 2 * 3 * 4);
+            proxy_convert_js_to_mp_obj_jsside(send, values + 3 * 3 * 4);
+            proxy_convert_js_to_mp_obj_jsside(throw_, values + 4 * 3 * 4);
+            await Module.ccall(
+                "proxy_c_to_js_resume",
+                "null",
+                ["number", "pointer"],
+                [this._ref, values],
+            );
+            return proxy_convert_mp_to_js_obj_jsside_with_free(values);
+        } catch (error) {
+            reject(error);
+        }
+    }
+
+    then(resolve, reject) {
+        return this._resume(null, null, resolve, reject);
     }
 }
 /*
