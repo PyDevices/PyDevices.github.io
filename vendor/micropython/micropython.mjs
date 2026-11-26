@@ -4398,6 +4398,7 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
   audioEnabled:false,
   audioUnlock:null,
   microphoneEnabled:false,
+  microphoneWanted:false,
   audioEnd:0,
   audioSources:new Set,
   audioQueuedBytes:0,
@@ -4405,6 +4406,16 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
   mediaStream:null,
   mediaNode:null,
   processor:null,
+  route:{
+  out:"",
+  in:"",
+  camera:"",
+  },
+  routeErrors:{
+  out:null,
+  in:null,
+  },
+  camera:null,
   };
   var _omnipython_audio_clear = (input) => { const s=omnipython_state; if(input)s.inputFrames.length=0; else { for(const x of s.audioSources)x.stop(); s.audioSources.clear(); s.audioQueuedBytes=0; s.audioEnd=s.audioContext?.currentTime||0; } };
 
@@ -4418,7 +4429,7 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
           else signed?view.setInt32(p,Math.round(clamped*2147483647),little):view.setUint32(p,Math.round((clamped+1)*2147483647.5),little);
       };
   var _omnipython_audio_read = (ptr, len, rate, channels, bits, signed, bigEndian) => {
-          const state=omnipython_state; if(!state.microphoneEnabled) return -1;
+          const state=omnipython_state; if(!state.microphoneEnabled) return state.microphoneWanted ? 0 : -1;
           const width=bits>>3, capacity=Math.floor(len/(width*channels)); let written=0;
           const view=new DataView(HEAPU8.buffer,ptr,len);
           while(written<capacity && state.inputFrames.length){
@@ -4442,16 +4453,35 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
           state.audioUnlock = null;
       };
   
+  
+  var omnipython_route_out = async () => {
+          const state = omnipython_state;
+          const context = state.audioContext;
+          if (!context || !context.setSinkId || context.sinkId === state.route.out) return;
+          try { await context.setSinkId(state.route.out); }
+          catch (error) { state.routeErrors.out = "can't play on that speaker: " + (error && error.message || error); }
+      };
+  
+  var omnipython_open_microphone = async () => {
+          const state = omnipython_state;
+          const id = state.route.in;
+          const stream = await navigator.mediaDevices.getUserMedia({audio: id ? {deviceId: {exact: id}} : true});
+          if (state.mediaNode) { try { state.mediaNode.disconnect(); } catch (_) {} }
+          if (state.mediaStream) { for (const track of state.mediaStream.getTracks()) track.stop(); }
+          state.mediaStream = stream;
+          state.mediaNode = state.audioContext.createMediaStreamSource(stream);
+          if (state.processor) state.mediaNode.connect(state.processor);
+      };
   var omnipython_enable_audio = async (microphone=false) => {
           const state = omnipython_state;
           const AudioContext = globalThis.AudioContext || globalThis.webkitAudioContext;
           if (!AudioContext) throw new Error('Web Audio is unavailable');
           state.audioContext ||= new AudioContext();
+          await omnipython_route_out();
           await state.audioContext.resume();
           state.audioEnabled = state.audioContext.state === 'running';
           if (microphone) {
-              state.mediaStream = await navigator.mediaDevices.getUserMedia({audio:true});
-              state.mediaNode = state.audioContext.createMediaStreamSource(state.mediaStream);
+              await omnipython_open_microphone();
               state.processor = state.audioContext.createScriptProcessor(1024, 2, 2);
               state.processor.onaudioprocess = (event) => {
                   const channels = [];
@@ -4469,17 +4499,183 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
           const state = omnipython_state;
           if (state.audioUnlock || typeof document === 'undefined') return;
           const names = ['pointerdown', 'pointerup', 'keydown'];
+          const done = () => state.audioEnabled && (state.microphoneEnabled || !state.microphoneWanted);
           const handler = () => {
-              if (state.audioEnabled) { omnipython_disarm_audio_unlock(); return; }
-              omnipython_enable_audio(false).then(
-                  () => { if (state.audioEnabled) omnipython_disarm_audio_unlock(); },
-                  () => {});
+              if (done()) { omnipython_disarm_audio_unlock(); return; }
+              omnipython_enable_audio(state.microphoneWanted && !state.microphoneEnabled).then(
+                  () => { if (done()) omnipython_disarm_audio_unlock(); },
+                  () => { state.microphoneWanted = false; });
           };
           state.audioUnlock = {names, handler};
           for (const name of names) document.addEventListener(name, handler, true);
       };
+  
+  
+  var omnipython_release_canvas = (canvas) => {
+          for (const [name, handler, opts] of canvas.__omnipythonListeners || []) {
+              canvas.removeEventListener(name, handler, opts);
+          }
+          canvas.__omnipythonListeners = null;
+          canvas.__omnipythonInputInstalled = false;
+      };
+  
+  
+  
+  
+  
+  var omnipython_camera_start = async () => {
+          const cam = omnipython_state.camera;
+          if (!cam) return;
+          const token = ++cam.token;
+          const media = globalThis.navigator && navigator.mediaDevices;
+          if (!media || !media.getUserMedia || typeof document === 'undefined') { cam.status = -3; return; }
+          const id = omnipython_state.route.camera;
+          try {
+              const stream = await media.getUserMedia({video: id ? {deviceId: {exact: id}} : true, audio: false});
+              if (token !== cam.token) { for (const track of stream.getTracks()) track.stop(); return; }
+              if (cam.stream) for (const track of cam.stream.getTracks()) track.stop();
+              cam.stream = stream;
+              const video = cam.video ||= document.createElement('video');
+              video.muted = true; video.playsInline = true; video.srcObject = stream;
+              if (!video.videoWidth) await new Promise((resolve) => video.addEventListener('loadedmetadata', resolve, {once: true}));
+              await video.play();
+              if (token !== cam.token) return;
+              cam.readTime = -1;
+              cam.status = 1;
+          } catch (error) {
+              if (token !== cam.token) return;
+              const name = error && error.name;
+              cam.status = name === 'NotAllowedError' || name === 'SecurityError' ? -1
+                  : name === 'NotFoundError' || name === 'OverconstrainedError' ? -2 : -4;
+              console.error('OmniPython camera:', error);
+          }
+      };
+  
+  var omnipython_camera_stop = () => {
+          const cam = omnipython_state.camera;
+          if (!cam) return;
+          cam.token++;
+          if (cam.stream) for (const track of cam.stream.getTracks()) track.stop();
+          if (cam.video) { try { cam.video.pause(); cam.video.srcObject = null; } catch (_) {} }
+          omnipython_state.camera = null;
+      };
+  var omnipython_export_host = () => {
+          if (Module.omnipythonBridge) return;
+          Module.omnipythonBridge = {
+              /*
+             * Releases everything this instance holds in the host page: the
+             * paint loop, the canvas listeners, pending timers, and any audio
+             * still playing or recording. Meant to run right before an embedder
+             * discards this Module for a fresh one - a VM restart, most likely -
+             * so the old instance's WASM heap (kept alive otherwise by nothing
+             * but its own rAF callback and DOM listeners) actually becomes
+             * garbage instead of accumulating on every restart, and so canvas
+             * input reaches whichever instance registers on it next rather than
+             * silently continuing to reach this one.
+             *
+             * Idempotent - calling it twice, or on an instance that never
+             * registered a display, does nothing harmful.
+             */
+              shutdown: () => {
+                  const state = omnipython_state;
+                  if (state.animation) {
+                      cancelAnimationFrame(state.animation);
+                      state.animation = 0;
+                  }
+                  for (const display of state.displays.values()) {
+                      if (display.canvas) omnipython_release_canvas(display.canvas);
+                  }
+                  state.displays.clear();
+                  for (const timer of state.timers.values()) {
+                      timer.periodic ? clearInterval(timer.handle) : clearTimeout(timer.handle);
+                  }
+                  state.timers.clear();
+                  state.firedTimers.length = 0;
+                  for (const source of state.audioSources) {
+                      try { source.stop(); } catch (_) { /* already finished */ }
+                  }
+                  state.audioSources.clear();
+                  omnipython_disarm_audio_unlock();
+                  state.audioQueuedBytes = 0;
+                  state.inputFrames.length = 0;
+                  if (state.processor) { try { state.processor.disconnect(); } catch (_) {} }
+                  if (state.mediaNode) { try { state.mediaNode.disconnect(); } catch (_) {} }
+                  if (state.mediaStream) { for (const track of state.mediaStream.getTracks()) track.stop(); }
+                  state.processor = null;
+                  state.mediaNode = null;
+                  state.mediaStream = null;
+                  state.microphoneEnabled = false;
+                  state.microphoneWanted = false;
+                  if (state.audioContext) {
+                      try { state.audioContext.close(); } catch (_) {}
+                      state.audioContext = null;
+                  }
+                  state.audioEnabled = false;
+                  omnipython_camera_stop();
+              },
+              enableAudio: (microphone=false) => omnipython_enable_audio(microphone),
+              /*
+             * Sends the page's sound to a speaker ('out') or records from a
+             * microphone ('in'): a deviceId from enumerateDevices, or '' for
+             * the browser's default. It holds for audio not on yet, and moves
+             * what's playing or recording now. routeError(way) hands back the
+             * last failure once, or null.
+             */
+              route: (way, deviceId) => {
+                  const state = omnipython_state;
+                  state.route[way] = deviceId || '';
+                  if (way === 'out') return omnipython_route_out();
+                  if (way === 'camera') return omnipython_camera_start();
+                  if (state.microphoneEnabled && state.audioContext && state.processor) {
+                      return omnipython_open_microphone().catch((error) => {
+                          state.routeErrors.in = "can't record from that microphone: " + (error && error.message || error);
+                      });
+                  }
+                  return Promise.resolve();
+              },
+              routeError: (way) => {
+                  const error = omnipython_state.routeErrors[way];
+                  omnipython_state.routeErrors[way] = null;
+                  return error;
+              },
+              permissions: () => ({audio:omnipython_state.audioEnabled, microphone:omnipython_state.microphoneEnabled}),
+              stats: () => ({
+                  events:Array.from(omnipython_state.displays.values()).reduce((n,d)=>n+d.events.length,0),
+                  timers:omnipython_state.timers.size,
+                  frames:Array.from(omnipython_state.displays.values()).reduce((n,d)=>n+d.framesPainted,0),
+                  queuedAudioBytes:omnipython_state.audioQueuedBytes,
+                  queuedAudioMs:Math.max(0, (omnipython_state.audioEnd - (omnipython_state.audioContext?.currentTime || 0)) * 1000),
+                  timerFirings:omnipython_state.timerFirings.slice(),
+                  timerDeliveries:omnipython_state.timerDeliveries.slice(),
+              }),
+              resetTimerFirings: () => {
+                  omnipython_state.timerFirings.length = 0;
+                  omnipython_state.timerDeliveries.length = 0;
+              },
+              injectMicrophone: (channels, rate=48000) => {
+                  omnipython_state.microphoneEnabled = true;
+                  omnipython_state.inputFrames.push({channels:channels.map(x => Float32Array.from(x)), rate, offset:0});
+              },
+          };
+      };
+  
+  
+  
+  var omnipython_want_microphone = () => {
+          const state = omnipython_state;
+          if (state.microphoneEnabled || state.microphoneWanted) return;
+          if (typeof navigator === 'undefined' || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return;
+          state.microphoneWanted = true;
+          if (state.audioEnabled) omnipython_enable_audio(true).catch(() => { state.microphoneWanted = false; });
+          else omnipython_arm_audio_unlock();
+      };
   var _omnipython_audio_state = (input) => {
-          if (input) return +omnipython_state.microphoneEnabled;
+          // A page with sound but no display still gets the host's controls.
+          omnipython_export_host();
+          if (input) {
+              omnipython_want_microphone();
+              return +(omnipython_state.microphoneEnabled || omnipython_state.microphoneWanted);
+          }
           if (!omnipython_state.audioEnabled) omnipython_arm_audio_unlock();
           return +omnipython_state.audioEnabled;
       };
@@ -4516,6 +4712,77 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
           source.start(start);
           return byteLength;
       };
+
+  var _omnipython_camera_close = () => omnipython_camera_stop();
+
+  
+  var omnipython_camera_draw = (w, h, flags, fresh) => {
+          const cam = omnipython_state.camera;
+          if (!cam || cam.status !== 1) return null;
+          const video = cam.video;
+          if (video.readyState < 2) return null;
+          if (fresh) {
+              if (video.currentTime === cam.readTime) return null;
+              cam.readTime = video.currentTime;
+          }
+          const canvas = cam.canvas ||= document.createElement('canvas');
+          if (canvas.width !== w) canvas.width = w;
+          if (canvas.height !== h) canvas.height = h;
+          const context = cam.context ||= canvas.getContext('2d', {willReadFrequently: true});
+          context.setTransform(flags & 2 ? -1 : 1, 0, 0, flags & 1 ? -1 : 1, flags & 2 ? w : 0, flags & 1 ? h : 0);
+          context.drawImage(video, 0, 0, w, h);
+          context.setTransform(1, 0, 0, 1, 0, 0);
+          return {canvas, context};
+      };
+  var _omnipython_camera_jpeg = (quality, flags, lenPtr) => {
+          HEAPU32[lenPtr >> 2] = 0;
+          const cam = omnipython_state.camera;
+          if (!cam || cam.status !== 1) return 0;
+          const drawn = omnipython_camera_draw(cam.video.videoWidth, cam.video.videoHeight, flags, false);
+          if (!drawn) return 0;
+          const text = atob(drawn.canvas.toDataURL('image/jpeg', Math.max(1, Math.min(100, quality)) / 100).split(',')[1]);
+          const ptr = _malloc(text.length || 1);
+          for (let i = 0; i < text.length; i++) HEAPU8[ptr + i] = text.charCodeAt(i);
+          HEAPU32[lenPtr >> 2] = text.length;
+          return ptr;
+      };
+
+  
+  
+  
+  var _omnipython_camera_open = () => {
+          omnipython_export_host();
+          omnipython_camera_stop();
+          omnipython_state.camera = {token: 0, status: 0, stream: null, video: null, canvas: null, context: null, readTime: -1};
+          omnipython_camera_start();
+      };
+
+  
+  var _omnipython_camera_read = (ptr, len, picW, picH, x, y, w, h, flags) => {
+          const cam = omnipython_state.camera;
+          if (!cam || cam.status !== 1) return -1;
+          const drawn = omnipython_camera_draw(w, h, flags, true);
+          if (!drawn) return 0;
+          const rgba = drawn.context.getImageData(0, 0, w, h).data;
+          const swap = flags & 4;
+          for (let row = 0; row < h; row++) {
+              let out = ptr + ((y + row) * picW + x) * 2, i = row * w * 4;
+              for (let col = 0; col < w; col++, i += 4, out += 2) {
+                  const value = ((rgba[i] >> 3) << 11) | ((rgba[i + 1] >> 2) << 5) | (rgba[i + 2] >> 3);
+                  HEAPU8[out + (swap ? 1 : 0)] = value & 0xff;
+                  HEAPU8[out + (swap ? 0 : 1)] = value >> 8;
+              }
+          }
+          return 1;
+      };
+
+  var _omnipython_camera_size = () => {
+          const cam = omnipython_state.camera;
+          if (!cam || cam.status !== 1) return 0;
+          return ((cam.video.videoWidth & 0xffff) << 16) | (cam.video.videoHeight & 0xffff);
+      };
+
+  var _omnipython_camera_state = () => omnipython_state.camera ? omnipython_state.camera.status : -4;
 
   var omnipython_get_display = (canvasId) => {
           let display = omnipython_state.displays.get(canvasId);
@@ -4693,89 +4960,6 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
           state.animation = requestAnimationFrame(omnipython_paint);
       };
   
-  
-  var omnipython_release_canvas = (canvas) => {
-          for (const [name, handler, opts] of canvas.__omnipythonListeners || []) {
-              canvas.removeEventListener(name, handler, opts);
-          }
-          canvas.__omnipythonListeners = null;
-          canvas.__omnipythonInputInstalled = false;
-      };
-  
-  
-  var omnipython_export_host = () => {
-          if (Module.omnipythonBridge) return;
-          Module.omnipythonBridge = {
-              /*
-             * Releases everything this instance holds in the host page: the
-             * paint loop, the canvas listeners, pending timers, and any audio
-             * still playing or recording. Meant to run right before an embedder
-             * discards this Module for a fresh one - a VM restart, most likely -
-             * so the old instance's WASM heap (kept alive otherwise by nothing
-             * but its own rAF callback and DOM listeners) actually becomes
-             * garbage instead of accumulating on every restart, and so canvas
-             * input reaches whichever instance registers on it next rather than
-             * silently continuing to reach this one.
-             *
-             * Idempotent - calling it twice, or on an instance that never
-             * registered a display, does nothing harmful.
-             */
-              shutdown: () => {
-                  const state = omnipython_state;
-                  if (state.animation) {
-                      cancelAnimationFrame(state.animation);
-                      state.animation = 0;
-                  }
-                  for (const display of state.displays.values()) {
-                      if (display.canvas) omnipython_release_canvas(display.canvas);
-                  }
-                  state.displays.clear();
-                  for (const timer of state.timers.values()) {
-                      timer.periodic ? clearInterval(timer.handle) : clearTimeout(timer.handle);
-                  }
-                  state.timers.clear();
-                  state.firedTimers.length = 0;
-                  for (const source of state.audioSources) {
-                      try { source.stop(); } catch (_) { /* already finished */ }
-                  }
-                  state.audioSources.clear();
-                  omnipython_disarm_audio_unlock();
-                  state.audioQueuedBytes = 0;
-                  state.inputFrames.length = 0;
-                  if (state.processor) { try { state.processor.disconnect(); } catch (_) {} }
-                  if (state.mediaNode) { try { state.mediaNode.disconnect(); } catch (_) {} }
-                  if (state.mediaStream) { for (const track of state.mediaStream.getTracks()) track.stop(); }
-                  state.processor = null;
-                  state.mediaNode = null;
-                  state.mediaStream = null;
-                  state.microphoneEnabled = false;
-                  if (state.audioContext) {
-                      try { state.audioContext.close(); } catch (_) {}
-                      state.audioContext = null;
-                  }
-                  state.audioEnabled = false;
-              },
-              enableAudio: (microphone=false) => omnipython_enable_audio(microphone),
-              permissions: () => ({audio:omnipython_state.audioEnabled, microphone:omnipython_state.microphoneEnabled}),
-              stats: () => ({
-                  events:Array.from(omnipython_state.displays.values()).reduce((n,d)=>n+d.events.length,0),
-                  timers:omnipython_state.timers.size,
-                  frames:Array.from(omnipython_state.displays.values()).reduce((n,d)=>n+d.framesPainted,0),
-                  queuedAudioBytes:omnipython_state.audioQueuedBytes,
-                  queuedAudioMs:Math.max(0, (omnipython_state.audioEnd - (omnipython_state.audioContext?.currentTime || 0)) * 1000),
-                  timerFirings:omnipython_state.timerFirings.slice(),
-                  timerDeliveries:omnipython_state.timerDeliveries.slice(),
-              }),
-              resetTimerFirings: () => {
-                  omnipython_state.timerFirings.length = 0;
-                  omnipython_state.timerDeliveries.length = 0;
-              },
-              injectMicrophone: (channels, rate=48000) => {
-                  omnipython_state.microphoneEnabled = true;
-                  omnipython_state.inputFrames.push({channels:channels.map(x => Float32Array.from(x)), rate, offset:0});
-              },
-          };
-      };
   
   
   var _omnipython_display_register = (ptr, len, width, height, canvasPtr) => {
@@ -5229,6 +5413,25 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
       };
 
   
+  
+  var omnipython_feed_repl = async () => {
+          const state = omnipython_state;
+          if (state.feedingRepl || !Module._mp_js_stdin_pending) return;
+          if (typeof Asyncify !== 'undefined' && Asyncify.currData) {
+              setTimeout(omnipython_feed_repl, 20);
+              return;
+          }
+          state.feedingRepl = true;
+          try {
+              if (!Module._mp_js_repl_started()) Module.ccall('mp_js_repl_init', 'null', [], []);
+              let c;
+              while ((c = Module._mp_js_stdin_rx_chr()) >= 0) {
+                  await Module.ccall('mp_js_repl_process_char', 'number', ['number'], [c], {async: true});
+              }
+          } finally {
+              state.feedingRepl = false;
+          }
+      };
   var _omnipython_timer_start = (id, delay, periodic) => {
           const state = omnipython_state;
           const old = state.timers.get(id); if (old) old.periodic ? clearInterval(old.handle) : clearTimeout(old.handle);
@@ -5245,6 +5448,9 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
                   state.firedTimers.push(id);
               }
               if (!periodic) state.timers.delete(id);
+              if (!state.feedingRepl && Module._mp_js_stdin_pending && Module._mp_js_stdin_pending()) {
+                  setTimeout(omnipython_feed_repl, 0);
+              }
           };
           const handle = periodic ? setInterval(fire, delay) : setTimeout(fire, delay);
           state.timers.set(id, {handle, periodic});
@@ -5857,11 +6063,18 @@ missingLibrarySymbols.forEach(missingLibrarySymbol)
   'omnipython_paint',
   'omnipython_export_host',
   'omnipython_drop_fired',
+  'omnipython_feed_repl',
+  'omnipython_route_out',
+  'omnipython_open_microphone',
   'omnipython_enable_audio',
   'omnipython_disarm_audio_unlock',
   'omnipython_arm_audio_unlock',
+  'omnipython_want_microphone',
   'omnipython_decode_pcm',
   'omnipython_encode_sample',
+  'omnipython_camera_stop',
+  'omnipython_camera_start',
+  'omnipython_camera_draw',
 ];
 unexportedSymbols.forEach(unexportedRuntimeSymbol);
 
@@ -5905,7 +6118,7 @@ function js_check_existing(c_ref) { return proxy_js_check_existing(c_ref); }
 function js_get_error_info(jsref,out_name,out_message) { const error = proxy_js_ref[jsref]; proxy_convert_js_to_mp_obj_jsside(error.name, out_name); proxy_convert_js_to_mp_obj_jsside(error.message, out_message); }
 function js_then_resolve(ret_value,resolve) { const ret_value_js = proxy_convert_mp_to_js_obj_jsside(ret_value); const resolve_js = proxy_convert_mp_to_js_obj_jsside(resolve); resolve_js(ret_value_js); }
 function js_then_reject(ret_value,reject) { let ret_value_js; try { ret_value_js = proxy_convert_mp_to_js_obj_jsside(ret_value); } catch(error) { ret_value_js = error; } const reject_js = proxy_convert_mp_to_js_obj_jsside(reject); reject_js(ret_value_js); }
-function js_then_continue(jsref,py_resume,resolve,reject,out) { const py_resume_js = proxy_convert_mp_to_js_obj_jsside(py_resume); const resolve_js = proxy_convert_mp_to_js_obj_jsside(resolve); const reject_js = proxy_convert_mp_to_js_obj_jsside(reject); const ret = proxy_js_ref[jsref].then( (result) => { py_resume_js(result, null, resolve_js, reject_js); }, (reason) => { py_resume_js(null, reason, resolve_js, reject_js); }, ); proxy_convert_js_to_mp_obj_jsside(ret, out); }
+function js_then_continue(jsref,thenable,resolve,reject,out) { const thenable_js = proxy_convert_mp_to_js_obj_jsside(thenable); const resolve_js = proxy_convert_mp_to_js_obj_jsside(resolve); const reject_js = proxy_convert_mp_to_js_obj_jsside(reject); const ret = proxy_js_ref[jsref].then( (result) => { return thenable_js._resume(result, null, resolve_js, reject_js); }, (reason) => { return thenable_js._resume(null, reason, resolve_js, reject_js); }, ); proxy_convert_js_to_mp_obj_jsside(ret, out); }
 function create_promise(out_set,out_promise) { const out_set_js = proxy_convert_mp_to_js_obj_jsside(out_set); const promise = new Promise(out_set_js); proxy_convert_js_to_mp_obj_jsside(promise, out_promise); }
 
 // Imports from the Wasm binary.
@@ -5921,7 +6134,11 @@ var _proxy_convert_mp_to_js_obj_cside = Module['_proxy_convert_mp_to_js_obj_csid
 var _mp_js_do_exec = Module['_mp_js_do_exec'] = makeInvalidEarlyAccess('_mp_js_do_exec');
 var _mp_js_do_exec_async = Module['_mp_js_do_exec_async'] = makeInvalidEarlyAccess('_mp_js_do_exec_async');
 var _mp_js_repl_init = Module['_mp_js_repl_init'] = makeInvalidEarlyAccess('_mp_js_repl_init');
+var _mp_js_repl_started = Module['_mp_js_repl_started'] = makeInvalidEarlyAccess('_mp_js_repl_started');
+var _mp_js_stdin_pending = Module['_mp_js_stdin_pending'] = makeInvalidEarlyAccess('_mp_js_stdin_pending');
+var _mp_js_stdin_rx_chr = Module['_mp_js_stdin_rx_chr'] = makeInvalidEarlyAccess('_mp_js_stdin_rx_chr');
 var _mp_js_repl_process_char = Module['_mp_js_repl_process_char'] = makeInvalidEarlyAccess('_mp_js_repl_process_char');
+var _mp_js_repl_process_char_async = Module['_mp_js_repl_process_char_async'] = makeInvalidEarlyAccess('_mp_js_repl_process_char_async');
 var _mp_hal_get_interrupt_char = Module['_mp_hal_get_interrupt_char'] = makeInvalidEarlyAccess('_mp_hal_get_interrupt_char');
 var _proxy_c_init = Module['_proxy_c_init'] = makeInvalidEarlyAccess('_proxy_c_init');
 var _proxy_c_free_obj = Module['_proxy_c_free_obj'] = makeInvalidEarlyAccess('_proxy_c_free_obj');
@@ -6002,7 +6219,11 @@ function assignWasmExports(wasmExports) {
   assert(typeof wasmExports['mp_js_do_exec'] != 'undefined', 'missing Wasm export: mp_js_do_exec');
   assert(typeof wasmExports['mp_js_do_exec_async'] != 'undefined', 'missing Wasm export: mp_js_do_exec_async');
   assert(typeof wasmExports['mp_js_repl_init'] != 'undefined', 'missing Wasm export: mp_js_repl_init');
+  assert(typeof wasmExports['mp_js_repl_started'] != 'undefined', 'missing Wasm export: mp_js_repl_started');
+  assert(typeof wasmExports['mp_js_stdin_pending'] != 'undefined', 'missing Wasm export: mp_js_stdin_pending');
+  assert(typeof wasmExports['mp_js_stdin_rx_chr'] != 'undefined', 'missing Wasm export: mp_js_stdin_rx_chr');
   assert(typeof wasmExports['mp_js_repl_process_char'] != 'undefined', 'missing Wasm export: mp_js_repl_process_char');
+  assert(typeof wasmExports['mp_js_repl_process_char_async'] != 'undefined', 'missing Wasm export: mp_js_repl_process_char_async');
   assert(typeof wasmExports['mp_hal_get_interrupt_char'] != 'undefined', 'missing Wasm export: mp_hal_get_interrupt_char');
   assert(typeof wasmExports['proxy_c_init'] != 'undefined', 'missing Wasm export: proxy_c_init');
   assert(typeof wasmExports['proxy_c_free_obj'] != 'undefined', 'missing Wasm export: proxy_c_free_obj');
@@ -6079,7 +6300,11 @@ function assignWasmExports(wasmExports) {
   _mp_js_do_exec = Module['_mp_js_do_exec'] = createExportWrapper('mp_js_do_exec', 3);
   _mp_js_do_exec_async = Module['_mp_js_do_exec_async'] = createExportWrapper('mp_js_do_exec_async', 3);
   _mp_js_repl_init = Module['_mp_js_repl_init'] = createExportWrapper('mp_js_repl_init', 0);
+  _mp_js_repl_started = Module['_mp_js_repl_started'] = createExportWrapper('mp_js_repl_started', 0);
+  _mp_js_stdin_pending = Module['_mp_js_stdin_pending'] = createExportWrapper('mp_js_stdin_pending', 0);
+  _mp_js_stdin_rx_chr = Module['_mp_js_stdin_rx_chr'] = createExportWrapper('mp_js_stdin_rx_chr', 0);
   _mp_js_repl_process_char = Module['_mp_js_repl_process_char'] = createExportWrapper('mp_js_repl_process_char', 1);
+  _mp_js_repl_process_char_async = Module['_mp_js_repl_process_char_async'] = createExportWrapper('mp_js_repl_process_char_async', 1);
   _mp_hal_get_interrupt_char = Module['_mp_hal_get_interrupt_char'] = createExportWrapper('mp_hal_get_interrupt_char', 0);
   _proxy_c_init = Module['_proxy_c_init'] = createExportWrapper('proxy_c_init', 0);
   _proxy_c_free_obj = Module['_proxy_c_free_obj'] = createExportWrapper('proxy_c_free_obj', 1);
@@ -6244,6 +6469,8 @@ var wasmImports = {
   /** @export */
   invoke_viiii,
   /** @export */
+  invoke_viiiii,
+  /** @export */
   invoke_viiiiii,
   /** @export */
   js_check_existing,
@@ -6289,6 +6516,18 @@ var wasmImports = {
   omnipython_audio_state: _omnipython_audio_state,
   /** @export */
   omnipython_audio_write: _omnipython_audio_write,
+  /** @export */
+  omnipython_camera_close: _omnipython_camera_close,
+  /** @export */
+  omnipython_camera_jpeg: _omnipython_camera_jpeg,
+  /** @export */
+  omnipython_camera_open: _omnipython_camera_open,
+  /** @export */
+  omnipython_camera_read: _omnipython_camera_read,
+  /** @export */
+  omnipython_camera_size: _omnipython_camera_size,
+  /** @export */
+  omnipython_camera_state: _omnipython_camera_state,
   /** @export */
   omnipython_display_register: _omnipython_display_register,
   /** @export */
@@ -6490,6 +6729,17 @@ function invoke_viiii(index,a1,a2,a3,a4) {
   var sp = stackSave();
   try {
     dynCall_viiii(index,a1,a2,a3,a4);
+  } catch(e) {
+    stackRestore(sp);
+    if (!(e instanceof EmscriptenEH)) throw e;
+    _setThrew(1, 0);
+  }
+}
+
+function invoke_viiiii(index,a1,a2,a3,a4,a5) {
+  var sp = stackSave();
+  try {
+    dynCall_viiiii(index,a1,a2,a3,a4,a5);
   } catch(e) {
     stackRestore(sp);
     if (!(e instanceof EmscriptenEH)) throw e;
@@ -6713,6 +6963,23 @@ export async function loadMicroPython(options) {
     }
     Module = await _createMicroPythonModule(Module);
     globalThis.Module = Module;
+    // On a jspi build, jsffi.run_sync() suspends until its promise is
+    // fulfilled or rejected.  But a KeyboardInterrupt must also end that
+    // wait.  The solution is to wrap the interrupt function.  While
+    // run_sync() is suspended, js_run_sync_wait (in modjsffi.c) also
+    // waits on Module.jspiInterrupt.  ccall finds this function by name
+    // on Module, so every caller gets the wrapped one.
+    const schedKeyboardInterrupt = Module._mp_sched_keyboard_interrupt;
+    Module._mp_sched_keyboard_interrupt = () => {
+        if (Module.jspiInterrupt) {
+            // run_sync() is suspended.  Wake it and let it raise the
+            // KeyboardInterrupt itself, so no other code can receive
+            // the interrupt first.
+            Module.jspiInterrupt.resolve();
+        } else {
+            schedKeyboardInterrupt();
+        }
+    };
     proxy_js_init();
     const pyimport = (name) => {
         const value = Module._malloc(3 * 4);
@@ -6790,6 +7057,10 @@ export async function loadMicroPython(options) {
             const buf = Module._malloc(len + 1);
             Module.stringToUTF8(code, buf, len + 1);
             const value = Module._malloc(3 * 4);
+            // On a jspi build this ccall returns a promise, because the
+            // code may suspend in jsffi.run_sync(); "value" is only valid
+            // once that promise is fulfilled.  On other builds the await
+            // passes the return value straight through.
             await Module.ccall(
                 "mp_js_do_exec_async",
                 "number",
@@ -6815,15 +7086,37 @@ export async function loadMicroPython(options) {
                 [chr],
             );
         },
-        // Needed if the GC/asyncify is enabled.
+        // Needed if the GC/asyncify is enabled.  On a jspi build the REPL
+        // may suspend in jsffi.run_sync(), so characters are processed one
+        // at a time: each ccall starts only after the previous one has
+        // finished, which queues anything typed while a line is suspended.
+        // The one exception is the interrupt character (Ctrl-C), which
+        // interrupts the suspended line at once instead of waiting.
         async replProcessCharWithAsyncify(chr) {
-            return Module.ccall(
-                "mp_js_repl_process_char",
-                "number",
-                ["number"],
-                [chr],
-                { async: true },
+            if (Module.jspiInterrupt) {
+                const interruptChar = Module.ccall(
+                    "mp_hal_get_interrupt_char",
+                    "number",
+                    [],
+                    [],
+                );
+                if (chr === interruptChar) {
+                    Module._mp_sched_keyboard_interrupt();
+                    return 0;
+                }
+            }
+            const previous = Module.replPending ?? Promise.resolve();
+            const current = previous.then(() =>
+                Module.ccall(
+                    "mp_js_repl_process_char_async",
+                    "number",
+                    ["number"],
+                    [chr],
+                    { async: true },
+                ),
             );
+            Module.replPending = current.catch(() => {});
+            return current;
         },
     };
 }
@@ -7162,27 +7455,44 @@ class PyProxyThenable {
         this._generation = globalThis.proxy_js_generation;
     }
 
-    then(resolve, reject) {
+    // Resume the generator with a value to receive ("send") or an
+    // exception to raise ("throw_"); the unused one is null.  "resolve"
+    // and "reject" settle the promise waiting on the generator.  The
+    // four arguments go to C in "values", which also carries the result
+    // back.  On a jspi build the ccall returns a promise, hence the await.
+    // An error from the resume (for example the generator yielding
+    // something that is not a promise) rejects the waiting promise.  It
+    // cannot be thrown instead: this function is async, so a throw
+    // would only reject its own, unobserved promise.
+    async _resume(send, throw_, resolve, reject) {
         if (this._generation !== globalThis.proxy_js_generation) {
             // The interpreter this generator belonged to is gone; its ref
             // would resolve to an arbitrary object in the current one.  The
             // promise machinery calls this spontaneously, so settle the
             // chain instead of throwing into it.
-            reject(
-                new Error("PyProxyThenable outlived its interpreter"),
-            );
+            reject(new Error("PyProxyThenable outlived its interpreter"));
             return undefined;
         }
-        const values = Module._malloc(3 * 3 * 4);
-        proxy_convert_js_to_mp_obj_jsside(resolve, values + 3 * 4);
-        proxy_convert_js_to_mp_obj_jsside(reject, values + 2 * 3 * 4);
-        Module.ccall(
-            "proxy_c_to_js_resume",
-            "null",
-            ["number", "pointer"],
-            [this._ref, values],
-        );
-        return proxy_convert_mp_to_js_obj_jsside_with_free(values);
+        try {
+            const values = Module._malloc(5 * 3 * 4);
+            proxy_convert_js_to_mp_obj_jsside(resolve, values + 1 * 3 * 4);
+            proxy_convert_js_to_mp_obj_jsside(reject, values + 2 * 3 * 4);
+            proxy_convert_js_to_mp_obj_jsside(send, values + 3 * 3 * 4);
+            proxy_convert_js_to_mp_obj_jsside(throw_, values + 4 * 3 * 4);
+            await Module.ccall(
+                "proxy_c_to_js_resume",
+                "null",
+                ["number", "pointer"],
+                [this._ref, values],
+            );
+            return proxy_convert_mp_to_js_obj_jsside_with_free(values);
+        } catch (error) {
+            reject(error);
+        }
+    }
+
+    then(resolve, reject) {
+        return this._resume(null, null, resolve, reject);
     }
 }
 /*
