@@ -181,6 +181,15 @@
           icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4v7.5M5 16.5V20M12 4v1.5M12 10.5V20M19 4v6.5M19 15.5V20"/><g stroke="var(--accent, currentColor)"><circle cx="5" cy="14" r="2.5"/><circle cx="12" cy="8" r="2.5"/><circle cx="19" cy="13" r="2.5"/></g></svg>'
         },
         {
+          id: "airwindows",
+          name: "airwindows",
+          path: "/airwindows/",
+          url: ROOT + "/airwindows/",
+          tag: "Airwindows",
+          desc: "528 Airwindows plug-ins as audio nodes",
+          icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5h10.5a3 3 0 1 0-3-3"/><path d="M3 12.5h15.5a2.5 2.5 0 1 1-2.5 2.5"/><path d="M3 16.5h7.5a2.5 2.5 0 1 1-2.5 2.5" stroke="var(--accent, currentColor)"/></svg>'
+        },
+        {
           id: "palettes",
           name: "palettes",
           path: "/palettes/",

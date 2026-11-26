@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- PYDEVICES-HEAD-TAGS: START -->
+  <title>airwindows — OmniPython</title>
+  <meta name="description" content="Chris Johnson's Airwindows effects, reverbs, dynamics, filters, saturation and tape among them, ported to audiodsp's audio graph, the same on MicroPython-compatible firmware and CPython. Install omnipython-airwindows from PyPI, or build audioairwindows into your firmware beside audiodsp.">
+  <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="alternate icon" href="/assets/img/favicon.ico" sizes="16x16 32x32 48x48">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&display=swap">
+  <!-- PYDEVICES-HEAD-TAGS: END -->
+  <link rel="stylesheet" href="/assets/chrome/site.css">
+</head>
+<body>
+  <!-- PYDEVICES-ABOVE-THE-FOLD: START -->
+  <div id="pydevices-site-header"></div>
+
+  <!-- Hero Banner -->
+  <section class="hero wrap has-hero-stage">
+    <div class="hero-main">
+      <div class="hero-lead">
+        <div class="logo-badge product-mark" style="background: linear-gradient(135deg, var(--tier-1-amber), var(--tier-1-deep)); color: var(--on-accent);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5h10.5a3 3 0 1 0-3-3"/><path d="M3 12.5h15.5a2.5 2.5 0 1 1-2.5 2.5"/><path d="M3 16.5h7.5a2.5 2.5 0 1 1-2.5 2.5" stroke="var(--accent, currentColor)"/></svg></div>
+        <span class="eyebrow" style="color: var(--tier-1-amber);">airwindows</span>
+      </div>
+      <h1>airwindows — 528 Airwindows plug-ins as audio nodes.</h1>
+      <p><code>airwindows</code> Chris Johnson's Airwindows effects, reverbs, dynamics, filters, saturation and tape among them, ported to audiodsp's audio graph, the same on MicroPython-compatible firmware and CPython. Install omnipython-airwindows from PyPI, or build audioairwindows into your firmware beside audiodsp.</p>
+      <div class="cta">
+      <a class="btn primary" href="https://github.com/PyDevices/airwindows">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.9a3.4 3.4 0 0 0-1-2.6c3-.3 6-1.5 6-6.5a5 5 0 0 0-1.4-3.5 4.6 4.6 0 0 0-.1-3.5s-1.1-.3-3.5 1.3a12 12 0 0 0-6 0C6.6 1.7 5.5 2 5.5 2a4.6 4.6 0 0 0-.1 3.5A5 5 0 0 0 4 9c0 5 3 6.2 6 6.5a3.4 3.4 0 0 0-1 2.6V22"/></svg>
+        GitHub Repo
+      </a>
+      <a class="btn" style="border-color: var(--tier-1-amber); color: var(--tier-1-amber);" href="https://github.com/PyDevices/airwindows/blob/main/docs/index.md">Docs</a>
+      <a class="btn" style="border-color: var(--tier-1-amber); color: var(--tier-1-amber);" href="https://github.com/PyDevices/airwindows/blob/main/docs/reference/plugins.md">Plug-ins</a>
+      <a class="btn" style="border-color: var(--tier-1-amber); color: var(--tier-1-amber);" href="https://pypi.org/project/omnipython-airwindows/">PyPI</a>
+      </div>
+    </div>
+    <div class="hero-stage">
+    <div class="hero-canvas-wrap" data-hero-canvas="hero_canvas" data-hero-app="signal_gen" data-hero-app-url="https://omnipython.org/assets/apps/signal_gen.py">
+      <div class="hero-canvas-square">
+        <div class="hero-canvas-loader">
+          <div class="hero-spinner"></div>
+          <span class="hero-canvas-status">Live Pure-Python Device</span>
+        </div>
+        <canvas id="hero_canvas" width="240" height="240" tabindex="0"></canvas>
+      </div>
+    </div>
+      <figure class="hero-art"><img src="/assets/img/huey-hanging.svg" alt="Huey, OmniPython's chameleon mascot, hanging from a jumper wire" width="508" height="440"><figcaption>Huey lets the reverb tail ring</figcaption></figure>
+    </div>
+  </section>
+  <!-- PYDEVICES-ABOVE-THE-FOLD: END -->
+  <main class="wrap" style="padding-bottom: 60px;">
+    <div class="section-head">
+      <h2>Install</h2>
+      <span class="hint">PyPI for CPython, a firmware build for boards</span>
+    </div>
+    <div class="spec-block">
+      <pre><code># CPython 3.11 or later: a prebuilt wheel, with audiodsp beside it
+pip install omnipython-airwindows</code></pre>
+    </div>
+    <p class="prose" style="margin-top: 14px;">The plug-ins are C, so on a board they are built into the firmware beside <a href="/audiodsp/">audiodsp</a>, as user C modules. <a href="https://github.com/PyDevices/airwindows/blob/main/docs/get-started/install.md">Install</a> has the commands, and which plug-ins a board build carries.</p>
+    <div class="section-head" style="margin-top: 36px;">
+      <h2>Try this first</h2>
+      <span class="hint">A burst of noise through Galactic's reverb</span>
+    </div>
+    <div class="spec-block">
+      <pre><code>from array import array
+import audiocore, audioairwindows
+
+RATE = 48000
+noise, x = array("h"), 1
+for _ in range(RATE // 50):
+    x = (x * 1103515245 + 12345) &amp; 0x7fffffff
+    noise.append((x &gt;&gt; 16) % 20001 - 10000)
+
+verb = audioairwindows.Galactic(sample_rate=RATE, channel_count=1, replace=0.3)
+verb.play(audiocore.RawSample(noise, sample_rate=RATE, channel_count=1))
+for row in range(12):
+    loudest = 0
+    for _ in range(48):
+        block = array("h", bytes(audiocore.get_buffer(verb)[1]))
+        loudest = max(loudest, max(abs(v) for v in block))
+    print("%.2f s  %5d" % (row * 48 * 256 / RATE, loudest))</code></pre>
+    </div>
+    <p class="prose" style="margin-top: 14px;">It prints the loudest sample of each quarter second or so, the same on CPython and MicroPython: the reverb tail, dying away over three seconds. On a board, hand <code>verb</code> to <code>audio_out.play()</code> instead of pulling it yourself. To put something worth processing in front of it, add <a href="/audioinstruments/">audioinstruments</a>.</p>
+    <div class="section-head" style="margin-top: 36px;">
+      <h2>Read more</h2>
+      <span class="hint">Depth lives in the repository</span>
+    </div>
+    <div class="spec-block">
+      <div class="spec-grid">
+        <div class="spec-item tier-1">
+          <h4><a href="https://github.com/PyDevices/airwindows/blob/main/docs/index.md">Docs</a></h4>
+          <p>Install, first program, guides and the reference.</p>
+        </div>
+        <div class="spec-item tier-1">
+          <h4><a href="https://github.com/PyDevices/airwindows/blob/main/docs/reference/plugins.md">The plug-ins</a></h4>
+          <p>All 528, by category, with their knobs.</p>
+        </div>
+        <div class="spec-item tier-1">
+          <h4><a href="https://github.com/PyDevices/airwindows/blob/main/docs/guides/put-an-effect-in-a-chain.md">Put an effect in a chain</a></h4>
+          <p>Wire a plug-in between a source and the output.</p>
+        </div>
+        <div class="spec-item tier-1">
+          <h4><a href="https://github.com/airwindows/airwindows">Airwindows</a></h4>
+          <p>Chris Johnson's originals, MIT licensed.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="pydevices-site-footer"></div>
+  <script src="/assets/chrome/site-chrome.js"></script>
+</body>
+</html>
