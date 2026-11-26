@@ -33,6 +33,12 @@ runtime is one shared copy so that every page downloads it once. Its
 provenance file says which patches and sources it was built from. The runtime has the
 PyDevices stack frozen in, so a demo imports it with nothing to install.
 
+The front page's watch is the other kind of hero: a whole home screen. Its
+database entry names a `home` rather than an `app`, and the page boots the
+apps' launcher from the all-apps runtime in `vendor/allapps/`, which has
+every app frozen in. Only the apps the entry lists are offered, since most of
+the rest need hardware a browser hasn't got.
+
 ## Publishing
 
 Pushes to `main` publish the repository root at <https://omnipython.org/>.

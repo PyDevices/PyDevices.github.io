@@ -1,0 +1,21 @@
+{
+ "apps": {
+  "ref": "watch-home",
+  "commit": "4140455b4a971e5ac48704ab2a83fea27b5a8640",
+  "dirty": false
+ },
+ "omnipython": {
+  "ref": "main",
+  "commit": "4388e30f4b44740084262660bec4d94012cc2b22",
+  "dirty": false
+ },
+ "omnipython-builds": {
+  "commit": "4298cfe4ab398da570eff46b7b494ad01bd9a3c2"
+ },
+ "variant": "allapps",
+ "modules": "all,pdwidgets",
+ "bytes": {
+  "micropython.mjs": 285209,
+  "micropython.wasm": 11251829
+ }
+}
