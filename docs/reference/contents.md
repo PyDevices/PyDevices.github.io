@@ -17,7 +17,6 @@ from the `.github` repository.
 | `assets/apps/` | The pure-Python demo apps the other heroes run. | Copied from `.github` |
 | `pyscript-template/pwa/` | The offline PyScript app, mirrored from the `pyscript-template` repository. | Copied from `pyscript-template` |
 | `vendor/micropython/` | The WebAssembly MicroPython runtime and its provenance file. | [Rebuilt by hand](../guides/rebuild-the-webassembly-runtime.md) |
-| `vendor/allapps/` | The all-apps runtime, with every app frozen in, which the front page's watch boots; its provenance file and `allapps.json`. | [Rebuilt by hand](../guides/rebuild-the-webassembly-runtime.md#the-all-apps-runtime) |
 | `tools/serve_local.py` | The [preview server](../get-started/install.md). | By hand |
 | `.nojekyll` | Tells GitHub Pages to serve the files as they are. | By hand |
 

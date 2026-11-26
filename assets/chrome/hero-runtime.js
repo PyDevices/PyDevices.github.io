@@ -25,9 +25,10 @@
   armAudioGesture();
   // A hero names either one app (data-hero-app), which the shared runtime in
   // /vendor/micropython/ fetches and runs, or a home screen (data-hero-home),
-  // which boots the apps repository's launcher from the all-apps runtime in
-  // /vendor/allapps/: every app is frozen into it, so nothing is fetched.
-  const HOME_RUNTIME = "/vendor/allapps/micropython.mjs";
+  // which boots the apps repository's launcher from the all-apps runtime that
+  // apps.omnipython.org publishes: every app is frozen into it, so nothing
+  // else is fetched, and the hero always runs the newest published build.
+  const HOME_RUNTIME = "https://apps.omnipython.org/micropython.mjs";
   const APP_NAME = /^[a-z0-9_]+$/;
   async function launch(container) {
     const canvasId = container.dataset.heroCanvas || "hero_canvas";

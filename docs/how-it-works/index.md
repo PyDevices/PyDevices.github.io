@@ -35,8 +35,8 @@ PyDevices stack frozen in, so a demo imports it with nothing to install.
 
 The front page's watch is the other kind of hero: a whole home screen. Its
 database entry names a `home` rather than an `app`, and the page boots the
-apps' launcher from the all-apps runtime in `vendor/allapps/`, which has
-every app frozen in. Only the apps the entry lists are offered, since most of
+apps' launcher from the all-apps runtime that <https://apps.omnipython.org/>
+publishes, which has every app frozen in. Only the apps the entry lists are offered, since most of
 the rest need hardware a browser hasn't got.
 
 ## Publishing

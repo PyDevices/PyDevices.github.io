@@ -28,15 +28,10 @@ before you push.
 
 ## The all-apps runtime
 
-The watch on the front page is a second runtime, in `vendor/allapps/`: every
-app of the [apps repository](https://github.com/PyDevices/apps) frozen in, so
-the page fetches nothing once it has loaded. It boots Watch as its home
-screen; the same build boots Home anywhere else.
-
-Build it with omnipython-builds'
-[all-apps page script](https://github.com/PyDevices/omnipython-builds/blob/main/docs/guides/build-the-all-apps-page.md),
-or take the `allapps-page` artifact of its "All-apps browser page" workflow,
-and copy four of its files into `vendor/allapps/`: `micropython.mjs`,
-`micropython.wasm`, `micropython.wasm.provenance` and `allapps.json`, which
-says which apps commit went in. The page's own `index.html` stays out.
-
+The watch on the front page, and the hero on the apps page, boot a second
+runtime: every app of the [apps repository](https://github.com/PyDevices/apps)
+frozen in. It isn't kept here. The pages load it from
+<https://apps.omnipython.org/>, where omnipython-builds publishes it with
+each apps release, so there is nothing to rebuild in this repository. How
+that build is made and published is in its
+[guide](https://github.com/PyDevices/omnipython-builds/blob/main/docs/guides/build-the-all-apps-page.md).
