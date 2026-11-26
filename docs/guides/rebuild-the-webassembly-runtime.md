@@ -28,7 +28,7 @@ before you push.
 
 ## The all-apps runtime
 
-The watch on the front page, and the hero on the apps page, boot a second
+The watch on the front page and on the apps page boots a second
 runtime: every app of the [apps repository](https://github.com/PyDevices/apps)
 frozen in, the same build that boots Home and Watch everywhere else. It
 isn't kept here. The pages load it from
