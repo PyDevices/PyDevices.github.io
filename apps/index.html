@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- PYDEVICES-HEAD-TAGS: START -->
+  <title>apps — OmniPython</title>
+  <meta name="description" content="Finished apps for a board with a screen, or a desktop: Home and Watch to start them from, and apps for music, MIDI and audio, cameras and calls, the clock and the weather, remotes and the board itself, with the libraries they share. One omip line puts them all on a Wi-Fi board; pip puts them on a desktop.">
+  <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="alternate icon" href="/assets/img/favicon.ico" sizes="16x16 32x32 48x48">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&display=swap">
+  <!-- PYDEVICES-HEAD-TAGS: END -->
+  <link rel="stylesheet" href="/assets/chrome/site.css">
+</head>
+<body>
+  <!-- PYDEVICES-ABOVE-THE-FOLD: START -->
+  <div id="pydevices-site-header"></div>
+
+  <!-- Hero Banner -->
+  <section class="hero wrap has-hero-canvas">
+    <div class="hero-main">
+      <div class="hero-lead">
+        <div class="logo-badge product-mark" style="background: linear-gradient(135deg, var(--tier-4-purple), var(--tier-4-deep)); color: var(--on-accent);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><path d="M8.5 8.5h.01M12 8.5h.01M15.5 8.5h.01M8.5 12h.01M12 12h.01M8.5 15.5h.01M12 15.5h.01M15.5 15.5h.01" stroke-width="2.6"/><path d="M15.5 12h.01" stroke="var(--accent, currentColor)" stroke-width="2.6"/></svg></div>
+        <span class="eyebrow" style="color: var(--tier-4-purple);">apps</span>
+      </div>
+      <h1>apps — Home, Watch and the apps they start.</h1>
+      <p><code>apps</code> Finished apps for a board with a screen, or a desktop: Home and Watch to start them from, and apps for music, MIDI and audio, cameras and calls, the clock and the weather, remotes and the board itself, with the libraries they share. One omip line puts them all on a Wi-Fi board; pip puts them on a desktop.</p>
+      <div class="cta">
+      <a class="btn primary" href="https://github.com/PyDevices/apps">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.9a3.4 3.4 0 0 0-1-2.6c3-.3 6-1.5 6-6.5a5 5 0 0 0-1.4-3.5 4.6 4.6 0 0 0-.1-3.5s-1.1-.3-3.5 1.3a12 12 0 0 0-6 0C6.6 1.7 5.5 2 5.5 2a4.6 4.6 0 0 0-.1 3.5A5 5 0 0 0 4 9c0 5 3 6.2 6 6.5a3.4 3.4 0 0 0-1 2.6V22"/></svg>
+        GitHub Repo
+      </a>
+      <a class="btn" style="border-color: var(--tier-4-purple); color: var(--tier-4-purple);" href="https://github.com/PyDevices/apps/blob/main/docs/reference/apps.md">The apps</a>
+      <a class="btn" style="border-color: var(--tier-4-purple); color: var(--tier-4-purple);" href="https://github.com/PyDevices/apps/blob/main/docs/guides/install-an-app.md">Install an app</a>
+      <a class="btn" style="border-color: var(--tier-4-purple); color: var(--tier-4-purple);" href="https://github.com/PyDevices/apps/blob/main/docs/index.md">Docs</a>
+      </div>
+    </div>
+    <div class="hero-canvas-wrap" data-hero-canvas="hero_canvas" data-hero-app="watch" data-hero-app-url="https://omnipython.org/assets/apps/watch.py">
+      <div class="hero-canvas-circle">
+        <div class="hero-canvas-loader">
+          <div class="hero-spinner"></div>
+          <span class="hero-canvas-status">Live Pure-Python Device</span>
+        </div>
+        <canvas id="hero_canvas" width="240" height="240" tabindex="0"></canvas>
+      </div>
+    </div>
+  </section>
+  <!-- PYDEVICES-ABOVE-THE-FOLD: END -->
+  <main class="wrap" style="padding-bottom: 60px;">
+    <div class="section-head">
+      <h2>Put them on a board</h2>
+      <span class="hint">One line at a Wi-Fi board's REPL</span>
+    </div>
+    <div class="spec-block">
+      <pre><code>import omip
+omip.install("github:PyDevices/apps/apps")
+omip.install("github:PyDevices/apps/apps/home/main.py", target="/")</code></pre>
+    </div>
+    <p class="prose" style="margin-top: 14px;">The board needs OmniPython firmware with LVGL, its board config and Wi-Fi. The first line puts every app on it, each with what it needs; the second starts Home when the board starts. Reset the board, and Home comes up with a tile for each app. To put on one app at a time, name its folder, as in <code>omip.install("github:PyDevices/apps/apps/clock")</code>. <a href="https://github.com/PyDevices/apps/blob/main/docs/guides/install-an-app.md">Install an app</a> has the board config line, CircuitPython's extra step, updating, and how to start in one app with Home behind it.</p>
+    <div class="section-head" style="margin-top: 36px;">
+      <h2>Home and Watch</h2>
+      <span class="hint">Where the apps start from</span>
+    </div>
+    <p class="prose">Home is the home screen: a tile for each installed app, on a tab per category. On a round or small screen, Home's <code>main.py</code> starts Watch instead: a watch face with the date, the battery and today's steps, then a wheel of the same apps. Swipe sideways for another face, and tap for the wheel. Every app installs on any board, and one that can't run there says why when you start it.</p>
+    <div class="section-head" style="margin-top: 36px;">
+      <h2>On a computer</h2>
+      <span class="hint">pip, from GitHub</span>
+    </div>
+    <div class="spec-block">
+      <pre><code># every app, as the package apps, with the libraries they share
+pip install "omnipython-apps @ git+https://github.com/PyDevices/apps#subdirectory=apps"</code></pre>
+    </div>
+    <p class="prose" style="margin-top: 14px;">The libraries alone (appkit, controlkit, touchkit and the rest) are one package for writing apps of your own: <code>omnipython-applibs</code> from PyPI, or <code>applibs</code> from <a href="https://lib.omnipython.org/">lib.omnipython.org</a>.</p>
+    <div class="section-head" style="margin-top: 36px;">
+      <h2>What there is</h2>
+      <span class="hint">Depth lives in the repository</span>
+    </div>
+    <div class="spec-block">
+      <div class="spec-grid">
+        <div class="spec-item tier-4">
+          <h4><a href="https://github.com/PyDevices/apps/blob/main/docs/reference/apps.md">Music and listening</a></h4>
+          <p>Synth Station, Backline, midiEngine, MIDI Controller, Stompbox, Spotify, Bluetooth Receiver and the MP3 player.</p>
+        </div>
+        <div class="spec-item tier-4">
+          <h4><a href="https://github.com/PyDevices/apps/blob/main/docs/reference/apps.md">Cameras and calls</a></h4>
+          <p>A video camera, object detection, a doorbell, a videophone and a walkie-talkie.</p>
+        </div>
+        <div class="spec-item tier-4">
+          <h4><a href="https://github.com/PyDevices/apps/blob/main/docs/guides/put-a-clock-on-your-desk.md">On a desk</a></h4>
+          <p>Clock, Weather and Steps, on a round screen.</p>
+        </div>
+        <div class="spec-item tier-4">
+          <h4><a href="https://github.com/PyDevices/apps/blob/main/docs/reference/apps.md">The board</a></h4>
+          <p>Info, Settings, the REPL, the Shell, Touch and Battery.</p>
+        </div>
+        <div class="spec-item tier-4">
+          <h4><a href="https://github.com/PyDevices/apps/blob/main/docs/index.md">Docs</a></h4>
+          <p>Install, guides, the reference and how the apps are built.</p>
+        </div>
+        <div class="spec-item tier-4">
+          <h4><a href="https://github.com/PyDevices/apps/blob/main/docs/guides/freeze-the-apps.md">Freeze the apps</a></h4>
+          <p>Build them into a firmware instead.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="pydevices-site-footer"></div>
+  <script src="/assets/chrome/site-chrome.js"></script>
+</body>
+</html>
