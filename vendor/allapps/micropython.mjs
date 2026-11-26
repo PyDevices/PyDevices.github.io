@@ -4408,11 +4408,13 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
   route:{
   out:"",
   in:"",
+  camera:"",
   },
   routeErrors:{
   out:null,
   in:null,
   },
+  camera:null,
   };
   var _omnipython_audio_clear = (input) => { const s=omnipython_state; if(input)s.inputFrames.length=0; else { for(const x of s.audioSources)x.stop(); s.audioSources.clear(); s.audioQueuedBytes=0; s.audioEnd=s.audioContext?.currentTime||0; } };
 
@@ -4518,6 +4520,43 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
   
   
   
+  
+  var omnipython_camera_start = async () => {
+          const cam = omnipython_state.camera;
+          if (!cam) return;
+          const token = ++cam.token;
+          const media = globalThis.navigator && navigator.mediaDevices;
+          if (!media || !media.getUserMedia || typeof document === 'undefined') { cam.status = -3; return; }
+          const id = omnipython_state.route.camera;
+          try {
+              const stream = await media.getUserMedia({video: id ? {deviceId: {exact: id}} : true, audio: false});
+              if (token !== cam.token) { for (const track of stream.getTracks()) track.stop(); return; }
+              if (cam.stream) for (const track of cam.stream.getTracks()) track.stop();
+              cam.stream = stream;
+              const video = cam.video ||= document.createElement('video');
+              video.muted = true; video.playsInline = true; video.srcObject = stream;
+              if (!video.videoWidth) await new Promise((resolve) => video.addEventListener('loadedmetadata', resolve, {once: true}));
+              await video.play();
+              if (token !== cam.token) return;
+              cam.readTime = -1;
+              cam.status = 1;
+          } catch (error) {
+              if (token !== cam.token) return;
+              const name = error && error.name;
+              cam.status = name === 'NotAllowedError' || name === 'SecurityError' ? -1
+                  : name === 'NotFoundError' || name === 'OverconstrainedError' ? -2 : -4;
+              console.error('OmniPython camera:', error);
+          }
+      };
+  
+  var omnipython_camera_stop = () => {
+          const cam = omnipython_state.camera;
+          if (!cam) return;
+          cam.token++;
+          if (cam.stream) for (const track of cam.stream.getTracks()) track.stop();
+          if (cam.video) { try { cam.video.pause(); cam.video.srcObject = null; } catch (_) {} }
+          omnipython_state.camera = null;
+      };
   var omnipython_export_host = () => {
           if (Module.omnipythonBridge) return;
           Module.omnipythonBridge = {
@@ -4569,6 +4608,7 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
                       state.audioContext = null;
                   }
                   state.audioEnabled = false;
+                  omnipython_camera_stop();
               },
               enableAudio: (microphone=false) => omnipython_enable_audio(microphone),
               /*
@@ -4582,6 +4622,7 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
                   const state = omnipython_state;
                   state.route[way] = deviceId || '';
                   if (way === 'out') return omnipython_route_out();
+                  if (way === 'camera') return omnipython_camera_start();
                   if (state.microphoneEnabled && state.audioContext && state.processor) {
                       return omnipython_open_microphone().catch((error) => {
                           state.routeErrors.in = "can't record from that microphone: " + (error && error.message || error);
@@ -4654,6 +4695,77 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
           source.start(start);
           return byteLength;
       };
+
+  var _omnipython_camera_close = () => omnipython_camera_stop();
+
+  
+  var omnipython_camera_draw = (w, h, flags, fresh) => {
+          const cam = omnipython_state.camera;
+          if (!cam || cam.status !== 1) return null;
+          const video = cam.video;
+          if (video.readyState < 2) return null;
+          if (fresh) {
+              if (video.currentTime === cam.readTime) return null;
+              cam.readTime = video.currentTime;
+          }
+          const canvas = cam.canvas ||= document.createElement('canvas');
+          if (canvas.width !== w) canvas.width = w;
+          if (canvas.height !== h) canvas.height = h;
+          const context = cam.context ||= canvas.getContext('2d', {willReadFrequently: true});
+          context.setTransform(flags & 2 ? -1 : 1, 0, 0, flags & 1 ? -1 : 1, flags & 2 ? w : 0, flags & 1 ? h : 0);
+          context.drawImage(video, 0, 0, w, h);
+          context.setTransform(1, 0, 0, 1, 0, 0);
+          return {canvas, context};
+      };
+  var _omnipython_camera_jpeg = (quality, flags, lenPtr) => {
+          HEAPU32[lenPtr >> 2] = 0;
+          const cam = omnipython_state.camera;
+          if (!cam || cam.status !== 1) return 0;
+          const drawn = omnipython_camera_draw(cam.video.videoWidth, cam.video.videoHeight, flags, false);
+          if (!drawn) return 0;
+          const text = atob(drawn.canvas.toDataURL('image/jpeg', Math.max(1, Math.min(100, quality)) / 100).split(',')[1]);
+          const ptr = _malloc(text.length || 1);
+          for (let i = 0; i < text.length; i++) HEAPU8[ptr + i] = text.charCodeAt(i);
+          HEAPU32[lenPtr >> 2] = text.length;
+          return ptr;
+      };
+
+  
+  
+  
+  var _omnipython_camera_open = () => {
+          omnipython_export_host();
+          omnipython_camera_stop();
+          omnipython_state.camera = {token: 0, status: 0, stream: null, video: null, canvas: null, context: null, readTime: -1};
+          omnipython_camera_start();
+      };
+
+  
+  var _omnipython_camera_read = (ptr, len, picW, picH, x, y, w, h, flags) => {
+          const cam = omnipython_state.camera;
+          if (!cam || cam.status !== 1) return -1;
+          const drawn = omnipython_camera_draw(w, h, flags, true);
+          if (!drawn) return 0;
+          const rgba = drawn.context.getImageData(0, 0, w, h).data;
+          const swap = flags & 4;
+          for (let row = 0; row < h; row++) {
+              let out = ptr + ((y + row) * picW + x) * 2, i = row * w * 4;
+              for (let col = 0; col < w; col++, i += 4, out += 2) {
+                  const value = ((rgba[i] >> 3) << 11) | ((rgba[i + 1] >> 2) << 5) | (rgba[i + 2] >> 3);
+                  HEAPU8[out + (swap ? 1 : 0)] = value & 0xff;
+                  HEAPU8[out + (swap ? 0 : 1)] = value >> 8;
+              }
+          }
+          return 1;
+      };
+
+  var _omnipython_camera_size = () => {
+          const cam = omnipython_state.camera;
+          if (!cam || cam.status !== 1) return 0;
+          return ((cam.video.videoWidth & 0xffff) << 16) | (cam.video.videoHeight & 0xffff);
+      };
+
+  var _omnipython_camera_state = () => omnipython_state.camera ? omnipython_state.camera.status : -4;
 
   var omnipython_get_display = (canvasId) => {
           let display = omnipython_state.displays.get(canvasId);
@@ -5942,6 +6054,9 @@ missingLibrarySymbols.forEach(missingLibrarySymbol)
   'omnipython_arm_audio_unlock',
   'omnipython_decode_pcm',
   'omnipython_encode_sample',
+  'omnipython_camera_stop',
+  'omnipython_camera_start',
+  'omnipython_camera_draw',
 ];
 unexportedSymbols.forEach(unexportedRuntimeSymbol);
 
@@ -6383,6 +6498,18 @@ var wasmImports = {
   omnipython_audio_state: _omnipython_audio_state,
   /** @export */
   omnipython_audio_write: _omnipython_audio_write,
+  /** @export */
+  omnipython_camera_close: _omnipython_camera_close,
+  /** @export */
+  omnipython_camera_jpeg: _omnipython_camera_jpeg,
+  /** @export */
+  omnipython_camera_open: _omnipython_camera_open,
+  /** @export */
+  omnipython_camera_read: _omnipython_camera_read,
+  /** @export */
+  omnipython_camera_size: _omnipython_camera_size,
+  /** @export */
+  omnipython_camera_state: _omnipython_camera_state,
   /** @export */
   omnipython_display_register: _omnipython_display_register,
   /** @export */
