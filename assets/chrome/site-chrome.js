@@ -231,6 +231,15 @@
           tag: "Android app",
           desc: "Package an OmniPython app as an APK",
           icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6.5" y="2.5" width="11" height="19" rx="3.5"/><path d="M10.8 18.3h2.4"/><path d="M10.7 8.3v4.4l3.4-2.2z" stroke="var(--accent, currentColor)"/></svg>'
+        },
+        {
+          id: "apps",
+          name: "apps",
+          path: "/apps/",
+          url: ROOT + "/apps/",
+          tag: "Apps",
+          desc: "Home, Watch and the apps they start",
+          icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><path d="M8.5 8.5h.01M12 8.5h.01M15.5 8.5h.01M8.5 12h.01M12 12h.01M8.5 15.5h.01M12 15.5h.01M15.5 15.5h.01" stroke-width="2.6"/><path d="M15.5 12h.01" stroke="var(--accent, currentColor)" stroke-width="2.6"/></svg>'
         }
       ]
     },
